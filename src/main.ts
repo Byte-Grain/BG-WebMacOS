@@ -9,12 +9,13 @@ import en from 'element-plus/es/locale/lang/en'
 import i18n from './i18n'
 import { envConfig } from './config/env.config'
 import { appConfig } from './config/app.config'
-import { useUtils } from './composables/useUtils'
-
 // 获取语言设置
-const { storage } = useUtils()
 const getLanguage = (): string => {
-  return storage.get('language', 'zh') || 'zh'
+  try {
+    return localStorage.getItem('language') || 'zh'
+  } catch {
+    return 'zh'
+  }
 }
 
 const app = createApp(App)

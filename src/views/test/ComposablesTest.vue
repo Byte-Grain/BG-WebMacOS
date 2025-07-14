@@ -8,13 +8,49 @@
     <div class="test-sections">
       <!-- 事件系统测试 -->
       <div class="test-section">
-        <h3>事件系统测试</h3>
+        <h3>🎯 事件系统测试</h3>
         <div class="test-controls">
-          <button @click="testEventEmit">触发自定义事件</button>
-          <button @click="testGlobalEvent">触发全局事件</button>
+          <button @click="testEventEmit" class="btn btn-primary">发送自定义事件</button>
+          <button @click="testGlobalEvent" class="btn btn-secondary">发送全局事件</button>
+          <button @click="testBusinessEvent" class="btn btn-success">发送业务事件</button>
+          <button @click="testErrorEvent" class="btn btn-warning">发送错误事件</button>
           <p>事件计数: {{ eventCount }}</p>
         </div>
       </div>
+
+      <!-- 错误监控测试 -->
+       <div class="test-section">
+         <h3>🚨 错误监控测试</h3>
+         <div class="test-controls">
+           <button @click="testCaptureError" class="btn btn-danger">记录错误</button>
+           <button @click="testCaptureException" class="btn btn-danger">记录异常</button>
+           <button @click="testNetworkError" class="btn btn-warning">模拟网络错误</button>
+           <button @click="showErrorStats" class="btn btn-info">显示错误统计</button>
+           <button @click="showRecentErrors" class="btn btn-info">显示最近错误</button>
+           <div class="test-info" v-if="errorMonitor">
+             <p>错误监控状态: {{ errorMonitor.isEnabled() ? '已启用' : '已禁用' }}</p>
+             <p>自动上报: {{ errorMonitor.config.autoReport ? '开启' : '关闭' }}</p>
+           </div>
+         </div>
+       </div>
+
+       <!-- 性能监控测试 -->
+       <div class="test-section">
+         <h3>📊 性能监控测试</h3>
+         <div class="test-controls">
+           <button @click="showPerformanceMetrics" class="btn btn-info">显示性能指标</button>
+           <button @click="showPerformanceHealth" class="btn btn-success">健康检查</button>
+           <button @click="showPerformanceReport" class="btn btn-secondary">性能报告</button>
+           <button @click="simulatePerformanceIssue" class="btn btn-warning">模拟性能问题</button>
+           <button @click="triggerPerformanceEvent" class="btn btn-danger">触发性能事件</button>
+           <div class="test-info" v-if="performanceMonitor">
+             <p>性能监控状态: {{ performanceMonitor.isMonitoring ? '运行中' : '已停止' }}</p>
+             <p>监控间隔: {{ performanceMonitor.config.interval }}ms</p>
+             <p>当前FPS: {{ performanceMonitor.currentMetrics.fps }}</p>
+             <p>内存使用: {{ performanceMonitor.currentMetrics.memoryUsage.percentage.toFixed(1) }}%</p>
+           </div>
+         </div>
+       </div>
 
       <!-- 键盘快捷键测试 -->
       <div class="test-section">
@@ -58,22 +94,50 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { 
-  useEventBus, 
-  useKeyboard, 
-  useNotification, 
-  useSystem,
-  useUtils,
+  useCore,
+  useErrorMonitor,
+  captureError,
+  captureException,
+  getCurrentPerformanceMetrics,
+  checkPerformanceHealth,
   EVENTS 
 } from '@/composables'
 
-// 组合式函数
-const { on, off, emit } = useEventBus()
-const { registerShortcut, unregisterShortcut, isShortcutRegistered } = useKeyboard()
-const { success, error, warning, info, show: notify, closeAll } = useNotification()
-const { getSystemInfo, getNetworkStatus } = useSystem()
+// 使用核心组合式函数
+const {
+  // 事件系统
+  on, off, emit,
+  // 键盘
+  registerShortcut, unregisterShortcut, isShortcutRegistered,
+  // 通知
+  success, error, warning, info, show: notify, closeAll,
+  // 系统
+  getSystemInfo, getNetworkStatus,
+  // 工具
+  device,
+  // 错误监控
+  errorMonitor,
+  // 性能监控
+  performanceMonitor
+} = useCore({
+  namespace: 'composables-test',
+  debugMode: true,
+  enableErrorMonitoring: true,
+  enablePerformanceMonitoring: true,
+  performanceConfig: {
+    interval: 3000, // 3秒监控间隔
+    thresholds: {
+      memoryWarning: 60,
+      memoryCritical: 80,
+      fpsWarning: 25,
+      fpsCritical: 10
+    }
+  }
+})
+
+// 系统信息
 const systemInfo = ref(getSystemInfo())
 const isOnline = ref(getNetworkStatus().online)
-const { device } = useUtils()
 
 // 响应式数据
 const eventCount = ref(0)
@@ -90,7 +154,26 @@ const testEventEmit = () => {
 }
 
 const testGlobalEvent = () => {
-  emit(EVENTS.SYSTEM_READY, { source: 'test-page' })
+  emit(EVENTS.SYSTEM_READY, { 
+    bootTime: 1000,
+    version: '1.0.0-test'
+  })
+}
+
+const testBusinessEvent = () => {
+  emit('business:feature-used', {
+    feature: 'test-feature',
+    metadata: { testId: Date.now() }
+  })
+}
+
+const testErrorEvent = () => {
+  emit(EVENTS.APP_ERROR, {
+    appKey: 'test-app',
+    pid: 12345,
+    error: '模拟应用错误',
+    severity: 'medium' as const
+  })
 }
 
 const handleTestEvent = (data: any) => {
@@ -99,7 +182,15 @@ const handleTestEvent = (data: any) => {
 }
 
 const handleSystemReady = (data: any) => {
-  info(`系统就绪事件触发，来源: ${data.source}`)
+  info(`系统就绪事件触发，启动时间: ${data.bootTime}ms`)
+}
+
+const handleBusinessEvent = (data: any) => {
+  info(`业务事件: ${data.feature}，元数据: ${JSON.stringify(data.metadata)}`)
+}
+
+const handleErrorEvent = (data: any) => {
+  warning(`应用错误事件: ${data.appKey} - ${data.error}`)
 }
 
 // 键盘快捷键测试
@@ -184,11 +275,166 @@ const clearAllNotifications = () => {
   closeAll()
 }
 
+// 错误监控测试
+const testCaptureError = () => {
+  captureError('这是一个测试错误', {
+    component: 'test-component',
+    severity: 'low',
+    metadata: { testData: 'error-test' }
+  })
+  info('错误已记录到监控系统')
+}
+
+const testCaptureException = () => {
+  try {
+    throw new Error('这是一个测试异常')
+  } catch (err) {
+    captureException(err as Error, {
+      component: 'test-component',
+      severity: 'medium'
+    })
+    warning('异常已记录到监控系统')
+  }
+}
+
+const testNetworkError = () => {
+  emit(EVENTS.NETWORK_ERROR, {
+    error: '网络连接超时',
+    url: 'https://api.example.com/test',
+    status: 408
+  })
+}
+
+const showErrorStats = () => {
+  if (errorMonitor) {
+    const stats = errorMonitor.getErrorStats()
+    notify({
+      type: 'info',
+      title: '错误统计',
+      message: `总错误数: ${stats.totalErrors}，JavaScript错误: ${stats.errorsByType.javascript}`,
+      duration: 5000
+    })
+  }
+}
+
+const showRecentErrors = () => {
+  if (errorMonitor) {
+    const recentErrors = errorMonitor.getRecentErrors(5)
+    console.group('🚨 最近的错误')
+    recentErrors.forEach(error => {
+      console.log(`[${error.severity}] ${error.message}`, error)
+    })
+    console.groupEnd()
+    info(`已在控制台显示最近 ${recentErrors.length} 个错误`)
+  }
+}
+
+// 性能监控测试
+const showPerformanceMetrics = async () => {
+  try {
+    const metrics = await getCurrentPerformanceMetrics()
+    console.group('📊 当前性能指标')
+    console.log('内存使用:', `${metrics.memoryUsage.percentage.toFixed(1)}% (${(metrics.memoryUsage.used / 1024 / 1024).toFixed(1)}MB)`)
+    console.log('FPS:', metrics.fps)
+    console.log('DOM 节点数:', metrics.domNodes)
+    console.log('网络延迟:', `${metrics.networkLatency.toFixed(1)}ms`)
+    console.log('渲染时间:', `${metrics.renderTime.toFixed(2)}ms`)
+    console.groupEnd()
+    
+    notify({
+      type: 'info',
+      title: '性能指标',
+      message: `内存: ${metrics.memoryUsage.percentage.toFixed(1)}%, FPS: ${metrics.fps}, DOM: ${metrics.domNodes}`,
+      duration: 5000
+    })
+  } catch (error) {
+    console.error('获取性能指标失败:', error)
+    warning('获取性能指标失败')
+  }
+}
+
+const showPerformanceHealth = () => {
+  const health = checkPerformanceHealth()
+  console.group('🏥 性能健康状态')
+  console.log('健康状态:', health.healthy ? '良好' : '存在问题')
+  console.log('性能评分:', `${health.score.toFixed(1)}/100`)
+  if (health.issues.length > 0) {
+    console.log('问题列表:')
+    health.issues.forEach(issue => {
+      console.log(`  - ${issue.type}: ${issue.level} (${issue.value})`)
+    })
+  }
+  console.groupEnd()
+  
+  const statusText = health.healthy ? '性能状态良好' : `发现 ${health.issues.length} 个性能问题`
+  const notifyType = health.healthy ? 'success' : (health.issues.some(i => i.level === 'critical') ? 'error' : 'warning')
+  
+  notify({
+    type: notifyType,
+    title: '性能健康检查',
+    message: `${statusText}，评分: ${health.score.toFixed(1)}/100`,
+    duration: 5000
+  })
+}
+
+const showPerformanceReport = () => {
+  if (performanceMonitor) {
+    const report = performanceMonitor.getPerformanceReport()
+    console.group('📈 性能报告')
+    console.log('当前指标:', report.current)
+    console.log('平均指标:', report.average)
+    console.log('状态:', report.status)
+    console.log('历史记录:', report.history)
+    console.groupEnd()
+    
+    info('性能报告已输出到控制台')
+  }
+}
+
+const simulatePerformanceIssue = () => {
+  // 模拟性能问题：创建大量 DOM 元素
+  const container = document.createElement('div')
+  container.style.display = 'none'
+  document.body.appendChild(container)
+  
+  for (let i = 0; i < 1000; i++) {
+    const element = document.createElement('div')
+    element.textContent = `Performance test element ${i}`
+    container.appendChild(element)
+  }
+  
+  warning('已创建1000个隐藏DOM元素来模拟性能问题')
+  
+  // 5秒后清理
+  setTimeout(() => {
+    document.body.removeChild(container)
+    success('性能测试元素已清理')
+  }, 5000)
+}
+
+const triggerPerformanceEvent = () => {
+  emit('PERFORMANCE_SLOW', {
+    component: 'test-component',
+    duration: 2500,
+    threshold: 1000,
+    timestamp: Date.now()
+  })
+  
+  emit('PERFORMANCE_MEMORY_WARNING', {
+    usage: 85.5,
+    threshold: 80,
+    available: 2048,
+    timestamp: Date.now()
+  })
+}
+
 // 生命周期
 onMounted(() => {
   // 注册事件监听器
   on('test-event', handleTestEvent)
   on(EVENTS.SYSTEM_READY, handleSystemReady)
+  on('business:feature-used', handleBusinessEvent)
+  on(EVENTS.APP_ERROR, handleErrorEvent)
   
   // 检查快捷键状态
   shortcutRegistered.value = isShortcutRegistered({
@@ -201,6 +447,8 @@ onUnmounted(() => {
   // 清理事件监听器
   off('test-event', handleTestEvent)
   off(EVENTS.SYSTEM_READY, handleSystemReady)
+  off('business:feature-used', handleBusinessEvent)
+  off(EVENTS.APP_ERROR, handleErrorEvent)
   
   // 清理快捷键
   if (shortcutRegistered.value && testShortcutId) {
@@ -260,25 +508,97 @@ onUnmounted(() => {
   gap: 10px;
 }
 
-.test-controls button {
+.test-controls button,
+.btn {
   padding: 8px 16px;
-  background: rgba(0, 122, 255, 0.8);
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.test-controls button:hover {
+.btn-primary {
+  background: rgba(0, 122, 255, 0.8);
+}
+
+.btn-primary:hover {
   background: rgba(0, 122, 255, 1);
   transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: rgba(108, 117, 125, 0.8);
+}
+
+.btn-secondary:hover {
+  background: rgba(108, 117, 125, 1);
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background: rgba(40, 167, 69, 0.8);
+}
+
+.btn-success:hover {
+  background: rgba(40, 167, 69, 1);
+  transform: translateY(-1px);
+}
+
+.btn-warning {
+  background: rgba(255, 193, 7, 0.8);
+  color: #212529;
+}
+
+.btn-warning:hover {
+  background: rgba(255, 193, 7, 1);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: rgba(220, 53, 69, 0.8);
+}
+
+.btn-danger:hover {
+  background: rgba(220, 53, 69, 1);
+  transform: translateY(-1px);
+}
+
+.btn-info {
+  background: rgba(23, 162, 184, 0.8);
+}
+
+.btn-info:hover {
+  background: rgba(23, 162, 184, 1);
+  transform: translateY(-1px);
+}
+
+.test-controls button:disabled,
+.btn:disabled {
+  background: rgba(108, 117, 125, 0.5);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .test-controls p {
   margin: 5px 0;
   font-size: 14px;
   opacity: 0.9;
+}
+
+.test-info {
+  margin-top: 15px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-size: 14px;
+  border-left: 4px solid rgba(0, 122, 255, 0.8);
+}
+
+.test-info p {
+  margin: 5px 0;
 }
 
 .system-info {

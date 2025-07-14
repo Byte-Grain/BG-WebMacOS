@@ -22,7 +22,7 @@
 
 <script setup>
   import { ref, onMounted, onUnmounted } from 'vue'
-  import { useAppManager } from '@/composables/useAppManager'
+  import { useAppManager } from '@/composables'
   import { getDesktopApps } from '@/config/app.config'
 
   const { openApp, closeLaunchpad } = useAppManager()

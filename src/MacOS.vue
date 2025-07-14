@@ -37,12 +37,9 @@
 import { computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { 
-  useSystem, 
-  useAppManager, 
-  useTheme, 
-  useEventBus, 
-  useKeyboard, 
-  useNotification,
+  useCore,
+  useErrorMonitor,
+  captureError,
   EVENTS 
 } from '@/composables'
 
@@ -57,13 +54,27 @@ import Notification from './components/common/Notification.vue'
 
 const store = useStore()
 
-// 使用组合式函数
-const { systemState, isLoggedIn, isLoading, initializeSystem } = useSystem()
-const { openApps, isLaunchpadOpen, initializeDockApps, openAppByKey } = useAppManager()
-const { applyCurrentTheme, toggleTheme } = useTheme()
-const { emit, on } = useEventBus()
-const { registerShortcut, COMMON_SHORTCUTS } = useKeyboard()
-const { success, info } = useNotification()
+// 使用核心组合式函数（包含错误监控）
+const {
+  // 系统相关
+  systemState, isLoggedIn, isLoading, initializeSystem,
+  // 应用管理
+  openApps, isLaunchpadOpen, initializeDockApps, openAppByKey,
+  // 主题
+  applyCurrentTheme, toggleTheme,
+  // 事件系统
+  emit, on,
+  // 键盘
+  registerShortcut, COMMON_SHORTCUTS,
+  // 通知
+  success, info,
+  // 错误监控
+  errorMonitor
+} = useCore({
+  namespace: 'macos-main',
+  debugMode: process.env.NODE_ENV === 'development',
+  enableErrorMonitoring: true
+})
 
 // 计算属性
 const showLogin = computed(() => !isLoggedIn.value)
@@ -105,60 +116,164 @@ const setupEventListeners = () => {
   // 监听应用打开事件
   on(EVENTS.APP_OPENED, (data) => {
     console.log('应用已打开:', data)
+    // 触发业务事件
+    emit('business:feature-used', {
+      feature: 'app-open',
+      metadata: { appKey: data.appKey, pid: data.pid }
+    })
+  })
+  
+  // 监听应用错误事件
+  on(EVENTS.APP_ERROR, (data) => {
+    captureError(`应用错误: ${data.error}`, {
+      component: 'app-manager',
+      severity: data.severity || 'medium',
+      metadata: { appKey: data.appKey, pid: data.pid }
+    })
   })
   
   // 监听主题变化事件
   on(EVENTS.THEME_CHANGED, (data) => {
     console.log('主题已变化:', data)
+    emit('business:feature-used', {
+      feature: 'theme-change',
+      metadata: { theme: data.theme, previous: data.previous }
+    })
   })
   
   // 监听系统就绪事件
-  on(EVENTS.SYSTEM_READY, () => {
+  on(EVENTS.SYSTEM_READY, (data) => {
     success('系统初始化完成', { duration: 3000 })
+    emit('business:engagement', {
+      type: 'system-ready',
+      duration: data?.bootTime || 0,
+      metadata: { version: data?.version }
+    })
+  })
+  
+  // 监听系统错误事件
+  on(EVENTS.SYSTEM_ERROR, (data) => {
+    captureError(`系统错误: ${data.error}`, {
+      component: data.component || 'system',
+      severity: data.recoverable ? 'medium' : 'high',
+      metadata: { code: data.code, recoverable: data.recoverable }
+    })
+  })
+  
+  // 监听网络错误事件
+  on(EVENTS.NETWORK_ERROR, (data) => {
+    captureError(`网络错误: ${data.error}`, {
+      component: 'network',
+      severity: 'medium',
+      metadata: { url: data.url, status: data.status }
+    })
   })
   
   // 监听系统锁屏事件
   window.addEventListener('system:lockScreen', () => {
-    // 实现锁屏逻辑
-    store.commit('logout')
-    info('系统已锁屏', { duration: 2000 })
+    try {
+      store.commit('logout')
+      info('系统已锁屏', { duration: 2000 })
+      emit(EVENTS.SYSTEM_LOCK, { trigger: 'user' })
+    } catch (error) {
+      captureError('锁屏操作失败', {
+        component: 'system-lock',
+        severity: 'medium',
+        metadata: { error: String(error) }
+      })
+    }
   })
   
   // 监听系统关机事件
   window.addEventListener('system:shutdown', () => {
-    // 实现关机逻辑
-    store.commit('logout')
-    info('系统正在关机...', { duration: 2000 })
-    setTimeout(() => {
-      window.close() || (window.location.href = 'about:blank')
-    }, 2000)
+    try {
+      store.commit('logout')
+      info('系统正在关机...', { duration: 2000 })
+      emit(EVENTS.SYSTEM_SHUTDOWN, { reason: 'user-request' })
+      
+      setTimeout(() => {
+        window.close() || (window.location.href = 'about:blank')
+      }, 2000)
+    } catch (error) {
+      captureError('关机操作失败', {
+        component: 'system-shutdown',
+        severity: 'high',
+        metadata: { error: String(error) }
+      })
+    }
   })
 }
 
 // 生命周期
-onMounted(() => {
-  // 初始化系统
-  initializeSystem()
-  // 初始化应用
-  initializeDockApps()
-  // 应用主题
-  applyCurrentTheme()
-  // 注册系统快捷键
-  registerSystemShortcuts()
-  // 设置事件监听
-  setupEventListeners()
-  
-  // 触发系统就绪事件
-  setTimeout(() => {
-    emit(EVENTS.SYSTEM_READY)
-  }, 1000)
+onMounted(async () => {
+  try {
+    const startTime = Date.now()
+    
+    // 初始化系统
+    await initializeSystem()
+    
+    // 初始化应用
+    await initializeDockApps()
+    
+    // 应用主题
+    await applyCurrentTheme()
+    
+    // 注册系统快捷键
+    registerSystemShortcuts()
+    
+    // 设置事件监听
+    setupEventListeners()
+    
+    const bootTime = Date.now() - startTime
+    
+    // 触发系统就绪事件
+    setTimeout(() => {
+      emit(EVENTS.SYSTEM_READY, {
+        bootTime,
+        version: process.env.VUE_APP_VERSION || '1.0.0'
+      })
+    }, 1000)
+    
+  } catch (error) {
+    captureError('系统初始化失败', {
+      component: 'macos-main',
+      severity: 'critical',
+      metadata: { error: String(error) }
+    })
+    
+    // 显示错误通知
+    info('系统初始化遇到问题，部分功能可能不可用', { duration: 5000 })
+  }
 })
 
 const handleLogin = () => {
-  // 处理登录成功事件
-  store.commit('login')
-  emit(EVENTS.USER_LOGIN, { timestamp: Date.now() })
-  success('登录成功', { duration: 2000 })
+  try {
+    // 处理登录成功事件
+    store.commit('login')
+    
+    const loginData = {
+      username: 'user', // 这里可以从实际登录数据获取
+      timestamp: Date.now(),
+      method: 'password',
+      ip: 'localhost'
+    }
+    
+    emit(EVENTS.USER_LOGIN, loginData)
+    success('登录成功', { duration: 2000 })
+    
+    // 记录业务事件
+    emit('business:conversion', {
+      action: 'user-login',
+      metadata: { method: loginData.method }
+    })
+    
+  } catch (error) {
+    captureError('登录处理失败', {
+      component: 'login-handler',
+      severity: 'high',
+      metadata: { error: String(error) }
+    })
+  }
 }
 
 const onContextShow = () => {

@@ -670,77 +670,96 @@ export const EVENTS = {
 export interface EventDataMap {
   // 应用事件数据
   [EVENTS.APP_OPEN]: { appKey: string; config?: any }
-  [EVENTS.APP_OPENED]: { appKey: string; pid: number }
+  [EVENTS.APP_OPENED]: { appKey: string; pid: number; timestamp?: number }
   [EVENTS.APP_CLOSE]: { appKey: string; pid?: number }
-  [EVENTS.APP_CLOSED]: { appKey: string; pid: number }
-  [EVENTS.APP_FOCUS]: { appKey: string; pid: number }
+  [EVENTS.APP_CLOSED]: { appKey: string; pid: number; reason?: string; source?: string }
+  [EVENTS.APP_FOCUS]: { appKey: string; pid: number; previousApp?: string }
   [EVENTS.APP_FOCUSED]: { appKey: string; pid: number }
   [EVENTS.APP_MINIMIZE]: { appKey: string; pid: number }
-  [EVENTS.APP_MINIMIZED]: { appKey: string; pid: number }
+  [EVENTS.APP_MINIMIZED]: { appKey: string; pid: number; position?: { x: number; y: number } }
   [EVENTS.APP_MAXIMIZE]: { appKey: string; pid: number }
-  [EVENTS.APP_MAXIMIZED]: { appKey: string; pid: number }
+  [EVENTS.APP_MAXIMIZED]: { appKey: string; pid: number; previousSize?: { width: number; height: number } }
   [EVENTS.APP_RESIZE]: { appKey: string; pid: number; width: number; height: number }
   [EVENTS.APP_MOVE]: { appKey: string; pid: number; x: number; y: number }
   
   // 系统事件数据
-  [EVENTS.SYSTEM_READY]: void
-  [EVENTS.SYSTEM_SHUTDOWN]: void
-  [EVENTS.SYSTEM_SLEEP]: void
-  [EVENTS.SYSTEM_WAKE]: void
-  [EVENTS.SYSTEM_ERROR]: { error: Error; context?: string }
+  [EVENTS.SYSTEM_READY]: { bootTime: number; version?: string }
+  [EVENTS.SYSTEM_SHUTDOWN]: { reason?: string; forced?: boolean }
+  [EVENTS.SYSTEM_SLEEP]: { trigger?: 'user' | 'auto' | 'schedule' }
+  [EVENTS.SYSTEM_WAKE]: { trigger?: 'user' | 'timer' | 'network' }
+  [EVENTS.SYSTEM_ERROR]: { error: Error; context?: string; component?: string; recoverable?: boolean }
   
   // 主题事件数据
   [EVENTS.THEME_CHANGE]: { theme: string; previous?: string }
-  [EVENTS.THEME_CHANGED]: { theme: string; previous?: string }
+  [EVENTS.THEME_CHANGED]: { theme: string; previous?: string; timestamp: number }
   [EVENTS.THEME_FOLLOW_SYSTEM]: { enabled: boolean }
   
   // 网络事件数据
-  [EVENTS.NETWORK_ONLINE]: void
-  [EVENTS.NETWORK_OFFLINE]: void
-  [EVENTS.NETWORK_SLOW]: { speed: number }
+  [EVENTS.NETWORK_ONLINE]: { timestamp: number; connectionType?: string }
+  [EVENTS.NETWORK_OFFLINE]: { timestamp: number; reason?: string }
+  [EVENTS.NETWORK_SLOW]: { speed: number; threshold: number; timestamp: number }
   
   // 用户事件数据
-  [EVENTS.USER_LOGIN]: { username: string; timestamp: number }
-  [EVENTS.USER_LOGOUT]: { username?: string; timestamp: number }
-  [EVENTS.USER_PROFILE_UPDATE]: { field: string; value: any }
+  [EVENTS.USER_LOGIN]: { username: string; timestamp: number; method?: string; ip?: string }
+  [EVENTS.USER_LOGOUT]: { username?: string; timestamp: number; reason?: string }
+  [EVENTS.USER_PROFILE_UPDATE]: { field: string; value: any; timestamp: number }
   
   // 窗口事件数据
-  [EVENTS.WINDOW_RESIZE]: { width: number; height: number }
-  [EVENTS.WINDOW_FOCUS]: void
-  [EVENTS.WINDOW_BLUR]: void
-  [EVENTS.WINDOW_FULLSCREEN]: { enabled: boolean }
+  [EVENTS.WINDOW_RESIZE]: { windowId?: string; width: number; height: number; oldSize?: { width: number; height: number } }
+  [EVENTS.WINDOW_FOCUS]: { windowId?: string; appKey?: string; timestamp: number }
+  [EVENTS.WINDOW_BLUR]: { windowId?: string; appKey?: string; timestamp: number }
+  [EVENTS.WINDOW_FULLSCREEN]: { enabled: boolean; windowId?: string }
   
   // 键盘事件数据
-  [EVENTS.KEYBOARD_SHORTCUT]: { key: string; modifiers: string[]; action: string }
-  [EVENTS.KEYBOARD_PRESS]: { key: string; code: string }
-  [EVENTS.KEYBOARD_RELEASE]: { key: string; code: string }
+  [EVENTS.KEYBOARD_SHORTCUT]: { key: string; modifiers: string[]; action: string; timestamp: number }
+  [EVENTS.KEYBOARD_PRESS]: { key: string; code: string; timestamp: number }
+  [EVENTS.KEYBOARD_RELEASE]: { key: string; code: string; timestamp: number }
   
   // 通知事件数据
-  [EVENTS.NOTIFICATION_SHOW]: { id: string; title: string; message?: string }
-  [EVENTS.NOTIFICATION_HIDE]: { id: string }
+  [EVENTS.NOTIFICATION_SHOW]: { id: string; title: string; message?: string; type?: string; duration?: number }
+  [EVENTS.NOTIFICATION_HIDE]: { id: string; reason?: 'timeout' | 'user' | 'system' }
   [EVENTS.NOTIFICATION_CLICK]: { id: string; action?: string }
   
   // 音量事件数据
-  [EVENTS.VOLUME_CHANGE]: { volume: number; previous?: number }
-  [EVENTS.VOLUME_MUTE]: { muted: boolean }
+  [EVENTS.VOLUME_CHANGE]: { volume: number; previous?: number; timestamp: number }
+  [EVENTS.VOLUME_MUTE]: { muted: boolean; timestamp: number }
   
   // 语言事件数据
-  [EVENTS.LANGUAGE_CHANGE]: { language: string; previous?: string }
+  [EVENTS.LANGUAGE_CHANGE]: { language: string; previous?: string; timestamp: number }
   
   // 小组件事件数据
-  [EVENTS.WIDGET_ADD]: { widgetId: string; type: string }
-  [EVENTS.WIDGET_REMOVE]: { widgetId: string }
-  [EVENTS.WIDGET_UPDATE]: { widgetId: string; data: any }
+  [EVENTS.WIDGET_ADD]: { widgetId: string; type: string; position?: { x: number; y: number } }
+  [EVENTS.WIDGET_REMOVE]: { widgetId: string; reason?: string }
+  [EVENTS.WIDGET_UPDATE]: { widgetId: string; data: any; timestamp: number }
   
   // Dock事件数据
-  [EVENTS.DOCK_SHOW]: void
-  [EVENTS.DOCK_HIDE]: void
-  [EVENTS.DOCK_APP_ADD]: { appKey: string }
-  [EVENTS.DOCK_APP_REMOVE]: { appKey: string }
+  [EVENTS.DOCK_SHOW]: { timestamp: number; trigger?: string }
+  [EVENTS.DOCK_HIDE]: { timestamp: number; trigger?: string }
+  [EVENTS.DOCK_APP_ADD]: { appKey: string; position?: number }
+  [EVENTS.DOCK_APP_REMOVE]: { appKey: string; position?: number }
   
   // Launchpad事件数据
-  [EVENTS.LAUNCHPAD_SHOW]: void
-  [EVENTS.LAUNCHPAD_HIDE]: void
+  [EVENTS.LAUNCHPAD_SHOW]: { timestamp: number; trigger?: string }
+  [EVENTS.LAUNCHPAD_HIDE]: { timestamp: number; trigger?: string }
+  
+  // 错误监控事件
+  'error:app': { appKey: string; error: string; stack?: string; severity: 'low' | 'medium' | 'high' | 'critical' }
+  'error:system': { component: string; error: string; recoverable: boolean }
+  'error:network': { url?: string; status?: number; error: string }
+  'error:performance': { component: string; metric: string; value: number; threshold: number }
+  
+  // 性能监控事件
+  'performance:memory': { used: number; available: number; percentage: number }
+  'performance:cpu': { usage: number; processes?: string[] }
+  'performance:render': { component: string; duration: number; frame?: number }
+  
+  // 业务相关事件
+  'business:feature-used': { feature: string; userId?: string; metadata?: any }
+  'business:conversion': { action: string; value?: number; metadata?: any }
+  'business:engagement': { type: string; duration: number; metadata?: any }
+  
+  // 自定义事件（兼容性）
+  [key: string]: any
 }
 
 export type EventName = keyof EventDataMap
