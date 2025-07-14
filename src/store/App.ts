@@ -2,6 +2,7 @@
 // import tool from "@/helper/tool";
 // import eventBus from 'vue3-eventbus';
 import { AppState, AppConfig } from "@/types/app";
+import AppModel from "@/model/App";
 
 export default {
   state(): AppState {
@@ -101,6 +102,84 @@ export default {
           break;
         }
       }
+    },
+
+    getDockAppList(state: AppState): void {
+      // Initialize dock app list with apps that have keepInDock: true
+      state.dockAppList = AppModel.allAppList.filter(app => app.keepInDock);
+    },
+
+    openApp(state: AppState, app: AppConfig): void {
+      // Check if app is already open
+      const existingApp = state.openAppList.find(item => item.key === app.key);
+      if (existingApp) {
+        // If app is hidden, show it
+        if (existingApp.hide) {
+          existingApp.hide = false;
+        }
+        state.nowApp = existingApp;
+        return;
+      }
+
+      // Create new app instance with unique pid
+      const newApp = {
+        ...app,
+        pid: Date.now() + Math.random(),
+        hide: false
+      };
+
+      // Add to open app list
+      state.openAppList.push(newApp);
+      state.nowApp = newApp;
+
+      // Add to dock if not already there and not keepInDock
+      if (!app.keepInDock && !state.dockAppList.find(item => item.key === app.key)) {
+        state.dockAppList.push(newApp);
+      }
+    },
+
+    openAppByKey(state: AppState, key: string): void {
+      const app = AppModel.allAppList.find(item => item.key === key);
+      if (app) {
+        // Use openApp mutation to handle the opening logic
+        const existingApp = state.openAppList.find(item => item.key === app.key);
+        if (existingApp) {
+          if (existingApp.hide) {
+            existingApp.hide = false;
+          }
+          state.nowApp = existingApp;
+          return;
+        }
+
+        const newApp = {
+          ...app,
+          pid: Date.now() + Math.random(),
+          hide: false
+        };
+
+        state.openAppList.push(newApp);
+        state.nowApp = newApp;
+
+        if (!app.keepInDock && !state.dockAppList.find(item => item.key === app.key)) {
+          state.dockAppList.push(newApp);
+        }
+      }
+     },
+
+    showApp(state: AppState, app: AppConfig): void {
+      // Find the app in openAppList and show it
+      const targetApp = state.openAppList.find(item => item.pid === app.pid);
+      if (targetApp) {
+        targetApp.hide = false;
+        state.nowApp = targetApp;
+      }
+    },
+
+    openMenu(state: AppState, menuKey: string): void {
+      // Handle menu operations - this could be extended based on specific menu actions
+      // For now, we'll just log the menu key or handle basic menu operations
+      console.log('Menu opened:', menuKey);
+      // Add specific menu handling logic here if needed
     },
   },
 };

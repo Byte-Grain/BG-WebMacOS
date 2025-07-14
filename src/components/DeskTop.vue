@@ -142,7 +142,7 @@
         </div>
       </transition>
       <transition-group name="fade-widget">
-        <div v-show="isWidgetShow">
+        <div v-show="isWidgetShow" key="widget-container">
           <template v-for="item in $store.state.openWidgetList" :key="item.pid">
             <Widget
               v-if="!item.outLink"
