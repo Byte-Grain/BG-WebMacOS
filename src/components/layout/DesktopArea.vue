@@ -5,10 +5,21 @@
       <template v-for="item in desktopAppList" :key="item.key">
         <div class="app-item" v-if="!item.hideInDesktop" @dblclick="openAppByKey(item.key)">
           <div class="icon">
-            <i :style="{
+            <div v-if="item.icon && item.icon.startsWith('icon-')" :style="{
               backgroundColor: item.iconBgColor,
               color: item.iconColor,
-            }" class="iconfont" :class="item.icon"></i>
+            }" class="iconfont" :class="item.icon"></div>
+            <div v-else :style="{
+              backgroundColor: item.iconBgColor,
+              color: item.iconColor,
+              fontSize: '32px',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '12px'
+            }">{{ item.icon }}</div>
           </div>
           <div class="title">{{ item.title }}</div>
         </div>
@@ -50,8 +61,11 @@
 <script setup lang="ts">
   import { ref, computed } from 'vue'
   import { useAppManager } from '@/composables'
-  import { getDesktopApps } from '@/config/app.config'
+  import { getDesktopApps } from '@/config/apps/app-registry'
   import ComposablesTest from '@/views/test/ComposablesTest.vue'
+  import ContextMenu from '@/components/common/ContextMenu.vue'
+  import App from '@/components/App.vue'
+  import Widget from '@/components/common/Widget.vue'
 
   // Emits
   const emit = defineEmits(['lockScreen'])

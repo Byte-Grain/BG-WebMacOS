@@ -68,7 +68,7 @@
   import { ref, watch, onMounted, computed } from 'vue'
   import { ElMessage } from 'element-plus'
   import { useAppManager, useSystem, useUtils } from '@/composables'
-  import { getDesktopApps } from '@/config/app.config'
+  import { getDesktopApps } from '@/config/apps/app-registry'
 
   const $message = ElMessage
   const emit = defineEmits(['launchpad', 'lockScreen', 'shutdown', 'logout'])

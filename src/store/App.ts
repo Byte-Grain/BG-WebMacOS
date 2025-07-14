@@ -1,5 +1,5 @@
 import { AppState, AppConfig } from "@/types/app";
-import { appConfig } from "@/config/app.config";
+import { getAllApps, getAppByKey, getDockApps } from "@/config/apps/app-registry";
 // createStore 现在通过自动导入，无需手动导入
 // import { createStore } from 'vuex'
 
@@ -136,7 +136,7 @@ const storeConfig = {
 
     getDockAppList(state: AppState): void {
       // Initialize dock app list with apps that have keepInDock: true
-      state.dockAppList = appConfig.allApps.filter(app => app.keepInDock);
+      state.dockAppList = getDockApps();
     },
 
     openApp(state: AppState, app: AppConfig): void {
@@ -169,7 +169,7 @@ const storeConfig = {
     },
 
     openAppByKey(state: AppState, key: string): void {
-      const app = appConfig.allApps.find(item => item.key === key);
+      const app = getAppByKey(key);
       if (app) {
         // Use openApp mutation to handle the opening logic
         const existingApp = state.openAppList.find(item => item.key === app.key);
@@ -207,8 +207,6 @@ const storeConfig = {
 
     openMenu(state: AppState, menuKey: string): void {
       // Handle menu operations - this could be extended based on specific menu actions
-      // For now, we'll just log the menu key or handle basic menu operations
-      console.log('Menu opened:', menuKey);
       // Add specific menu handling logic here if needed
     },
 
