@@ -38,8 +38,8 @@
   // 处理背景点击（点击空白区域关闭）
   const handleBackgroundClick = (event) => {
     // 如果点击的是背景区域（不是应用图标），则关闭启动台
-    if (event.target.classList.contains('launchpad') || 
-        event.target.classList.contains('body')) {
+    if (event.target.classList.contains('launchpad') ||
+      event.target.classList.contains('body')) {
       closeLaunchpad()
     }
   }

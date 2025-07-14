@@ -1,0 +1,60 @@
+/* 暗色主题 */
+[data-theme="dark"] {
+  /* 背景色 */
+  --bg-desktop: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  --bg-window: #2C2C2E;
+  --bg-panel: #1C1C1E;
+  --bg-sidebar: #161618;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-active: rgba(255, 255, 255, 0.1);
+  --bg-selected: #0A84FF;
+  
+  /* 文本色 */
+  --text-primary: #FFFFFF;
+  --text-secondary: #98989D;
+  --text-tertiary: #636366;
+  --text-placeholder: #48484A;
+  --text-disabled: #3A3A3C;
+  --text-inverse: #1D1D1F;
+  --text-link: #0A84FF;
+  
+  /* 边框色 */
+  --border-primary: #38383A;
+  --border-secondary: #48484A;
+  --border-focus: #0A84FF;
+  --border-error: #FF453A;
+  --border-warning: #FF9F0A;
+  --border-success: #30D158;
+  
+  /* 状态色 */
+  --status-info: #0A84FF;
+  --status-success: #30D158;
+  --status-warning: #FF9F0A;
+  --status-error: #FF453A;
+  
+  /* 控件色 */
+  --control-bg: #2C2C2E;
+  --control-border: #48484A;
+  --control-hover: #3A3A3C;
+  --control-active: #48484A;
+  --control-disabled: #1C1C1E;
+  
+  /* 按钮色 */
+  --btn-primary-bg: #0A84FF;
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-hover: #0056CC;
+  --btn-secondary-bg: #3A3A3C;
+  --btn-secondary-text: #FFFFFF;
+  --btn-secondary-hover: #48484A;
+  
+  /* 输入框 */
+  --input-bg: #2C2C2E;
+  --input-border: #48484A;
+  --input-focus-border: #0A84FF;
+  --input-placeholder: #636366;
+  
+  /* 滚动条 */
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+}

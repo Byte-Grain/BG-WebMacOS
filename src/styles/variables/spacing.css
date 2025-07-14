@@ -1,0 +1,83 @@
+/* macOS 尺寸和间距系统变量 */
+:root {
+  /* 间距系统 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  
+  /* 字体大小 */
+  --font-xs: 11px;
+  --font-sm: 12px;
+  --font-md: 14px;
+  --font-lg: 16px;
+  --font-xl: 18px;
+  --font-2xl: 20px;
+  --font-3xl: 24px;
+  --font-4xl: 32px;
+  
+  /* 行高 */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.6;
+  
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 50%;
+  
+  /* 窗口相关尺寸 */
+  --window-min-width: 320px;
+  --window-min-height: 240px;
+  --window-titlebar-height: 28px;
+  --window-border-width: 1px;
+  
+  /* Dock 相关尺寸 */
+  --dock-height: 68px;
+  --dock-padding: 8px;
+  --dock-item-size: 52px;
+  --dock-item-margin: 4px;
+  --dock-border-radius: 16px;
+  
+  /* 启动台相关尺寸 */
+  --launchpad-item-size: 80px;
+  --launchpad-item-margin: 16px;
+  --launchpad-grid-gap: 24px;
+  
+  /* 菜单栏高度 */
+  --menubar-height: 24px;
+  
+  /* 状态栏高度 */
+  --statusbar-height: 22px;
+  
+  /* 滚动条 */
+  --scrollbar-width: 8px;
+  --scrollbar-thumb-radius: 4px;
+  
+  /* 动画时长 */
+  --duration-fast: 0.15s;
+  --duration-normal: 0.25s;
+  --duration-slow: 0.35s;
+  
+  /* 动画缓动 */
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-in: cubic-bezier(0.55, 0.06, 0.68, 0.19);
+  --ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Z-index 层级 */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+}

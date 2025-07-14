@@ -1,7 +1,16 @@
-import { ref, computed, watch, onMounted } from 'vue'
-import { applyTheme, getSystemTheme, themeUtils } from '@/config/theme.config'
+import { ref, computed, watch, onMounted, readonly } from 'vue'
 import { THEMES, STORAGE_KEYS } from '@/constants'
 import type { Theme } from '@/constants'
+
+// 获取系统主题
+const getSystemTheme = (): Theme => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches 
+      ? THEMES.DARK 
+      : THEMES.LIGHT
+  }
+  return THEMES.LIGHT
+}
 
 // 主题管理组合式函数
 export function useTheme() {
@@ -12,7 +21,7 @@ export function useTheme() {
   const followSystem = ref<boolean>(false)
   
   // 系统主题
-  const systemTheme = ref<Theme>(getSystemTheme() as Theme)
+  const systemTheme = ref<Theme>(getSystemTheme())
   
   // 实际应用的主题（考虑跟随系统的情况）
   const activeTheme = computed(() => {
@@ -26,7 +35,7 @@ export function useTheme() {
   const isLight = computed(() => activeTheme.value === THEMES.LIGHT)
   
   // 获取所有可用主题
-  const availableThemes = computed(() => themeUtils.getThemeNames())
+  const availableThemes = computed(() => Object.values(THEMES))
   
   // 从本地存储加载主题设置
   const loadThemeFromStorage = (): void => {
@@ -34,7 +43,7 @@ export function useTheme() {
       const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME)
       const savedFollowSystem = localStorage.getItem(`${STORAGE_KEYS.THEME}_follow_system`)
       
-      if (savedTheme && themeUtils.isValidTheme(savedTheme)) {
+      if (savedTheme && Object.values(THEMES).includes(savedTheme as Theme)) {
         currentTheme.value = savedTheme as Theme
       }
       
@@ -58,7 +67,7 @@ export function useTheme() {
   
   // 设置主题
   const setTheme = (theme: Theme): void => {
-    if (themeUtils.isValidTheme(theme)) {
+    if (Object.values(THEMES).includes(theme)) {
       currentTheme.value = theme
       followSystem.value = false
       saveThemeToStorage()
@@ -110,29 +119,13 @@ export function useTheme() {
     }
   }
   
-  // 获取主题配置
-  const getThemeConfig = (themeName?: string) => {
-    return themeUtils.getTheme(themeName || activeTheme.value)
-  }
-  
-  // 获取主题颜色
-  const getThemeColor = (colorKey: string) => {
-    const theme = getThemeConfig()
-    // 支持嵌套属性访问，如 'text.primary'
-    const keys = colorKey.split('.')
-    let value: any = theme.colors
-    
-    for (const key of keys) {
-      value = value?.[key]
-      if (value === undefined) break
-    }
-    
-    return value
-  }
-  
+
+
   // 应用主题到 DOM
   const applyCurrentTheme = (): void => {
-    applyTheme(activeTheme.value)
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', activeTheme.value)
+    }
   }
   
   // 预加载主题
@@ -163,9 +156,12 @@ export function useTheme() {
   
   // 监听主题变化并应用
   watch(activeTheme, (newTheme) => {
-    applyTheme(newTheme)
+    applyCurrentTheme()
   }, { immediate: true })
   
+  // 初始化系统主题
+  systemTheme.value = getSystemTheme()
+
   // 组件挂载时初始化
   onMounted(() => {
     loadThemeFromStorage()
@@ -188,8 +184,6 @@ export function useTheme() {
     toggleTheme,
     setFollowSystem,
     toggleFollowSystem,
-    getThemeConfig,
-    getThemeColor,
     applyCurrentTheme,
     preloadTheme,
     getThemeMetadata,

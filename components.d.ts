@@ -22,12 +22,12 @@ declare module 'vue' {
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElSlider: typeof import('element-plus/es')['ElSlider']
-    LanguageSwitcher: typeof import('./src/components/LanguageSwitcher.vue')['default']
-    LaunchPad: typeof import('./src/components/LaunchPad.vue')['default']
-    Loading: typeof import('./src/components/Loading.vue')['default']
+    LanguageSwitcher: typeof import('./src/components/business/LanguageSwitcher.vue')['default']
+    LaunchPad: typeof import('./src/components/layout/LaunchPad.vue')['default']
+    Loading: typeof import('./src/components/common/Loading.vue')['default']
     Login: typeof import('./src/components/Login.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Widget: typeof import('./src/components/Widget.vue')['default']
+    Widget: typeof import('./src/components/common/Widget.vue')['default']
   }
 }

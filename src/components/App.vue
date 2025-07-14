@@ -45,26 +45,26 @@
 
 <script setup>
   import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, getCurrentInstance } from 'vue'
-  import tool from '../helper/tool'
+  import tool from '../utils/tool'
 
   const { proxy } = getCurrentInstance()
   const $store = proxy.$store
 
   // 组件注册
-  const SystemAbout = defineAsyncComponent(() => import('@/view/system/about.vue'))
-  const SystemFinder = defineAsyncComponent(() => import('@/view/system/finder.vue'))
-  const SystemSetting = defineAsyncComponent(() => import('@/view/system/setting.vue'))
-  const SystemStore = defineAsyncComponent(() => import('@/view/system/store.vue'))
-  const SystemTask = defineAsyncComponent(() => import('@/view/system/task.vue'))
-  const Demo = defineAsyncComponent(() => import('@/view/demo/demo.vue'))
-  const DemoDock = defineAsyncComponent(() => import('@/view/demo/dock.vue'))
-  const DemoUnResize = defineAsyncComponent(() => import('@/view/demo/unresize.vue'))
-  const DemoUnClose = defineAsyncComponent(() => import('@/view/demo/unclose.vue'))
-  const DemoHideDesktop = defineAsyncComponent(() => import('@/view/demo/hidedesktop.vue'))
-  const DemoColorFull = defineAsyncComponent(() => import('@/view/demo/colorfull.vue'))
-  const DemoCamera = defineAsyncComponent(() => import('@/view/demo/camera.vue'))
-  const DemoMultiTask = defineAsyncComponent(() => import('@/view/demo/multitask.vue'))
-  const DemoWeb = defineAsyncComponent(() => import('@/view/demo/web.vue'))
+  const SystemAbout = defineAsyncComponent(() => import('@/views/desktop/system/about.vue'))
+  const SystemFinder = defineAsyncComponent(() => import('@/views/desktop/system/finder.vue'))
+  const SystemSetting = defineAsyncComponent(() => import('@/views/desktop/system/setting.vue'))
+  const SystemStore = defineAsyncComponent(() => import('@/views/desktop/system/store.vue'))
+  const SystemTask = defineAsyncComponent(() => import('@/views/desktop/system/task.vue'))
+  const Demo = defineAsyncComponent(() => import('@/views/apps/demo/demo.vue'))
+  const DemoDock = defineAsyncComponent(() => import('@/views/apps/demo/dock.vue'))
+  const DemoUnResize = defineAsyncComponent(() => import('@/views/apps/demo/unresize.vue'))
+  const DemoUnClose = defineAsyncComponent(() => import('@/views/apps/demo/unclose.vue'))
+  const DemoHideDesktop = defineAsyncComponent(() => import('@/views/apps/demo/hidedesktop.vue'))
+  const DemoColorFull = defineAsyncComponent(() => import('@/views/apps/demo/colorfull.vue'))
+  const DemoCamera = defineAsyncComponent(() => import('@/views/apps/demo/camera.vue'))
+  const DemoMultiTask = defineAsyncComponent(() => import('@/views/apps/demo/multitask.vue'))
+  const DemoWeb = defineAsyncComponent(() => import('@/views/apps/demo/web.vue'))
 
   // 组件映射对象
   const componentMap = {

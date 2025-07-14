@@ -36,11 +36,11 @@ import { useStore } from 'vuex'
 import { useSystem, useAppManager, useTheme } from '@/composables'
 
 // 组件导入
-import Background from './components/Bg.vue'
-import Loading from './components/Loading.vue'
-import Login from './components/Login.vue'
-import Desktop from './components/DeskTop.vue'
-import Launchpad from './components/LaunchPad.vue'
+import Background from './components/common/Bg.vue'
+import Loading from './components/common/Loading.vue'
+import Login from './views/login/Login.vue'
+import Desktop from './components/layout/DeskTop.vue'
+import Launchpad from './components/layout/LaunchPad.vue'
 // AppWindow 组件暂时移除，等待后续实现
 
 const store = useStore()
