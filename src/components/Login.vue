@@ -171,7 +171,7 @@
 <script setup>
   import { ref, onMounted } from 'vue'
   import bgImageUrl from '@/asset/img/bg.jpg'
-  import tool from '@/helper/tool'
+  import tool from '@/utils/tool'
   // import LanguageSwitcher from './business/LanguageSwitcher'
   import { useUtils } from '@/composables/useUtils'
 

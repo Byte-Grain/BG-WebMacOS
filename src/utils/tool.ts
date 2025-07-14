@@ -1,6 +1,11 @@
-import AppModel from "@/model/App";
-import { AppConfig } from "@/types/app";
+import { STORAGE_KEYS } from '@/constants'
+import { getAppByKey as getAppByKeyFromConfig, getAllApps, getDockApps } from '@/config/apps'
+import type { AppConfig } from '@/types/app'
 
+/**
+ * 工具函数集合
+ * @deprecated 建议使用 useUtils 组合式函数替代
+ */
 interface Tool {
   getAccessToken(): string;
   saveAccessToken(access_token: string): void;
@@ -13,43 +18,28 @@ interface Tool {
 
 const tool: Tool = {
   getAccessToken() {
-    return localStorage.getItem('AcessToken') || "";
+    return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) || "";
   },
 
   saveAccessToken(access_token: string) {
-    localStorage.setItem('AcessToken', access_token);
+    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, access_token);
   },
 
   isAppInKeepList(app: AppConfig, dockAppList: AppConfig[]) {
-    for (let item of dockAppList) {
-      if (item.key == app.key) {
-        return true;
-      }
-    }
-    return false;
+    return dockAppList.some(item => item.key === app.key);
   },
 
   isAppInOpenList(app: AppConfig, openAppList: AppConfig[]) {
-    for (let item of openAppList) {
-      if (item.key == app.key) {
-        return true;
-      }
-    }
-    return false;
+    return openAppList.some(item => item.key === app.key);
   },
 
   getAppByKey(key: string) {
-    let appList = AppModel.allAppList;
-    for (let app of appList) {
-      if (app.key == key) {
-        return app;
-      }
-    }
-    return false;
+    const app = getAppByKeyFromConfig(key);
+    return app || false;
   },
 
   getDeskTopApp() {
-    return AppModel.allAppList;
+    return getAllApps();
   },
 
   formatTime(date: string | number | Date, format: string = "yyyy-MM-dd") {
