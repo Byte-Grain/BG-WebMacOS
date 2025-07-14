@@ -88,7 +88,7 @@
   }
 </style>
 <script setup>
-  import { reactive, defineEmits } from 'vue'
+  import { reactive } from 'vue'
   const emit = defineEmits(['api'])
   let app = reactive({})
   const selectApp = (item) => {
