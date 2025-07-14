@@ -230,7 +230,7 @@ onMounted(async () => {
     setTimeout(() => {
       emit(EVENTS.SYSTEM_READY, {
         bootTime,
-        version: process.env.VUE_APP_VERSION || '1.0.0'
+        version: import.meta.env.VITE_APP_VERSION || '1.0.0'
       })
     }, 1000)
     

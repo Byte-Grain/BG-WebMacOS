@@ -13,7 +13,7 @@
       </template>
     </div>
     <div class="task-ctrl" @click.stop>
-      <el-button size="mini" type="primary" :disabled="!app.pid" @click="closeApp">强制退出</el-button>
+      <el-button size="small" type="primary" :disabled="!app.pid" @click="closeApp">强制退出</el-button>
     </div>
   </div>
 </template>

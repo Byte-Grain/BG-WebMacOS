@@ -8,6 +8,7 @@ import { useNotification } from './useNotification'
 import { useEventBus, useEventBusLegacy } from './useEventBus'
 import { useErrorMonitor } from './useErrorMonitor'
 import { usePerformanceMonitor } from './usePerformanceMonitor'
+import { useEnterpriseEventManager } from './useEnterpriseEventManager'
 
 // 组合式函数统一导出
 export { useAppManager } from './useAppManager'
@@ -23,6 +24,14 @@ export {
 } from './useEventBus'
 export { useKeyboard, globalKeyboard } from './useKeyboard'
 export { useNotification, globalNotification, notify } from './useNotification'
+
+// 事件系统中期优化组件
+export { useEventMiddleware } from './useEventMiddleware'
+export { useBuiltInMiddlewares } from './useBuiltInMiddlewares'
+export { useEventRouter } from './useEventRouter'
+export { useEventLifecycle } from './useEventLifecycle'
+export { useEventDebugger } from './useEventDebugger'
+export { useEnterpriseEventManager } from './useEnterpriseEventManager'
 
 // 错误监控导出
 export {

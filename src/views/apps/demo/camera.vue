@@ -15,19 +15,19 @@
       </div>
     </div>
     <div class="toolbar" v-if="canUse">
-      <el-radio-group :style="nowPreview ? 'visibility:hidden;' : ''" v-model="mode" size="mini" text-color="#fff"
+      <el-radio-group :style="nowPreview ? 'visibility:hidden;' : ''" v-model="mode" size="small" text-color="#fff"
         fill="#A0A0A0">
-        <el-radio-button label="fourPhoto"><i class="el-icon-menu"></i></el-radio-button>
-        <el-radio-button label="portrait"><i class="el-icon-s-custom"></i></el-radio-button>
-        <el-radio-button label="video"><i class="el-icon-video-camera"></i></el-radio-button>
+        <el-radio-button value="fourPhoto"><i class="el-icon-menu"></i></el-radio-button>
+          <el-radio-button value="portrait"><i class="el-icon-s-custom"></i></el-radio-button>
+          <el-radio-button value="video"><i class="el-icon-video-camera"></i></el-radio-button>
       </el-radio-group>
       <div class="tool-action">
         <el-avatar :class="nowPreview ? 'back-shoot' : 'shoot-btn'" @click="shoot">
           <i class="iconfont icon-camera_fill shoot-icon"></i>
         </el-avatar>
       </div>
-      <el-button size="mini" v-if="!nowPreview">效果</el-button>
-      <el-button size="mini" @click="download()" v-else>分享</el-button>
+      <el-button size="small" v-if="!nowPreview">效果</el-button>
+                    <el-button size="small" @click="download()" v-else>分享</el-button>
       <canvas ref="canvas" style="display: none" :width="width" :height="height"></canvas>
     </div>
     <div class="title" v-else>浏览器不支持</div>
