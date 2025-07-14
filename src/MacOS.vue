@@ -37,50 +37,59 @@
   bottom: 0;
 }
 </style>
-<script setup>
-import Bg from "@/components/Bg";
-import LaunchPad from "@/components/LaunchPad";
-import Loading from "@/components/Loading";
-import Login from "@/components/Login";
-import DeskTop from "@/components/DeskTop";
+<script lang="ts" setup>
+import Bg from "@/components/Bg.vue";
+import LaunchPad from "@/components/LaunchPad.vue";
+import Loading from "@/components/Loading.vue";
+import Login from "@/components/Login.vue";
+import DeskTop from "@/components/DeskTop.vue";
 
 import { ref, onMounted } from 'vue'
-let isBg = ref(true)
-let isLoading = ref(false)
-let isLogin = ref(false)
-let isDeskTop = ref(false)
-let isLaunchPad = ref(false)
+
+const isBg = ref<boolean>(true)
+const isLoading = ref<boolean>(false)
+const isLogin = ref<boolean>(false)
+const isDeskTop = ref<boolean>(false)
+const isLaunchPad = ref<boolean>(false)
 
 onMounted(() => {
   boot();
 })
-const onContextShow = () => {
+
+const onContextShow = (): void => {
   console.log("onContextShow");
 }
-const boot = () => {
+
+const boot = (): void => {
   isLoading.value = true;
 }
-const loaded = () => {
+
+const loaded = (): void => {
   isLoading.value = false;
   isBg.value = true;
   isLogin.value = true;
 }
-const logined = () => {
+
+const logined = (): void => {
   isLogin.value = false;
   isDeskTop.value = true;
 }
-const lockScreen = () => {
+
+const lockScreen = (): void => {
   isLogin.value = true;
 }
-const launchpad = (show) => {
+
+const launchpad = (show: boolean): void => {
   isLaunchPad.value = show;
 }
-const logout = () => {
+
+const logout = (): void => {
   localStorage.removeItem("user_name");
   isDeskTop.value = false;
   isLogin.value = true;
 }
-const shutdown = () => {
+
+const shutdown = (): void => {
   localStorage.removeItem("user_name");
   isDeskTop.value = false;
   isLogin.value = false;
