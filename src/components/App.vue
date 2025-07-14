@@ -69,22 +69,22 @@
 import { defineAsyncComponent } from "vue";
 export default {
   components: {
-    SystemAbout: defineAsyncComponent(() => import("@/view/system/about")),
-    SystemFinder: defineAsyncComponent(() => import("@/view/system/finder")),
-    SystemSetting: defineAsyncComponent(() => import("@/view/system/setting")),
-    SystemStore: defineAsyncComponent(() => import("@/view/system/store")),
-    SystemTask: defineAsyncComponent(() => import("@/view/system/task")),
-    Demo: defineAsyncComponent(() => import("@/view/demo/demo")),
-    DemoDock: defineAsyncComponent(() => import("@/view/demo/dock")),
-    DemoUnResize: defineAsyncComponent(() => import("@/view/demo/unresize")),
-    DemoUnClose: defineAsyncComponent(() => import("@/view/demo/unclose")),
+    SystemAbout: defineAsyncComponent(() => import("@/view/system/about.vue")),
+    SystemFinder: defineAsyncComponent(() => import("@/view/system/finder.vue")),
+    SystemSetting: defineAsyncComponent(() => import("@/view/system/setting.vue")),
+    SystemStore: defineAsyncComponent(() => import("@/view/system/store.vue")),
+    SystemTask: defineAsyncComponent(() => import("@/view/system/task.vue")),
+    Demo: defineAsyncComponent(() => import("@/view/demo/demo.vue")),
+    DemoDock: defineAsyncComponent(() => import("@/view/demo/dock.vue")),
+    DemoUnResize: defineAsyncComponent(() => import("@/view/demo/unresize.vue")),
+    DemoUnClose: defineAsyncComponent(() => import("@/view/demo/unclose.vue")),
     DemoHideDesktop: defineAsyncComponent(() =>
-      import("@/view/demo/hidedesktop")
+      import("@/view/demo/hidedesktop.vue")
     ),
-    DemoColorFull: defineAsyncComponent(() => import("@/view/demo/colorfull")),
-    DemoCamera: defineAsyncComponent(() => import("@/view/demo/camera")),
-    DemoMultiTask: defineAsyncComponent(() => import("@/view/demo/multitask")),
-    DemoWeb: defineAsyncComponent(() => import("@/view/demo/web")),
+    DemoColorFull: defineAsyncComponent(() => import("@/view/demo/colorfull.vue")),
+    DemoCamera: defineAsyncComponent(() => import("@/view/demo/camera.vue")),
+    DemoMultiTask: defineAsyncComponent(() => import("@/view/demo/multitask.vue")),
+    DemoWeb: defineAsyncComponent(() => import("@/view/demo/web.vue")),
   },
   props: {
     app: Object,

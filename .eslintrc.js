@@ -11,18 +11,14 @@ module.exports = {
     'eslint:recommended',
     '@vue/typescript/recommended'
   ],
-  parser: 'vue-eslint-parser',
   parserOptions: {
     ecmaVersion: 2020,
     parser: '@typescript-eslint/parser',
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true
-    }
+    sourceType: 'module'
   },
   plugins: [
-    '@typescript-eslint',
-    'vue'
+    'vue',
+    '@typescript-eslint'
   ],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',

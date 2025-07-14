@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Dock from "@/components/Dock";
+import Dock from "@/components/Dock.vue";
 export default {
   components: {
     Dock,

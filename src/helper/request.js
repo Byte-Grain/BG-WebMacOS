@@ -1,6 +1,6 @@
 import axios from 'axios'
 import tool from "./tool"
-import config from "@/config"
+import config from "@/config.ts"
 
 import { ElMessage } from 'element-plus'
 const HTTP_STATUS_CODE = config.httpStatusCode

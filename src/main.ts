@@ -3,7 +3,7 @@ import { createStore, Store } from 'vuex'
 import { AppState } from './types/app'
 
 import MacOS from './MacOS.vue'
-let macOS = createApp(MacOS)
+const macOS = createApp(MacOS)
 
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'

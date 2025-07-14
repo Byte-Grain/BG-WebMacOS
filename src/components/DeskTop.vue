@@ -158,9 +158,9 @@
   </div>
 </template>
 <script>
-import App from "@/components/App";
-import Dock from "@/components/Dock";
-import Widget from "@/components/Widget";
+import App from "@/components/App.vue";
+import Dock from "@/components/Dock.vue";
+import Widget from "@/components/Widget.vue";
 export default {
   components: {
     App,
