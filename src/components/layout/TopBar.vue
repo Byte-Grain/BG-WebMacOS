@@ -63,28 +63,30 @@
   import { computed } from 'vue'
   import { useAppManager, useSystem } from '@/composables'
 
-  // Props and Emits
-  const emit = defineEmits(['lockScreen', 'shutdown', 'logout', 'openTestPage'])
-
   // Composables
   const { openAppByKey, currentMenu } = useAppManager()
-  const { userInfo } = useSystem()
+  const { userInfo, logout: systemLogout, lockScreen: systemLockScreen, shutdown: systemShutdown } = useSystem()
 
   // Computed
   const menu = computed(() => currentMenu.value)
   const userName = computed(() => userInfo.value?.name || '')
 
-  // Methods
+  // Methods - 直接在组件内部处理系统功能
   const handleLockScreen = () => {
-    emit('lockScreen')
+    // 直接调用系统锁屏功能
+    systemLockScreen()
   }
 
   const handleShutdown = () => {
-    emit('shutdown')
+    // 直接调用系统关机功能
+    systemShutdown()
   }
 
   const handleLogout = () => {
-    emit('logout')
+    // 直接调用系统退出登录功能
+    systemLogout()
+    // 可以直接跳转到登录页面或重新加载应用
+    window.location.reload()
   }
 </script>
 

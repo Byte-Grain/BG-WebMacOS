@@ -116,6 +116,23 @@ const setupEventListeners = () => {
   on(EVENTS.SYSTEM_READY, () => {
     success('系统初始化完成', { duration: 3000 })
   })
+  
+  // 监听系统锁屏事件
+  window.addEventListener('system:lockScreen', () => {
+    // 实现锁屏逻辑
+    store.commit('logout')
+    info('系统已锁屏', { duration: 2000 })
+  })
+  
+  // 监听系统关机事件
+  window.addEventListener('system:shutdown', () => {
+    // 实现关机逻辑
+    store.commit('logout')
+    info('系统正在关机...', { duration: 2000 })
+    setTimeout(() => {
+      window.close() || (window.location.href = 'about:blank')
+    }, 2000)
+  })
 }
 
 // 生命周期

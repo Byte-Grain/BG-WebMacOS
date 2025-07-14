@@ -260,6 +260,20 @@ export function useSystem() {
     })
   }
   
+  // 锁屏功能
+  const lockScreen = (): void => {
+    // 触发锁屏事件，可以通过事件总线或直接操作DOM
+    const event = new CustomEvent('system:lockScreen')
+    window.dispatchEvent(event)
+  }
+
+  // 关机功能
+  const shutdown = (): void => {
+    // 触发关机事件
+    const event = new CustomEvent('system:shutdown')
+    window.dispatchEvent(event)
+  }
+
   // 初始化系统设置
   const initializeSystem = (): void => {
     initializeVolume()
@@ -290,6 +304,8 @@ export function useSystem() {
     increaseVolume,
     decreaseVolume,
     toggleMute,
+    lockScreen,
+    shutdown,
     
     // 系统信息
     getSystemInfo,
