@@ -6,11 +6,11 @@
     </div>
     <div class="form">
       <div class="item" v-if="!haveSavedUserName" :class="isUserNameError ? 'error' : ''">
-        <input class="account" placeholder="account..." type="email" v-model="user_name" />
+        <input class="account" placeholder="account..." type="email" v-model="user_name" @keyup.enter="login" />
       </div>
       <div class="item" :class="isUserPasswordError ? 'error' : ''">
         <input class="password" placeholder="password..." type="password" v-model="user_password"
-          :class="user_password ? 'password-in' : ''" />
+          :class="user_password ? 'password-in' : ''" @keyup.enter="login" />
         <i class="login-button iconfont icon-icon_send" :class="user_password ? 'click-enable' : ''" @click="login"></i>
       </div>
     </div>
