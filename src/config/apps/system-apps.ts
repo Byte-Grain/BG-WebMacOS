@@ -145,7 +145,7 @@ export const systemApps: Record<string, SystemAppConfig> = {
     iconBgColor: '#4CAF50',
     width: WINDOW_PRESETS.LARGE.width,
     height: WINDOW_PRESETS.LARGE.height,
-    hideInDesktop: true,
+    hideInDesktop: false,
     category: 'development',
     description: '测试和演示组合式函数功能',
     version: '1.0.0',

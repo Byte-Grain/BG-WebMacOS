@@ -54,7 +54,7 @@
   const SystemAbout = defineAsyncComponent(() => import('@/views/desktop/system/about.vue'))
   const SystemFinder = defineAsyncComponent(() => import('@/views/desktop/system/finder.vue'))
   const SystemSetting = defineAsyncComponent(() => import('@/views/desktop/system/setting.vue'))
-  const SystemStore = defineAsyncComponent(() => import('@/views/desktop/system/store.vue'))
+  const SystemStore = defineAsyncComponent(() => import('@/views/apps/system/SystemStore.vue'))
   const SystemTask = defineAsyncComponent(() => import('@/views/desktop/system/task.vue'))
   const Demo = defineAsyncComponent(() => import('@/views/apps/demo/demo.vue'))
   const DemoDock = defineAsyncComponent(() => import('@/views/apps/demo/dock.vue'))
@@ -65,6 +65,7 @@
   const DemoCamera = defineAsyncComponent(() => import('@/views/apps/demo/camera.vue'))
   const DemoMultiTask = defineAsyncComponent(() => import('@/views/apps/demo/multitask.vue'))
   const DemoWeb = defineAsyncComponent(() => import('@/views/apps/demo/web.vue'))
+  const ComposablesTest = defineAsyncComponent(() => import('@/views/apps/system/ComposablesTest.vue'))
 
   // 组件映射对象
   const componentMap = {
@@ -81,7 +82,8 @@
     DemoColorFull,
     DemoCamera,
     DemoMultiTask,
-    DemoWeb
+    DemoWeb,
+    ComposablesTest
   }
 
   // Props

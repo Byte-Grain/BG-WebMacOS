@@ -17,9 +17,12 @@
           <el-dropdown-item @click="openAppByKey('system_store')">
             <div>{{ $t('system.appStore') }}</div>
           </el-dropdown-item>
-          <el-dropdown-item class="line"></el-dropdown-item>
           <el-dropdown-item @click="openAppByKey('system_task')">
             <div>{{ $t('system.forceQuit') }}</div>
+          </el-dropdown-item>
+          <el-dropdown-item class="line"></el-dropdown-item>
+          <el-dropdown-item @click="openAppByKey('composables_test')">
+            <div>Composables Test</div>
           </el-dropdown-item>
           <el-dropdown-item class="line"></el-dropdown-item>
           <el-dropdown-item @click="handleShutdown">

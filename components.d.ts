@@ -9,6 +9,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     App: typeof import('./src/components/App.vue')['default']
+    AppCard: typeof import('./src/components/store/AppCard.vue')['default']
+    AppDetailModal: typeof import('./src/components/store/AppDetailModal.vue')['default']
     Bg: typeof import('./src/components/common/Bg.vue')['default']
     ContextMenu: typeof import('./src/components/layout/ContextMenu.vue')['default']
     DeskTop: typeof import('./src/components/layout/DeskTop.vue')['default']
@@ -24,6 +26,8 @@ declare module 'vue' {
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElSlider: typeof import('element-plus/es')['ElSlider']
+    InstalledAppCard: typeof import('./src/components/store/InstalledAppCard.vue')['default']
+    InstallProgressModal: typeof import('./src/components/store/InstallProgressModal.vue')['default']
     LanguageSelector: typeof import('./src/components/business/LanguageSelector.vue')['default']
     LanguageSwitch: typeof import('./src/components/business/LanguageSwitch.vue')['default']
     LanguageSwitcher: typeof import('./src/components/business/LanguageSwitcher.vue')['default']
