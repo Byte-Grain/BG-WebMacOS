@@ -26,6 +26,7 @@ declare module 'vue' {
     LaunchPad: typeof import('./src/components/layout/LaunchPad.vue')['default']
     Loading: typeof import('./src/components/common/Loading.vue')['default']
     Login: typeof import('./src/components/Login.vue')['default']
+    Notification: typeof import('./src/components/common/Notification.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Widget: typeof import('./src/components/common/Widget.vue')['default']

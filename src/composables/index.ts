@@ -3,6 +3,12 @@ export { useAppManager } from './useAppManager'
 export { useTheme } from './useTheme'
 export { useSystem } from './useSystem'
 export { useUtils } from './useUtils'
+export { useEventBus, eventBus, EVENTS } from './useEventBus'
+export { useKeyboard, globalKeyboard } from './useKeyboard'
+export { useNotification, globalNotification, notify } from './useNotification'
+export type { EventCallback, EventListener, EventName } from './useEventBus'
+export type { ModifierKeys, ShortcutConfig, ShortcutHandler } from './useKeyboard'
+export type { NotificationType, NotificationPosition, NotificationConfig, NotificationAction, NotificationInstance } from './useNotification'
 
 // 类型导出
 export type {
@@ -24,5 +30,8 @@ export function useCore() {
     ...useTheme(),
     ...useSystem(),
     ...useUtils(),
+    ...useEventBus(),
+    ...useKeyboard(),
+    ...useNotification(),
   }
 }

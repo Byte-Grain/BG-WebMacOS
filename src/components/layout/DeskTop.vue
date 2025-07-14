@@ -22,6 +22,10 @@
               <div>{{ $t('system.forceQuit') }}</div>
             </el-dropdown-item>
             <el-dropdown-item class="line"></el-dropdown-item>
+            <el-dropdown-item @click="openTestPage">
+              <div>开发者工具</div>
+            </el-dropdown-item>
+            <el-dropdown-item class="line"></el-dropdown-item>
             <el-dropdown-item @click="shutdown">
               <div>{{ $t('system.shutdown') }}</div>
             </el-dropdown-item>
@@ -109,6 +113,19 @@
           <!-- Widget 功能暂时保留原有逻辑，后续可进一步优化 -->
         </div>
       </transition-group>
+      
+      <!-- 测试页面 -->
+      <transition name="fade">
+        <div v-show="isTestPageShow" class="test-page-overlay" @click.self="closeTestPage">
+          <div class="test-page-container">
+            <div class="test-page-header">
+              <h3>开发者工具</h3>
+              <button @click="closeTestPage" class="close-btn">×</button>
+            </div>
+            <ComposablesTest />
+          </div>
+        </div>
+      </transition>
     </div>
     <Dock></Dock>
   </div>
@@ -121,6 +138,7 @@
   import App from '@/components/App.vue'
   import Widget from '@/components/common/Widget.vue'
   import Dock from './Dock.vue'
+  import ComposablesTest from '@/views/test/ComposablesTest.vue'
 
   const $message = ElMessage
   const emit = defineEmits(['launchpad', 'lockScreen', 'shutdown', 'logout'])
@@ -142,6 +160,7 @@
   const userName = ref('')
   const timeString = ref('')
   const isWidgetShow = ref(false)
+  const isTestPageShow = ref(false)
   
   // 计算属性
   const menu = computed(() => currentMenu.value)
@@ -222,6 +241,14 @@
     isWidgetShow.value = !isWidgetShow.value
   }
 
+  const openTestPage = () => {
+    isTestPageShow.value = true
+  }
+
+  const closeTestPage = () => {
+    isTestPageShow.value = false
+  }
+
   // 生命周期
   onMounted(() => {
     userName.value = storage.get('user_name', '') || ''
@@ -292,6 +319,62 @@
 
       .logo:hover {
         background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .test-page-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .test-page-container {
+        background: rgba(30, 30, 30, 0.95);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        max-width: 90vw;
+        max-height: 90vh;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .test-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .test-page-header h3 {
+        margin: 0;
+        color: white;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+      }
+
+      .close-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
       }
 
       .space {
