@@ -30,7 +30,10 @@
 </style>
 
 <script lang="ts" setup>
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, getCurrentInstance } from 'vue'
+  
+  const { proxy } = getCurrentInstance()
+  const $store = proxy.$store
 
   const isBg = ref<boolean>(true)
   const isLoading = ref<boolean>(false)
@@ -73,6 +76,10 @@
 
   const launchpad = (show: boolean): void => {
     isLaunchPad.value = show;
+    // 同步store状态，避免状态不一致
+    if (show !== $store.state.launchpad) {
+      $store.commit('launchpad');
+    }
   };
 
   onMounted(() => {
