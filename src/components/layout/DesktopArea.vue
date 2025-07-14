@@ -49,12 +49,8 @@
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
-  import { ElMessage } from 'element-plus'
   import { useAppManager } from '@/composables'
   import { getDesktopApps } from '@/config/app.config'
-  import App from '../App.vue'
-  import Widget from '../common/Widget.vue'
-  import ContextMenu from './ContextMenu.vue'
   import ComposablesTest from '@/views/test/ComposablesTest.vue'
 
   // Emits
