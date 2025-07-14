@@ -172,8 +172,10 @@
   import bgImageUrl from '@/asset/img/bg.jpg'
   import tool from '@/helper/tool'
   import LanguageSwitcher from './LanguageSwitcher.vue'
+  import { useUtils } from '@/composables/useUtils'
 
   const emit = defineEmits(['logined'])
+  const { storage } = useUtils()
 
   const headImage = ref(bgImageUrl)
   const user_name = ref('')
@@ -183,7 +185,7 @@
   const isUserPasswordError = ref(false)
 
   const guest = () => {
-    localStorage.setItem('user_name', 'Guest')
+    storage.set('user_name', 'Guest')
     emit('logined')
   }
 
@@ -205,12 +207,12 @@
 
     tool.saveAccessToken('guest')
     emit('logined')
-    localStorage.setItem('user_name', user_name.value)
+    storage.set('user_name', user_name.value)
   }
 
   onMounted(() => {
     haveSavedUserName.value = false
-    const savedUserName = localStorage.getItem('user_name') || false
+    const savedUserName = storage.get('user_name')
     if (savedUserName) {
       user_name.value = savedUserName
       haveSavedUserName.value = true

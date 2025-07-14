@@ -1,59 +1,33 @@
-// Vue API 现在通过自动导入，无需手动导入
-// import { createApp } from 'vue'
-// import { createStore, Store } from 'vuex'
-import { AppState } from './types/app'
-
-import MacOS from './MacOS.vue'
-const macOS = createApp(MacOS)
-
-// 国际化配置
-import i18n from './i18n'
-import { watch } from 'vue'
-macOS.use(i18n)
-
+import { createApp } from 'vue'
+import App from './MacOS.vue'
+import store from './store'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import './asset/css/app.css'
+import './asset/css/animation.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import en from 'element-plus/es/locale/lang/en'
+import i18n from './i18n'
+import { envConfig } from './config/env.config'
+import { appConfig } from './config/app.config'
+import { useUtils } from './composables/useUtils'
 
-// 根据当前语言设置 ElementPlus 语言
-const getElementLocale = () => i18n.global.locale.value === 'zh' ? zhCn : en
-
-macOS.use(ElementPlus, {
-    locale: getElementLocale(),
-})
-
-// 监听语言变化，动态更新 ElementPlus 语言
-watch(() => i18n.global.locale.value, () => {
-  // 重新配置 ElementPlus 语言
-  macOS.config.globalProperties.$ELEMENT = {
-    locale: getElementLocale()
-  }
-})
-
-import "@/asset/css/app.css"
-import "@/asset/css/animation.css"
-
-import config from './config'
-declare module 'vue' {
-    interface ComponentCustomProperties {
-        config: typeof config
-        tool: typeof import('./helper/tool').default
-    }
+// 获取语言设置
+const { storage } = useUtils()
+const getLanguage = (): string => {
+  return storage.get('language', 'zh') || 'zh'
 }
-macOS.config.globalProperties.config = config
 
-import tool from './helper/tool'
-macOS.config.globalProperties.tool = tool
+const app = createApp(App)
 
-import store from './store/App'
-macOS.use(store)
+// 注入全局配置
+app.config.globalProperties.$envConfig = envConfig
+app.config.globalProperties.$appConfig = appConfig
 
-// PWA相关功能暂时移除
-// import { registerSW } from 'virtual:pwa-register'
-// const updateSW = registerSW({
-//   onNeedRefresh() {},
-//   onOfflineReady() {},
-// })
-
-macOS.mount('#app')
+// 使用插件
+app.use(store)
+  .use(ElementPlus, {
+    locale: getLanguage() === 'zh' ? zhCn : en,
+  })
+  .use(i18n)
+  .mount('#app')

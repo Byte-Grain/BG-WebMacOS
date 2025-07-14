@@ -1,4 +1,5 @@
 import { AppConfig } from "@/types/app";
+import { APP_KEYS, WINDOW_SIZES } from '@/constants';
 
 interface AppModel {
   allAppList: AppConfig[];
@@ -7,13 +8,13 @@ interface AppModel {
 const appModel: AppModel = {
   allAppList: [
     {
-      key: "system_about",
+      key: APP_KEYS.SYSTEM_ABOUT,
       component: "SystemAbout",
       icon: "icon-question",
       title: "关于本站",
       iconColor: "#fff",
       iconBgColor: "#23282d",
-      width: 400,
+      width: WINDOW_SIZES.SMALL.width,
       height: 250,
       disableResize: true,
       hideInDesktop: true,
@@ -41,14 +42,14 @@ const appModel: AppModel = {
       ],
     },
     {
-      key: "system_finder",
+      key: APP_KEYS.SYSTEM_FINDER,
       component: "SystemFinder",
       icon: "icon-MIS_chanpinshezhi",
       title: "访达",
       iconColor: "#fff",
       iconBgColor: "#db5048",
-      width: 800,
-      height: 600,
+      width: WINDOW_SIZES.LARGE.width,
+      height: WINDOW_SIZES.LARGE.height,
       keepInDock: true,
       menu: [
         {
@@ -103,7 +104,7 @@ const appModel: AppModel = {
     },
     // ... 其他应用配置
     {
-      key: "system_launchpad",
+      key: APP_KEYS.SYSTEM_LAUNCHPAD,
       component: "SystemLaunchPad",
       icon: "icon-shezhi",
       title: "启动台",
@@ -115,16 +116,15 @@ const appModel: AppModel = {
       keepInDock: true,
     },
     {
-      key: "system_setting",
+      key: APP_KEYS.SYSTEM_SETTING,
       component: "SystemSetting",
       icon: "icon-setting",
       title: "系统偏好设置",
       iconColor: "#fff",
       iconBgColor: "#23282d",
-      width: 800,
-      height: 600,
+      width: WINDOW_SIZES.LARGE.width,
+      height: WINDOW_SIZES.LARGE.height,
       disableResize: true,
-      hideInDesktop: true,
       keepInDock: true,
       menu: [
         {
@@ -150,16 +150,15 @@ const appModel: AppModel = {
       ],
     },
     {
-      key: "system_store",
+      key: APP_KEYS.SYSTEM_STORE,
       component: "SystemStore",
       icon: "icon-store",
       title: "应用商店",
       iconColor: "#fff",
       iconBgColor: "#23282d",
-      width: 800,
-      height: 600,
+      width: WINDOW_SIZES.LARGE.width,
+      height: WINDOW_SIZES.LARGE.height,
       disableResize: true,
-      hideInDesktop: true,
       keepInDock: true,
       menu: [
         {
@@ -213,34 +212,24 @@ const appModel: AppModel = {
       ],
     },
     {
-      key: "system_task",
+      key: APP_KEYS.SYSTEM_TASK,
       component: "SystemTask",
-      icon: "icon-icon_roundclose_fill",
-      title: "强制退出...",
+      icon: "icon-task",
+      title: "强制退出",
       iconColor: "#fff",
-      iconBgColor: "#333",
-      width: 300,
+      iconBgColor: "#ff6b6b",
+      width: WINDOW_SIZES.MEDIUM.width,
       height: 400,
       disableResize: true,
       hideInDesktop: true,
       menu: [
         {
           key: "task",
-          title: "TASK",
+          title: "强制退出",
           sub: [
             {
               key: "close",
               title: "关闭",
-            },
-          ],
-        },
-        {
-          key: "help",
-          title: "帮助",
-          sub: [
-            {
-              key: "send",
-              title: "发送反馈",
             },
           ],
         },

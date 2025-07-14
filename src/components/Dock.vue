@@ -2,14 +2,14 @@
   <div class="footer">
     <div class="space"></div>
     <div class="dock">
-      <template v-for="item in $store.state.dockAppList" :key="item.pid">
-        <div class="item" @click="openApp(item)" :class="$store.state.nowApp.pid == item.pid ? 'jump' : ''"
-          v-if="item && tool.isAppInKeepList(item, $store.state.dockAppList)">
+      <template v-for="item in dockApps" :key="item.key">
+        <div class="item" @click="handleAppClick(item)" :class="currentApp?.key === item.key ? 'jump' : ''"
+          v-if="item && isAppInDock(item.key)">
           <i :style="{
             backgroundColor: item.iconBgColor,
             color: item.iconColor,
           }" class="iconfont" :class="item.icon"></i>
-          <div class="dot" v-if="tool.isAppInOpenList(item, $store.state.openAppList)"></div>
+          <div class="dot" v-if="isAppOpen(item.key)"></div>
           <div class="title">{{ item.title }}</div>
         </div>
       </template>
@@ -18,21 +18,22 @@
   </div>
 </template>
 <script setup>
-  import { getCurrentInstance } from 'vue'
-  import tool from '../helper/tool'
+  import { useAppManager } from '@/composables'
+  import { getDockApps } from '@/config/app.config'
+  import { APP_KEYS } from '@/constants'
 
-  const { proxy } = getCurrentInstance()
-  const $store = proxy.$store
+  // 使用组合式函数
+  const { 
+    currentApp, 
+    dockApps, 
+    isAppOpen, 
+    isAppInDock, 
+    handleSpecialApp,
+    openApp 
+  } = useAppManager()
 
-  const openApp = (item) => {
-    switch (item.key) {
-      case "system_launchpad":
-        $store.commit("launchpad");
-        break;
-      default:
-        $store.commit("openApp", item);
-        break;
-    }
+  const handleAppClick = (item) => {
+    handleSpecialApp(item)
   }
 </script>
 

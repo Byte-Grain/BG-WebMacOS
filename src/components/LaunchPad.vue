@@ -21,22 +21,22 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, onUnmounted, getCurrentInstance } from 'vue'
-  import tool from '../helper/tool';
-  const { proxy } = getCurrentInstance()
-  const $store = proxy.$store
+  import { ref, onMounted, onUnmounted } from 'vue'
+  import { useAppManager } from '@/composables/useAppManager'
+  import { getDesktopApps } from '@/config/app.config'
 
   const emit = defineEmits(['launchpad'])
+  const { openApp } = useAppManager()
 
-  const deskTopAppList = ref([])
+  const deskTopAppList = ref(getDesktopApps())
 
   const launchpad = () => {
-    emit('launchpad', $store.state.launchpad)
+    emit('launchpad', false)
   }
 
   // 打开应用并关闭启动台
   const openAppAndClose = (item) => {
-    $store.commit('openApp', item)
+    openApp(item)
     closeLaunchpad()
   }
 
@@ -62,9 +62,6 @@
   }
 
   onMounted(() => {
-    deskTopAppList.value = tool.getDeskTopApp()
-    $store.commit('getDockAppList')
-    
     // 添加键盘事件监听
     document.addEventListener('keydown', handleKeydown)
   })

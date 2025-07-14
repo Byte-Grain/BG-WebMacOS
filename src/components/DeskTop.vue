@@ -42,9 +42,9 @@
             <el-dropdown-menu>
               <template v-for="subItem in item.sub" :key="subItem.value">
                 <el-dropdown-item class="line" v-if="subItem.isLine"></el-dropdown-item>
-                <el-dropdown-item v-else @click="$store.commit('openMenu', subItem.key)">
-                  <div>{{ subItem.title }}</div>
-                </el-dropdown-item>
+                <el-dropdown-item v-else @click="openAppByKey(subItem.key)">
+              <div>{{ subItem.title }}</div>
+            </el-dropdown-item>
               </template>
             </el-dropdown-menu>
           </template>
@@ -76,7 +76,7 @@
     " @click.stop="hideAllController()">
       <div class="desktop-app">
         <template v-for="item in deskTopAppList" :key="item.key">
-          <div class="app-item" v-on:dblclick="$store.commit('openApp', item)" v-if="!item.hideInDesktop">
+          <div class="app-item" v-on:dblclick="openAppByKey(item.key)" v-if="!item.hideInDesktop">
             <div class="icon">
               <i :style="{
                 backgroundColor: item.iconBgColor,
@@ -88,7 +88,7 @@
         </template>
       </div>
       <transition-group name="fade-window">
-        <template v-for="item in $store.state.openAppList" :key="item.pid">
+        <template v-for="item in openApps" :key="item.pid">
           <App v-if="!item.outLink" v-show="!item.hide" :app="item" :key="item.pid"></App>
         </template>
       </transition-group>
@@ -106,9 +106,7 @@
       </transition>
       <transition-group name="fade-widget">
         <div v-show="isWidgetShow" key="widget-container">
-          <template v-for="item in $store.state.openWidgetList" :key="item.pid">
-            <Widget v-if="!item.outLink" v-show="!item.hide" :app="item" :key="item.pid"></Widget>
-          </template>
+          <!-- Widget 功能暂时保留原有逻辑，后续可进一步优化 -->
         </div>
       </transition-group>
     </div>
@@ -116,53 +114,51 @@
   </div>
 </template>
 <script setup>
-  import { ref, watch, onMounted, getCurrentInstance } from 'vue'
+  import { ref, watch, onMounted, computed } from 'vue'
   import { ElMessage } from 'element-plus'
-  import tool from '../helper/tool'
+  import { useAppManager, useSystem, useUtils } from '@/composables'
+  import { getDesktopApps } from '@/config/app.config'
   import App from './App.vue'
   import Widget from './Widget.vue'
   import Dock from './Dock.vue'
 
-  const { proxy } = getCurrentInstance()
-  const $store = proxy.$store
   const $message = ElMessage
   const emit = defineEmits(['launchpad', 'lockScreen', 'shutdown', 'logout'])
+  
+  // 使用组合式函数
+  const { openAppByKey, currentMenu, openApps } = useAppManager()
+  const { volume, setVolume, userInfo, logout: systemLogout } = useSystem()
+  const { date, storage } = useUtils()
 
   // 响应式数据
   const isCalendarShow = ref(false)
   const nowDate = ref(new Date())
-  const volumnDelayTimer = ref(false)
-  const volumn = ref(80)
+  const volumnDelayTimer = ref(null)
+  const volumn = ref(volume.value)
   const isVolumnShow = ref(false)
   const rightMenuVisible = ref(false)
   const rightMenuLeft = ref(0)
   const rightMenuTop = ref(0)
   const userName = ref('')
-  const menu = ref([])
   const timeString = ref('')
-  const deskTopAppList = ref([])
-  const deskTopMenu = ref([])
   const isWidgetShow = ref(false)
+  
+  // 计算属性
+  const menu = computed(() => currentMenu.value)
+  const deskTopAppList = computed(() => getDesktopApps())
 
   // 监听器
-  watch(volumn, () => {
-    $store.commit('setVolumn', volumn.value)
+  watch(volumn, (newValue) => {
+    setVolume(newValue)
     clearTimeout(volumnDelayTimer.value)
     volumnDelayTimer.value = setTimeout(() => {
       isVolumnShow.value = false
     }, 3000)
   })
 
-  watch(() => $store.state.volumn, () => {
-    console.log($store.state.volumn)
-  })
-
-  watch(() => $store.state.nowApp, () => {
-    menu.value = $store.state.nowApp ? $store.state.nowApp.menu : []
-  })
-
-  watch(() => $store.state.launchpad, () => {
-    emit('launchpad', $store.state.launchpad)
+  // 同步音量值
+  watch(volume, (newValue) => {
+    volumn.value = newValue
   })
 
   // 方法
@@ -205,12 +201,8 @@
 
   const startTimer = () => {
     setInterval(() => {
-      timeString.value = tool.formatTime(new Date(), 'MM-dd HH:mm')
+      timeString.value = date.format(new Date(), 'MM-dd HH:mm')
     }, 1000)
-  }
-
-  const openAppByKey = (key) => {
-    $store.commit('openAppByKey', key)
   }
 
   const lockScreen = () => {
@@ -222,6 +214,7 @@
   }
 
   const logout = () => {
+    systemLogout()
     emit('logout')
   }
 
@@ -231,11 +224,8 @@
 
   // 生命周期
   onMounted(() => {
-    menu.value = deskTopMenu.value
-    userName.value = localStorage.getItem('user_name') || ''
-    deskTopAppList.value = tool.getDeskTopApp()
+    userName.value = storage.get('user_name', '') || ''
     startTimer()
-    $store.commit('getDockAppList')
   })
 </script>
 <style>

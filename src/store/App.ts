@@ -1,8 +1,5 @@
-// import AppModel from "@/model/App";
-// import tool from "@/helper/tool";
-// import eventBus from 'vue3-eventbus';
 import { AppState, AppConfig } from "@/types/app";
-import AppModel from "@/model/App";
+import { appConfig } from "@/config/app.config";
 // createStore 现在通过自动导入，无需手动导入
 // import { createStore } from 'vuex'
 
@@ -139,7 +136,7 @@ const storeConfig = {
 
     getDockAppList(state: AppState): void {
       // Initialize dock app list with apps that have keepInDock: true
-      state.dockAppList = AppModel.allAppList.filter(app => app.keepInDock);
+      state.dockAppList = appConfig.allApps.filter(app => app.keepInDock);
     },
 
     openApp(state: AppState, app: AppConfig): void {
@@ -172,7 +169,7 @@ const storeConfig = {
     },
 
     openAppByKey(state: AppState, key: string): void {
-      const app = AppModel.allAppList.find(item => item.key === key);
+      const app = appConfig.allApps.find(item => item.key === key);
       if (app) {
         // Use openApp mutation to handle the opening logic
         const existingApp = state.openAppList.find(item => item.key === app.key);

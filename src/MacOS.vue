@@ -1,21 +1,22 @@
 <template>
-  <div class="mac-os" @mousedown.self="boot" @contextmenu.prevent="onContextShow()">
+  <div class="mac-os" @contextmenu.prevent="onContextShow()">
     <transition name="fade">
-      <Bg v-if="isBg"></Bg>
+      <Background />
     </transition>
     <transition name="fade">
-      <Loading v-if="isLoading" @loaded="loaded"></Loading>
+      <Loading v-if="loading" />
     </transition>
     <transition name="fade">
-      <Login v-if="isNeedLogin" @logined="logined"></Login>
+      <Login v-if="showLogin" @logined="handleLogin" />
     </transition>
     <transition name="fade">
-      <DeskTop v-if="isDeskTop" @lockScreen="lockScreen" @shutdown="shutdown" @logout="logout" @launchpad="launchpad">
-      </DeskTop>
+      <Desktop v-if="!showLogin && !loading" />
     </transition>
     <transition name="fade">
-      <LaunchPad v-if="isLaunchPad" @launchpad="launchpad"></LaunchPad>
+      <Launchpad v-if="launchpad" />
     </transition>
+    <!-- AppWindow 组件暂时移除，等待后续实现 -->
+    <!-- <AppWindow v-for="item in openAppList" :key="item.pid" :app="item" /> -->
   </div>
 </template>
 
@@ -29,66 +30,48 @@
   }
 </style>
 
-<script lang="ts" setup>
-  import { ref, onMounted, getCurrentInstance } from 'vue'
+<script setup lang="ts">
+import { computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { useSystem, useAppManager, useTheme } from '@/composables'
 
-  const { proxy } = getCurrentInstance()
-  const $store = proxy.$store
+// 组件导入
+import Background from './components/Bg.vue'
+import Loading from './components/Loading.vue'
+import Login from './components/Login.vue'
+import Desktop from './components/DeskTop.vue'
+import Launchpad from './components/LaunchPad.vue'
+// AppWindow 组件暂时移除，等待后续实现
 
-  const isBg = ref<boolean>(true)
-  const isLoading = ref<boolean>(false)
-  const isNeedLogin = ref<boolean>(false)
-  const isDeskTop = ref<boolean>(false)
-  const isLaunchPad = ref<boolean>(false)
+const store = useStore()
 
-  const boot = (): void => {
-    isLoading.value = true;
-  };
+// 使用组合式函数
+const { systemState, isLoggedIn, isLoading, initializeSystem } = useSystem()
+const { openApps, isLaunchpadOpen, initializeDockApps } = useAppManager()
+const { applyCurrentTheme } = useTheme()
 
-  const loaded = (): void => {
-    isLoading.value = false;
-    isNeedLogin.value = true;
-    isBg.value = true;
-  };
+// 计算属性
+const showLogin = computed(() => !isLoggedIn.value)
+const loading = computed(() => isLoading.value)
+const launchpad = computed(() => isLaunchpadOpen.value)
+const openAppList = computed(() => openApps.value)
 
-  const logined = (): void => {
-    isNeedLogin.value = false;
-    isDeskTop.value = true;
-  };
+// 生命周期
+onMounted(() => {
+  // 初始化系统
+  initializeSystem()
+  // 初始化应用
+  initializeDockApps()
+  // 应用主题
+  applyCurrentTheme()
+})
 
-  const lockScreen = (): void => {
-    isNeedLogin.value = true;
-  };
+const handleLogin = () => {
+  // 处理登录成功事件
+  store.commit('login')
+}
 
-  const shutdown = (): void => {
-    isDeskTop.value = false;
-    isLaunchPad.value = false;
-    isNeedLogin.value = false;
-    isLoading.value = false;
-    isBg.value = true;
-  };
-
-  const logout = (): void => {
-    isDeskTop.value = false;
-    isLaunchPad.value = false;
-    isNeedLogin.value = true;
-    $store.commit('logout');
-  };
-
-  const launchpad = (show: boolean): void => {
-    isLaunchPad.value = show;
-    // 同步store状态，避免状态不一致
-    if (show !== $store.state.launchpad) {
-      $store.commit('launchpad');
-    }
-  };
-
-  onMounted(() => {
-    boot();
-    console.log('MacOS mounted');
-  });
-
-  const onContextShow = () => {
-    console.log("onContextShow");
-  }
+const onContextShow = () => {
+  console.log("onContextShow");
+}
 </script>
