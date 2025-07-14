@@ -2,7 +2,7 @@
   <div class="task">
     <div class="task-list">
       <template v-for="item in $store.state.openAppList" :key="item.pid">
-        <div class="task-item" :class="app && app.pid == item.pid ? 'active' : ''" @click="selectApp(item)">
+        <div v-if="item.key !== 'system_task'" class="task-item" :class="app && app.pid == item.pid ? 'active' : ''" @click="selectApp(item)">
           <i class="iconfont" :class="item.icon" :style="{
             backgroundColor: item.iconBgColor,
             color: item.iconColor,
