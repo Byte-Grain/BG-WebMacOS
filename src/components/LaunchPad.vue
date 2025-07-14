@@ -23,16 +23,18 @@
         </template>
       </div>
     </div>
+    <!-- Dock组件现在通过自动导入，无需手动导入 -->
     <Dock></Dock>
   </div>
 </template>
 
 <script>
-import Dock from "@/components/Dock.vue";
+// 组件现在通过自动导入，无需手动导入
+// import Dock from "@/components/Dock.vue";
 export default {
-  components: {
-    Dock,
-  },
+  // components: {
+  //   Dock,
+  // },
   data() {
     return {
       deskTopAppList: [],
@@ -61,65 +63,64 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
-  margin-top: -100px;
-  z-index: 99900;
-  backdrop-filter: blur(100px);
-  .body {
-    flex-grow: 1;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  z-index: 999;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.launchpad-app {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+.app-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  
+  i {
+    font-size: 32px;
+    border-radius: 12px;
     width: 100%;
+    height: 100%;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
     align-items: center;
-    position: relative;
-    .launchpad-app {
-      position: fixed;
-      left: 10%;
-      right: 5%;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: flex-end;
-      padding: 100px;
-      flex-wrap: wrap;
-      .app-item {
-        padding: 10px 0px;
-        flex-direction: column;
-        text-align: center;
-        text-shadow: 0px 0px 2px rgb(0 0 0 / 50%);
-        cursor: pointer;
-        border-radius: 10px;
-        border: 2px solid transparent;
-        justify-content: center;
-        align-items: center;
-        width: 180px;
-        .icon {
-          border-radius: 10px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-        }
-        .iconfont {
-          font-size: 100px;
-          border-radius: 10px;
-          padding: 8px;
-        }
-        .title {
-          font-size: 12px;
-          margin-top: 5px;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
-        }
-      }
-    }
+    justify-content: center;
   }
-  .footer {
-    display: flex;
-    z-index: 100;
-    bottom: 0;
-  }
+}
+
+.title {
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

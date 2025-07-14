@@ -1,5 +1,6 @@
-import { createApp } from 'vue'
-import { createStore, Store } from 'vuex'
+// Vue API 现在通过自动导入，无需手动导入
+// import { createApp } from 'vue'
+// import { createStore, Store } from 'vuex'
 import { AppState } from './types/app'
 
 import MacOS from './MacOS.vue'
@@ -28,14 +29,14 @@ macOS.config.globalProperties.config = config
 import tool from './helper/tool'
 macOS.config.globalProperties.tool = tool
 
-import AppStore from './store/App'
-const store: Store<AppState> = createStore(AppStore)
+import store from './store/App'
 macOS.use(store)
 
-declare global {
-    interface Window {
-        macOS: typeof macOS
-    }
-}
-window.macOS = macOS
+// PWA相关功能暂时移除
+// import { registerSW } from 'virtual:pwa-register'
+// const updateSW = registerSW({
+//   onNeedRefresh() {},
+//   onOfflineReady() {},
+// })
+
 macOS.mount('#app')

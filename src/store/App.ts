@@ -3,8 +3,10 @@
 // import eventBus from 'vue3-eventbus';
 import { AppState, AppConfig } from "@/types/app";
 import AppModel from "@/model/App";
+// createStore 现在通过自动导入，无需手动导入
+// import { createStore } from 'vuex'
 
-export default {
+const storeConfig = {
   state(): AppState {
     return {
       showLogin: false,
@@ -187,3 +189,6 @@ export default {
     },
   },
 };
+
+// 创建并导出store实例
+export default createStore(storeConfig);

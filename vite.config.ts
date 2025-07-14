@@ -2,13 +2,43 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import { fileURLToPath, URL } from 'node:url'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 // import legacy from '@vitejs/plugin-legacy'
 // import eslint from 'vite-plugin-eslint'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue()
+    vue(),
+    AutoImport({
+      imports: [
+        'vue',
+        'vue-router',
+        'vuex'
+      ],
+      resolvers: [ElementPlusResolver()],
+      dts: true, // 生成类型声明文件
+      eslintrc: {
+        enabled: true, // 生成eslint配置
+        filepath: './.eslintrc-auto-import.json',
+        globalsPropValue: true
+      }
+    }),
+    Components({
+      resolvers: [
+        ElementPlusResolver(),
+        // 自动导入图标组件
+        ElementPlusResolver({
+          importStyle: 'sass'
+        })
+      ],
+      dts: true, // 生成类型声明文件
+      dirs: ['src/components'], // 自动导入的组件目录
+      extensions: ['vue'],
+      deep: true
+    })
     // eslint({
     //   include: ['src/**/*.ts', 'src/**/*.vue', 'src/**/*.js'],
     //   exclude: ['node_modules']
