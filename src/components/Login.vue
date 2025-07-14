@@ -171,7 +171,7 @@
   import { ref, onMounted } from 'vue'
   import bgImageUrl from '@/asset/img/bg.jpg'
   import tool from '@/helper/tool'
-  import LanguageSwitcher from './LanguageSwitcher.vue'
+  import LanguageSwitcher from './business/LanguageSelector.vue'
   import { useUtils } from '@/composables/useUtils'
 
   const emit = defineEmits(['logined'])

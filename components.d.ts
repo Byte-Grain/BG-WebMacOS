@@ -9,11 +9,11 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     App: typeof import('./src/components/App.vue')['default']
-    Bg: typeof import('./src/components/Bg.vue')['default']
+    Bg: typeof import('./src/components/common/Bg.vue')['default']
     ContextMenu: typeof import('./src/components/layout/ContextMenu.vue')['default']
-    DeskTop: typeof import('./src/components/DeskTop.vue')['default']
+    DeskTop: typeof import('./src/components/layout/DeskTop.vue')['default']
     DesktopArea: typeof import('./src/components/layout/DesktopArea.vue')['default']
-    Dock: typeof import('./src/components/Dock.vue')['default']
+    Dock: typeof import('./src/components/layout/Dock.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCalendar: typeof import('element-plus/es')['ElCalendar']
@@ -24,6 +24,8 @@ declare module 'vue' {
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElSlider: typeof import('element-plus/es')['ElSlider']
+    LanguageSelector: typeof import('./src/components/business/LanguageSelector.vue')['default']
+    LanguageSwitch: typeof import('./src/components/business/LanguageSwitch.vue')['default']
     LanguageSwitcher: typeof import('./src/components/business/LanguageSwitcher.vue')['default']
     LaunchPad: typeof import('./src/components/layout/LaunchPad.vue')['default']
     Loading: typeof import('./src/components/common/Loading.vue')['default']
