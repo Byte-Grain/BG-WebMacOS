@@ -106,9 +106,10 @@ export function useKeyboard() {
           
           // 触发全局快捷键事件
           emit(EVENTS.KEYBOARD_SHORTCUT, {
-            shortcut: registration.id,
-            config: registration.config,
-            event,
+            key: registration.config.key,
+            modifiers: Object.keys(registration.config.modifiers || {}).filter(key => registration.config.modifiers?.[key as keyof ModifierKeys]),
+            action: registration.config.description || 'unknown',
+            timestamp: Date.now()
           })
         } catch (error) {
           console.error(`Error executing shortcut handler for '${registration.id}':`, error)

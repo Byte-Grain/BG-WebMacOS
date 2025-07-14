@@ -168,9 +168,8 @@ const testBusinessEvent = () => {
 }
 
 const testErrorEvent = () => {
-  emit(EVENTS.APP_ERROR, {
+  emit('error:app', {
     appKey: 'test-app',
-    pid: 12345,
     error: '模拟应用错误',
     severity: 'medium' as const
   })
@@ -298,7 +297,7 @@ const testCaptureException = () => {
 }
 
 const testNetworkError = () => {
-  emit(EVENTS.NETWORK_ERROR, {
+  emit('error:network', {
     error: '网络连接超时',
     url: 'https://api.example.com/test',
     status: 408
@@ -434,7 +433,7 @@ onMounted(() => {
   on('test-event', handleTestEvent)
   on(EVENTS.SYSTEM_READY, handleSystemReady)
   on('business:feature-used', handleBusinessEvent)
-  on(EVENTS.APP_ERROR, handleErrorEvent)
+  on('error:app', handleErrorEvent)
   
   // 检查快捷键状态
   shortcutRegistered.value = isShortcutRegistered({
@@ -448,7 +447,7 @@ onUnmounted(() => {
   off('test-event', handleTestEvent)
   off(EVENTS.SYSTEM_READY, handleSystemReady)
   off('business:feature-used', handleBusinessEvent)
-  off(EVENTS.APP_ERROR, handleErrorEvent)
+  off('error:app', handleErrorEvent)
   
   // 清理快捷键
   if (shortcutRegistered.value && testShortcutId) {

@@ -145,7 +145,13 @@ export function useNotification() {
     }
     
     // 触发显示事件
-    emit(EVENTS.NOTIFICATION_SHOW, notification)
+    emit(EVENTS.NOTIFICATION_SHOW, {
+      id: notification.id,
+      title: notification.title || '',
+      message: notification.message,
+      type: notification.type,
+      duration: notification.duration
+    })
     
     return notification.id
   }
@@ -175,7 +181,10 @@ export function useNotification() {
     notifications.value.splice(index, 1)
     
     // 触发隐藏事件
-    emit(EVENTS.NOTIFICATION_HIDE, notification)
+    emit(EVENTS.NOTIFICATION_HIDE, {
+      id: notification.id,
+      reason: 'user'
+    })
     
     return true
   }

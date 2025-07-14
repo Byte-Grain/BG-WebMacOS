@@ -38,7 +38,6 @@ import { computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { 
   useCore,
-  useErrorMonitor,
   captureError,
   EVENTS 
 } from '@/composables'
@@ -102,7 +101,12 @@ const registerSystemShortcuts = () => {
   // 关闭当前窗口 (Cmd/Ctrl + W)
   registerShortcut(COMMON_SHORTCUTS.CLOSE_WINDOW, () => {
     // 这里可以添加关闭当前活动窗口的逻辑
-    emit(EVENTS.APP_CLOSED, { source: 'keyboard' })
+    emit(EVENTS.APP_CLOSED, { 
+      appKey: 'current', 
+      pid: Date.now(), 
+      reason: 'keyboard-shortcut',
+      source: 'keyboard' 
+    })
   })
   
   // 刷新页面 (Cmd/Ctrl + R)
@@ -124,11 +128,11 @@ const setupEventListeners = () => {
   })
   
   // 监听应用错误事件
-  on(EVENTS.APP_ERROR, (data) => {
+  on('error:app', (data) => {
     captureError(`应用错误: ${data.error}`, {
       component: 'app-manager',
       severity: data.severity || 'medium',
-      metadata: { appKey: data.appKey, pid: data.pid }
+      metadata: { appKey: data.appKey }
     })
   })
   
@@ -156,12 +160,12 @@ const setupEventListeners = () => {
     captureError(`系统错误: ${data.error}`, {
       component: data.component || 'system',
       severity: data.recoverable ? 'medium' : 'high',
-      metadata: { code: data.code, recoverable: data.recoverable }
+      metadata: { recoverable: data.recoverable }
     })
   })
   
   // 监听网络错误事件
-  on(EVENTS.NETWORK_ERROR, (data) => {
+  on('error:network', (data) => {
     captureError(`网络错误: ${data.error}`, {
       component: 'network',
       severity: 'medium',
@@ -174,7 +178,7 @@ const setupEventListeners = () => {
     try {
       store.commit('logout')
       info('系统已锁屏', { duration: 2000 })
-      emit(EVENTS.SYSTEM_LOCK, { trigger: 'user' })
+      emit(EVENTS.SYSTEM_SLEEP, { trigger: 'user' })
     } catch (error) {
       captureError('锁屏操作失败', {
         component: 'system-lock',
