@@ -18,13 +18,11 @@
 
 </style>
 <script>
-import bgImageUrl from '@/asset/img/bg.jpg'
-
 export default {
   props:['blur'],
   data() {
     return {
-      bgImage: bgImageUrl,
+      bgImage: '/src/asset/img/bg.jpg',
     };
   },
 };

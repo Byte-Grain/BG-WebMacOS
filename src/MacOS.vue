@@ -30,16 +30,6 @@
 </style>
 
 <script lang="ts" setup>
-  // 组件现在通过自动导入，无需手动导入
-  // import Bg from "@/components/Bg.vue";
-  // import LaunchPad from "@/components/LaunchPad.vue";
-  // import Loading from "@/components/Loading.vue";
-  // import Login from "@/components/Login.vue";
-  // import DeskTop from "@/components/DeskTop.vue";
-
-  // Vue API 现在通过自动导入，无需手动导入
-  // import { ref, onMounted } from 'vue'
-
   const isBg = ref<boolean>(true)
   const isLoading = ref<boolean>(false)
   const isLogin = ref<boolean>(false)
@@ -47,15 +37,13 @@
   const isLaunchPad = ref<boolean>(false)
 
   const boot = (): void => {
-    if (isBg.value) {
-      isBg.value = false;
-      isLoading.value = true;
-    }
+    isLoading.value = true;
   };
 
   const loaded = (): void => {
     isLoading.value = false;
     isLogin.value = true;
+    isBg.value = true;
   };
 
   const logined = (): void => {
@@ -64,7 +52,6 @@
   };
 
   const lockScreen = (): void => {
-    isDeskTop.value = false;
     isLogin.value = true;
   };
 
@@ -79,7 +66,7 @@
   const logout = (): void => {
     isDeskTop.value = false;
     isLaunchPad.value = false;
-    isLogin.value = true;
+    isLogin.value = false;
   };
 
   const launchpad = (show: boolean): void => {
