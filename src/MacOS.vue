@@ -30,6 +30,8 @@
 </style>
 
 <script lang="ts" setup>
+  import { ref, onMounted } from 'vue'
+
   const isBg = ref<boolean>(true)
   const isLoading = ref<boolean>(false)
   const isLogin = ref<boolean>(false)
