@@ -148,53 +148,50 @@
   }
 }
 </style>
-<script>
+<script setup>
 import bgImageUrl from '@/asset/img/bg.jpg'
 
-export default {
-  data() {
-    return {
-      headImage: bgImageUrl,
-      user_name: "",
-      user_password: "",
-      haveSavedUserName: false,
-      isUserNameError: false,
-      isUserPasswordError: false,
-    };
-  },
-  created() {
-    this.haveSavedUserName = false;
-    let user_name = localStorage.getItem("user_name") || false;
-    if (user_name) {
-      this.user_name = user_name;
-      this.haveSavedUserName = true;
-    }
-  },
-  methods: {
-    guest() {
-      localStorage.setItem("user_name", "Guest");
-      this.$emit("logined");
-    },
-    login() {
-      if (!this.user_name) {
-        this.isUserNameError = true;
-        setTimeout(() => {
-          this.isUserNameError = false;
-        }, 1000);
-        return;
-      }
-      if (!this.user_password) {
-        this.isUserPasswordError = true;
-        setTimeout(() => {
-          this.isUserPasswordError = false;
-        }, 1000);
-        return;
-      }
+const emit = defineEmits(['logined'])
 
-      this.tool.saveAccessToken("guest");
-      this.$emit("logined");
-      localStorage.setItem("user_name", this.user_name);
-    },
-  },
-};
+const headImage = ref(bgImageUrl)
+const user_name = ref('')
+const user_password = ref('')
+const haveSavedUserName = ref(false)
+const isUserNameError = ref(false)
+const isUserPasswordError = ref(false)
+
+const guest = () => {
+  localStorage.setItem('user_name', 'Guest')
+  emit('logined')
+}
+
+const login = () => {
+  if (!user_name.value) {
+    isUserNameError.value = true
+    setTimeout(() => {
+      isUserNameError.value = false
+    }, 1000)
+    return
+  }
+  if (!user_password.value) {
+    isUserPasswordError.value = true
+    setTimeout(() => {
+      isUserPasswordError.value = false
+    }, 1000)
+    return
+  }
+
+  tool.saveAccessToken('guest')
+  emit('logined')
+  localStorage.setItem('user_name', user_name.value)
+}
+
+onMounted(() => {
+  haveSavedUserName.value = false
+  const savedUserName = localStorage.getItem('user_name') || false
+  if (savedUserName) {
+    user_name.value = savedUserName
+    haveSavedUserName.value = true
+  }
+})
 </script>

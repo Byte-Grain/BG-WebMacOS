@@ -50,43 +50,42 @@
   }
 }
 </style>
-<script>
-export default {
-  data() {
-    return {
-      progress: 0,
-      showProgress: false,
-    };
-  },
-  created() {
-    setTimeout(() => {
-      this.showProgress = true;
-      this.updateProgress();
-    }, 1000);
-  },
-  methods: {
-    fullScreen() {
-      var docElm = document.documentElement;
-      if (docElm.requestFullscreen) {
-        docElm.requestFullscreen();
-      } else if (docElm.msRequestFullscreen) {
-        docElm.msRequestFullscreen();
-      } else if (docElm.mozRequestFullScreen) {
-        docElm.mozRequestFullScreen();
-      } else if (docElm.webkitRequestFullScreen) {
-        docElm.webkitRequestFullScreen();
-      }
-    },
-    updateProgress() {
-      this.progress += parseInt(Math.random() * 2);
-      if (this.progress >= 100) {
-        this.progress = 100;
-        this.showProgress = false;
-        setTimeout(() => this.$emit("loaded"), 1000);
-      } else {
-        requestAnimationFrame(this.updateProgress)
-      }
-    },
-  },
-};
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const emit = defineEmits(['loaded'])
+
+const progress = ref(0)
+const showProgress = ref(false)
+
+const fullScreen = () => {
+  const docElm = document.documentElement
+  if (docElm.requestFullscreen) {
+    docElm.requestFullscreen()
+  } else if (docElm.msRequestFullscreen) {
+    docElm.msRequestFullscreen()
+  } else if (docElm.mozRequestFullScreen) {
+    docElm.mozRequestFullScreen()
+  } else if (docElm.webkitRequestFullScreen) {
+    docElm.webkitRequestFullScreen()
+  }
+}
+
+const updateProgress = () => {
+  progress.value += parseInt(Math.random() * 2)
+  if (progress.value >= 100) {
+    progress.value = 100
+    showProgress.value = false
+    setTimeout(() => emit('loaded'), 1000)
+  } else {
+    requestAnimationFrame(updateProgress)
+  }
+}
+
+onMounted(() => {
+  setTimeout(() => {
+    showProgress.value = true
+    updateProgress()
+  }, 1000)
+})
 </script>

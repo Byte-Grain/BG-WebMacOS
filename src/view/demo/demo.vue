@@ -79,68 +79,75 @@
   }
 }
 </style>
-<script>
-export default {
-  data() {
-    return {
-      demo: {
-        title: "MacOS WebUI",
-        desc: "这是一个示例APP，用于一些交互相关功能的实现",
-      },
-    };
-  },
-  created() {},
-  methods: {
-    windowMaxSize() {
-      this.$emit("api", {
-        event: "windowMaxSize",
-      });
-    },
-    windowNormalSize() {
-      this.$emit("api", {
-        event: "windowNormalSize",
-      });
-    },
-    windowMinSize() {
-      this.$emit("api", {
-        event: "windowMinSize",
-      });
-    },
-    windowFullSize() {
-      this.$emit("api", {
-        event: "windowFullSize",
-      });
-    },
-    windowClose() {
-      this.$emit("api", {
-        event: "windowClose",
-      });
-    },
-    openApp() {
-      this.$emit("api", {
-        event: "openApp",
-        app: "system_about",
-      });
-    },
-    closeApp() {
-      this.$emit("api", {
-        event: "closeApp",
-        app: "system_about",
-      });
-    },
-    setWindowTitle() {
-      this.$emit("api", {
-        event: "setWindowTitle",
-        title: new Date().valueOf(),
-      });
-    },
-    openAppWithData() {
-      this.$emit("api", {
-        event: "openApp",
-        app: "demo_colorfull",
-        data: "我是传入的参数",
-      });
-    },
-  },
-};
+<script setup>
+import { ref } from 'vue'
+
+// 定义事件
+const emit = defineEmits(['api'])
+
+// 响应式数据
+const demo = ref({
+  title: "MacOS WebUI",
+  desc: "这是一个示例APP，用于一些交互相关功能的实现",
+})
+
+// 方法
+const windowMaxSize = () => {
+  emit("api", {
+    event: "windowMaxSize",
+  })
+}
+
+const windowNormalSize = () => {
+  emit("api", {
+    event: "windowNormalSize",
+  })
+}
+
+const windowMinSize = () => {
+  emit("api", {
+    event: "windowMinSize",
+  })
+}
+
+const windowFullSize = () => {
+  emit("api", {
+    event: "windowFullSize",
+  })
+}
+
+const windowClose = () => {
+  emit("api", {
+    event: "windowClose",
+  })
+}
+
+const openApp = () => {
+  emit("api", {
+    event: "openApp",
+    app: "system_about",
+  })
+}
+
+const closeApp = () => {
+  emit("api", {
+    event: "closeApp",
+    app: "system_about",
+  })
+}
+
+const setWindowTitle = () => {
+  emit("api", {
+    event: "setWindowTitle",
+    title: new Date().valueOf(),
+  })
+}
+
+const openAppWithData = () => {
+  emit("api", {
+    event: "openApp",
+    app: "demo_colorfull",
+    data: "我是传入的参数",
+  })
+}
 </script>

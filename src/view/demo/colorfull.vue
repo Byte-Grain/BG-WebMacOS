@@ -26,14 +26,9 @@
   }
 }
 </style>
-<script>
-export default {
-  data() {
-    return {};
-  },
-  props: {
-    app: Object,
-  },
-  created() {},
-};
+<script setup>
+// 定义props
+defineProps({
+  app: Object,
+})
 </script>

@@ -17,13 +17,8 @@
 }
 
 </style>
-<script>
-export default {
-  props:['blur'],
-  data() {
-    return {
-      bgImage: '/src/asset/img/bg.jpg',
-    };
-  },
-};
+<script setup>
+defineProps(['blur'])
+
+const bgImage = '/src/asset/img/bg.jpg'
 </script>

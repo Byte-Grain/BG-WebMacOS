@@ -28,28 +28,20 @@
   </div>
 </template>
 
-<script>
-// 组件现在通过自动导入，无需手动导入
-// import Dock from "@/components/Dock.vue";
-export default {
-  // components: {
-  //   Dock,
-  // },
-  data() {
-    return {
-      deskTopAppList: [],
-    };
-  },
-  created() {
-    this.deskTopAppList = this.tool.getDeskTopApp();
-    this.$store.commit("getDockAppList");
-  },
-  methods: {
-    launchpad() {
-      this.$emit("launchpad", this.$store.state.launchpad);
-    },
-  },
-};
+<script setup>
+
+const emit = defineEmits(['launchpad'])
+
+const deskTopAppList = ref([])
+
+const launchpad = () => {
+  emit('launchpad', $store.state.launchpad)
+}
+
+onMounted(() => {
+  deskTopAppList.value = tool.getDeskTopApp()
+  $store.commit('getDockAppList')
+})
 </script>
 
 <style lang="scss" scoped>

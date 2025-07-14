@@ -28,25 +28,17 @@
     <div class="space"></div>
   </div>
 </template>
-<script>
-export default {
-  data() {
-    return {};
-  },
-  methods: {
-    openApp(item) {
-      console.log(item);
-      switch (item.key) {
-        case "system_launchpad":
-          this.$store.commit("launchpad");
-          break;
-        default:
-          this.$store.commit("openApp", item);
-          break;
-      }
-    },
-  },
-};
+<script setup>
+const openApp = (item) => {
+  switch (item.key) {
+    case "system_launchpad":
+      $store.commit("launchpad");
+      break;
+    default:
+      $store.commit("openApp", item);
+      break;
+  }
+}
 </script>
 
 <style scoped lang="scss">

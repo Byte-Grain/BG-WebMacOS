@@ -28,19 +28,15 @@
   }
 }
 </style>
-<script>
-export default {
-  data() {
-    return {};
-  },
-  created() {},
-  methods: {
-    openAbout() {
-      this.$emit("api", {
-        event: "openApp",
-        app: "system_about",
-      });
-    },
-  },
-};
+<script setup>
+// 定义事件
+const emit = defineEmits(['api'])
+
+// 方法
+const openAbout = () => {
+  emit("api", {
+    event: "openApp",
+    app: "system_about",
+  })
+}
 </script>
