@@ -10,7 +10,9 @@ declare module 'vue' {
   export interface GlobalComponents {
     App: typeof import('./src/components/App.vue')['default']
     Bg: typeof import('./src/components/Bg.vue')['default']
+    ContextMenu: typeof import('./src/components/layout/ContextMenu.vue')['default']
     DeskTop: typeof import('./src/components/DeskTop.vue')['default']
+    DesktopArea: typeof import('./src/components/layout/DesktopArea.vue')['default']
     Dock: typeof import('./src/components/Dock.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -29,6 +31,8 @@ declare module 'vue' {
     Notification: typeof import('./src/components/common/Notification.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    StatusBar: typeof import('./src/components/layout/StatusBar.vue')['default']
+    TopBar: typeof import('./src/components/layout/TopBar.vue')['default']
     Widget: typeof import('./src/components/common/Widget.vue')['default']
   }
 }
