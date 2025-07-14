@@ -7,13 +7,13 @@ export interface AppMenu {
 
 export interface AppConfig {
   key: string;
-  component: string;
+  component?: string;
   icon: string;
   title: string;
   iconColor: string;
   iconBgColor: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   disableResize?: boolean;
   hideInDesktop?: boolean;
   keepInDock?: boolean;
@@ -21,6 +21,11 @@ export interface AppConfig {
   menu?: AppMenu[];
   pid?: number;
   hide?: boolean;
+  outLink?: boolean;
+  url?: string;
+  innerLink?: boolean;
+  titleBgColor?: string;
+  titleColor?: string;
 }
 
 export interface AppState {
