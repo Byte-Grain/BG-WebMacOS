@@ -25,24 +25,14 @@
   import { useAppManager } from '@/composables/useAppManager'
   import { getDesktopApps } from '@/config/app.config'
 
-  const emit = defineEmits(['launchpad'])
-  const { openApp } = useAppManager()
+  const { openApp, closeLaunchpad } = useAppManager()
 
   const deskTopAppList = ref(getDesktopApps())
-
-  const launchpad = () => {
-    emit('launchpad', false)
-  }
 
   // 打开应用并关闭启动台
   const openAppAndClose = (item) => {
     openApp(item)
     closeLaunchpad()
-  }
-
-  // 关闭启动台
-  const closeLaunchpad = () => {
-    emit('launchpad', false)
   }
 
   // 处理背景点击（点击空白区域关闭）

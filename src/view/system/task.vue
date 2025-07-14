@@ -1,9 +1,9 @@
 <template>
-  <div class="task">
+  <div class="task" @click="handleBackgroundClick">
     <div class="task-list">
       <template v-for="item in $store.state.openAppList" :key="item.pid">
         <div v-if="item.key !== 'system_task'" class="task-item" :class="app && app.pid == item.pid ? 'active' : ''"
-          @click="selectApp(item)">
+          @click.stop="selectApp(item)">
           <i class="iconfont" :class="item.icon" :style="{
             backgroundColor: item.iconBgColor,
             color: item.iconColor,
@@ -12,7 +12,7 @@
         </div>
       </template>
     </div>
-    <div class="task-ctrl">
+    <div class="task-ctrl" @click.stop>
       <el-button size="mini" type="primary" :disabled="!app.pid" @click="closeApp">强制退出</el-button>
     </div>
   </div>
@@ -89,12 +89,14 @@
   }
 </style>
 <script setup>
-  import { reactive } from 'vue'
+  import { reactive, onMounted, onUnmounted } from 'vue'
   const emit = defineEmits(['api'])
   let app = reactive({})
+  
   const selectApp = (item) => {
     Object.assign(app, item);
   }
+  
   const closeApp = () => {
     if (app.pid) {
       emit("api", {
@@ -103,4 +105,36 @@
       });
     }
   }
+  
+  // 处理背景点击事件
+  const handleBackgroundClick = (event) => {
+    // 如果点击的是背景区域（不是任务项或控制按钮），则关闭控制台
+    if (event.target.classList.contains('task')) {
+      closeTaskManager()
+    }
+  }
+  
+  // 关闭控制台
+  const closeTaskManager = () => {
+    emit("api", {
+      event: "windowClose"
+    });
+  }
+  
+  // 键盘事件处理
+  const handleKeydown = (event) => {
+    if (event.key === 'Escape') {
+      closeTaskManager()
+    }
+  }
+  
+  onMounted(() => {
+    // 添加键盘事件监听
+    document.addEventListener('keydown', handleKeydown)
+  })
+  
+  onUnmounted(() => {
+    // 移除键盘事件监听
+    document.removeEventListener('keydown', handleKeydown)
+  })
 </script>
