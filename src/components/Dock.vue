@@ -18,6 +18,12 @@
   </div>
 </template>
 <script setup>
+  import { getCurrentInstance } from 'vue'
+  import tool from '../helper/tool'
+
+  const { proxy } = getCurrentInstance()
+  const $store = proxy.$store
+
   const openApp = (item) => {
     switch (item.key) {
       case "system_launchpad":

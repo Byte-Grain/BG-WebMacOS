@@ -8,7 +8,7 @@
       top: nowRect.top + 'px',
       bottom: nowRect.bottom + 'px',
       right: nowRect.right + 'px',
-    }" :class="getExtBoxClasses()">
+    }" :class="getExtBoxClasses">
       <div class="box-top">
         <div class="box-top-left" @mousedown="resizeMouseDown"></div>
         <div class="box-top-center" @mousedown="resizeMouseDown"></div>
@@ -44,7 +44,11 @@
 </template>
 
 <script setup>
-  import { defineAsyncComponent, reactive, watch, onMounted, computed } from 'vue'
+  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, getCurrentInstance } from 'vue'
+  import tool from '../helper/tool'
+
+  const { proxy } = getCurrentInstance()
+  const $store = proxy.$store
 
   // 组件注册
   const SystemAbout = defineAsyncComponent(() => import('@/view/system/about.vue'))

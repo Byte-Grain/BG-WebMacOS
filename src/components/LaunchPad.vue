@@ -21,6 +21,9 @@
 </template>
 
 <script setup>
+  import tool from '../helper/tool';
+  const { proxy } = getCurrentInstance()
+  const $store = proxy.$store
 
   const emit = defineEmits(['launchpad'])
 

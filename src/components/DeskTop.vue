@@ -116,8 +116,16 @@
   </div>
 </template>
 <script setup>
-  import { ref, watch, onMounted } from 'vue'
+  import { ref, watch, onMounted, getCurrentInstance } from 'vue'
+  import { ElMessage } from 'element-plus'
+  import tool from '../helper/tool'
+  import App from './App.vue'
+  import Widget from './Widget.vue'
+  import Dock from './Dock.vue'
 
+  const { proxy } = getCurrentInstance()
+  const $store = proxy.$store
+  const $message = ElMessage
   const emit = defineEmits(['launchpad', 'lockScreen', 'shutdown', 'logout'])
 
   // 响应式数据
