@@ -181,5 +181,9 @@ export default {
       console.log('Menu opened:', menuKey);
       // Add specific menu handling logic here if needed
     },
+
+    launchpad(state: AppState): void {
+      state.launchpad = !state.launchpad;
+    },
   },
 };
