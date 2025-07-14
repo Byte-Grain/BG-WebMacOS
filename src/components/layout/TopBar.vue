@@ -1,198 +1,248 @@
 <template>
   <div class="top-bar">
     <!-- Apple Logo Dropdown -->
-    <div class="logo-section">
-      <el-dropdown trigger="click">
-        <div class="logo">
-          <i class="iconfont icon-apple1"></i>
-        </div>
+    <el-dropdown trigger="click">
+      <div class="logo">
+        <i class="iconfont icon-apple1"></i>
+      </div>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item @click="openAppByKey('system_about')">
+            <div>{{ $t('system.about') }}</div>
+          </el-dropdown-item>
+          <el-dropdown-item class="line"></el-dropdown-item>
+          <el-dropdown-item @click="openAppByKey('system_setting')">
+            <div>{{ $t('system.settings') }}</div>
+          </el-dropdown-item>
+          <el-dropdown-item @click="openAppByKey('system_store')">
+            <div>{{ $t('system.appStore') }}</div>
+          </el-dropdown-item>
+          <el-dropdown-item class="line"></el-dropdown-item>
+          <el-dropdown-item @click="openAppByKey('system_task')">
+            <div>{{ $t('system.forceQuit') }}</div>
+          </el-dropdown-item>
+          <el-dropdown-item class="line"></el-dropdown-item>
+          <el-dropdown-item @click="handleShutdown">
+            <div>{{ $t('system.shutdown') }}</div>
+          </el-dropdown-item>
+          <el-dropdown-item class="line"></el-dropdown-item>
+          <el-dropdown-item @click="handleLockScreen">
+            <div>{{ $t('system.lockScreen') }}</div>
+          </el-dropdown-item>
+          <el-dropdown-item @click="handleLogout">
+            <div>{{ $t('system.logout', { username: userName }) }}</div>
+          </el-dropdown-item>
+          <el-dropdown-item class="line"></el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+
+    <!-- Menu Items -->
+    <div class="menu" v-for="item in menu" :key="item.value">
+      <el-dropdown trigger="click" placement="bottom-start">
+        <div class="item">{{ item.title }}</div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="openAppByKey('system_about')">
-              <div>{{ $t('system.about') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="openAppByKey('system_setting')">
-              <div>{{ $t('system.settings') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item @click="openAppByKey('system_store')">
-              <div>{{ $t('system.appStore') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="openAppByKey('system_task')">
-              <div>{{ $t('system.forceQuit') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="handleShutdown">
-              <div>{{ $t('system.shutdown') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="handleLockScreen">
-              <div>{{ $t('system.lockScreen') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item @click="handleLogout">
-              <div>{{ $t('system.logout', { username: userName }) }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="openTestPage">
-              <div>开发者工具</div>
-            </el-dropdown-item>
+            <template v-for="subItem in item.sub" :key="subItem.value">
+              <el-dropdown-item class="line" v-if="subItem.isLine"></el-dropdown-item>
+              <el-dropdown-item v-else @click="openAppByKey(subItem.key)">
+                <div>{{ subItem.title }}</div>
+              </el-dropdown-item>
+            </template>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
     </div>
 
-    <!-- Menu Items -->
-    <div class="menu-section">
-      <div class="menu" v-for="item in menu" :key="item.value">
-        <el-dropdown trigger="click" placement="bottom-start">
-          <div class="item">{{ item.title }}</div>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <template v-for="subItem in item.sub" :key="subItem.value">
-                <el-dropdown-item class="line" v-if="subItem.isLine"></el-dropdown-item>
-                <el-dropdown-item v-else @click="openAppByKey(subItem.key)">
-                  <div>{{ subItem.title }}</div>
-                </el-dropdown-item>
-              </template>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </div>
-    </div>
-
     <!-- Spacer -->
     <div class="space"></div>
-
-    <!-- Status Bar -->
-    <StatusBar />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAppManager, useSystem } from '@/composables'
-import StatusBar from './StatusBar.vue'
+  import { computed } from 'vue'
+  import { useAppManager, useSystem } from '@/composables'
 
-// Props and Emits
-const emit = defineEmits(['lockScreen', 'shutdown', 'logout', 'openTestPage'])
+  // Props and Emits
+  const emit = defineEmits(['lockScreen', 'shutdown', 'logout', 'openTestPage'])
 
-// Composables
-const { openAppByKey, currentMenu } = useAppManager()
-const { userInfo } = useSystem()
+  // Composables
+  const { openAppByKey, currentMenu } = useAppManager()
+  const { userInfo } = useSystem()
 
-// Computed
-const menu = computed(() => currentMenu.value)
-const userName = computed(() => userInfo.value?.name || '')
+  // Computed
+  const menu = computed(() => currentMenu.value)
+  const userName = computed(() => userInfo.value?.name || '')
 
-// Methods
-const handleLockScreen = () => {
-  emit('lockScreen')
-}
+  // Methods
+  const handleLockScreen = () => {
+    emit('lockScreen')
+  }
 
-const handleShutdown = () => {
-  emit('shutdown')
-}
+  const handleShutdown = () => {
+    emit('shutdown')
+  }
 
-const handleLogout = () => {
-  emit('logout')
-}
-
-const openTestPage = () => {
-  emit('openTestPage')
-}
+  const handleLogout = () => {
+    emit('logout')
+  }
 </script>
 
-<style scoped>
-.top-bar {
-  display: flex;
-  align-items: center;
-  height: 30px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 0 15px;
-  position: relative;
-  z-index: 1000;
-}
+<style scoped lang="scss">
+  .top-bar {
+    height: 28px;
+    display: flex;
+    flex-direction: row;
+    font-size: 14px;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 5px;
+    z-index: 100;
 
-.logo-section {
-  display: flex;
-  align-items: center;
-}
+    .logo {
+      height: 28px;
+      color: white;
+      align-items: center;
+      justify-content: center;
+      padding: 0px 16px;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-.logo {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
+      .iconfont {
+        font-size: 16px;
+      }
 
-.logo:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
+      .el-select {
+        position: absolute;
+        opacity: 0;
+      }
+    }
 
-.logo i {
-  font-size: 16px;
-  color: #333;
-}
+    .logo:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
 
-.menu-section {
-  display: flex;
-  align-items: center;
-  margin-left: 15px;
-}
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
 
-.menu {
-  margin-right: 20px;
-}
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
 
-.menu .item {
-  padding: 4px 8px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #333;
-  transition: background-color 0.2s ease;
-}
+    .space {
+      flex-grow: 1;
+    }
 
-.menu .item:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
+    .menu {
+      display: flex;
+      flex-direction: row;
+      font-size: 13px;
+      height: 100%;
+      font-weight: 500;
 
-.space {
-  flex: 1;
-}
+      .item {
+        font-size: 13px;
+        padding: 0px 15px;
+        display: inline-block;
+        flex-grow: 1;
+        cursor: pointer;
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
 
-/* Dropdown styles */
-:deep(.el-dropdown-menu) {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
+      .item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
 
-:deep(.el-dropdown-menu__item) {
-  color: #333;
-  font-size: 14px;
-  padding: 8px 16px;
-}
+    .status {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
 
-:deep(.el-dropdown-menu__item:hover) {
-  background-color: rgba(0, 122, 255, 0.1);
-  color: #007AFF;
-}
+      .audio {
+        cursor: pointer;
+        padding: 0px 10px;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
 
-:deep(.el-dropdown-menu__item.line) {
-  height: 1px;
-  padding: 0;
-  margin: 4px 0;
-  background-color: rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
+        .iconfont {
+          font-size: 20px;
+        }
+
+        .el-slider {
+          position: absolute;
+          top: 40px;
+          height: 80px;
+        }
+      }
+
+      .audio:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .datetime {
+        cursor: pointer;
+        padding: 0px 10px;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+
+        .el-calendar {
+          color: #333;
+          background: rgba(255, 255, 255, 0.98);
+          position: fixed;
+          top: 40px;
+          right: 20px;
+          width: 500px;
+          border-radius: 10px;
+        }
+      }
+
+      .datetime:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .notification {
+        cursor: pointer;
+        padding: 0px 10px;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+
+        .iconfont {
+          font-size: 20px;
+        }
+
+        .notification:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+  }
 </style>

@@ -1,59 +1,7 @@
 <template>
   <div class="desktop">
     <div class="top">
-      <el-dropdown trigger="click">
-        <div class="logo">
-          <i class="iconfont icon-apple1"></i>
-        </div>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item @click="openAppByKey('system_about')">
-              <div>{{ $t('system.about') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="openAppByKey('system_setting')">
-              <div>{{ $t('system.settings') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item @click="openAppByKey('system_store')">
-              <div>{{ $t('system.appStore') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="openAppByKey('system_task')">
-              <div>{{ $t('system.forceQuit') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="openTestPage">
-              <div>开发者工具</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="shutdown">
-              <div>{{ $t('system.shutdown') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item class="line"></el-dropdown-item>
-            <el-dropdown-item @click="lockScreen">
-              <div>{{ $t('system.lockScreen') }}</div>
-            </el-dropdown-item>
-            <el-dropdown-item @click="logout">
-              <div>{{ $t('system.logout', { username: userName }) }}</div>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      <div class="menu" v-for="item in menu" :key="item.value">
-        <el-dropdown trigger="click" placement="bottom-start">
-          <div class="item">{{ item.title }}</div>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <template v-for="subItem in item.sub" :key="subItem.value">
-                <el-dropdown-item class="line" v-if="subItem.isLine"></el-dropdown-item>
-                <el-dropdown-item v-else @click="openAppByKey(subItem.key)">
-              <div>{{ subItem.title }}</div>
-            </el-dropdown-item>
-              </template>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </div>
+      <TopBar></TopBar>
       <div class="space"></div>
       <div class="status">
         <div class="audio">
@@ -110,22 +58,8 @@
       </transition>
       <transition-group name="fade-widget">
         <div v-show="isWidgetShow" key="widget-container">
-          <!-- Widget 功能暂时保留原有逻辑，后续可进一步优化 -->
         </div>
       </transition-group>
-      
-      <!-- 测试页面 -->
-      <transition name="fade">
-        <div v-show="isTestPageShow" class="test-page-overlay" @click.self="closeTestPage">
-          <div class="test-page-container">
-            <div class="test-page-header">
-              <h3>开发者工具</h3>
-              <button @click="closeTestPage" class="close-btn">×</button>
-            </div>
-            <ComposablesTest />
-          </div>
-        </div>
-      </transition>
     </div>
     <Dock></Dock>
   </div>
@@ -135,17 +69,13 @@
   import { ElMessage } from 'element-plus'
   import { useAppManager, useSystem, useUtils } from '@/composables'
   import { getDesktopApps } from '@/config/app.config'
-  import App from '@/components/App.vue'
-  import Widget from '@/components/common/Widget.vue'
-  import Dock from './Dock.vue'
-  import ComposablesTest from '@/views/test/ComposablesTest.vue'
 
   const $message = ElMessage
   const emit = defineEmits(['launchpad', 'lockScreen', 'shutdown', 'logout'])
-  
+
   // 使用组合式函数
   const { openAppByKey, currentMenu, openApps } = useAppManager()
-  const { volume, setVolume, userInfo, logout: systemLogout } = useSystem()
+  const { volume, setVolume, logout: systemLogout } = useSystem()
   const { date, storage } = useUtils()
 
   // 响应式数据
@@ -161,9 +91,7 @@
   const timeString = ref('')
   const isWidgetShow = ref(false)
   const isTestPageShow = ref(false)
-  
-  // 计算属性
-  const menu = computed(() => currentMenu.value)
+
   const deskTopAppList = computed(() => getDesktopApps())
 
   // 监听器
@@ -241,35 +169,12 @@
     isWidgetShow.value = !isWidgetShow.value
   }
 
-  const openTestPage = () => {
-    isTestPageShow.value = true
-  }
-
-  const closeTestPage = () => {
-    isTestPageShow.value = false
-  }
-
   // 生命周期
   onMounted(() => {
     userName.value = storage.get('user_name', '') || ''
     startTimer()
   })
 </script>
-<style>
-  .top .el-dropdown {
-    color: white !important;
-    height: 100% !important;
-  }
-
-  .top .el-calendar-day {
-    height: 30px !important;
-  }
-
-  .top .is-today {
-    background: #4b9efb !important;
-    color: white !important;
-  }
-</style>
 <style scoped lang="scss">
   .desktop {
     display: flex;
@@ -295,114 +200,8 @@
       padding: 0px 5px;
       z-index: 100;
 
-      .logo {
-        height: 100%;
-        align-items: center;
-        justify-content: center;
-        padding: 0px 15px;
-        cursor: pointer;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .iconfont {
-          font-size: 16px;
-          margin-top: -3px;
-        }
-
-        .el-select {
-          position: absolute;
-          opacity: 0;
-        }
-      }
-
-      .logo:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-
-      .test-page-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(10px);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-
-      .test-page-container {
-        background: rgba(30, 30, 30, 0.95);
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        max-width: 90vw;
-        max-height: 90vh;
-        overflow: hidden;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      }
-
-      .test-page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 20px;
-        background: rgba(255, 255, 255, 0.05);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      }
-
-      .test-page-header h3 {
-        margin: 0;
-        color: white;
-        font-size: 16px;
-        font-weight: 500;
-      }
-
-      .close-btn {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 20px;
-        cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 4px;
-        transition: background-color 0.2s ease;
-      }
-
-      .close-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-      }
-
       .space {
         flex-grow: 1;
-      }
-
-      .menu {
-        display: flex;
-        flex-direction: row;
-        font-size: 13px;
-        height: 100%;
-        font-weight: 500;
-
-        .item {
-          font-size: 13px;
-          padding: 0px 15px;
-          display: inline-block;
-          flex-grow: 1;
-          cursor: pointer;
-          display: flex;
-          height: 100%;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .item:hover {
-          background-color: rgba(255, 255, 255, 0.1);
-        }
       }
 
       .status {
