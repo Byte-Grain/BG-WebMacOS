@@ -12,6 +12,7 @@ declare module 'vue' {
     Bg: typeof import('./src/components/Bg.vue')['default']
     DeskTop: typeof import('./src/components/DeskTop.vue')['default']
     Dock: typeof import('./src/components/Dock.vue')['default']
+    ElButton: typeof import('element-plus/es')['ElButton']
     ElCalendar: typeof import('element-plus/es')['ElCalendar']
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']

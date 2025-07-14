@@ -29,7 +29,7 @@
             </div>
           </div>
           <div class="app-body">
-            <component :is="app.component" :app="app" @api="appEvent"></component>
+            <component :is="componentMap[app.component]" :app="app" @api="appEvent"></component>
           </div>
         </div>
         <div class="box-center-right" @mousedown="resizeMouseDown"></div>
@@ -65,6 +65,24 @@
   const DemoCamera = defineAsyncComponent(() => import('@/view/demo/camera.vue'))
   const DemoMultiTask = defineAsyncComponent(() => import('@/view/demo/multitask.vue'))
   const DemoWeb = defineAsyncComponent(() => import('@/view/demo/web.vue'))
+
+  // 组件映射对象
+  const componentMap = {
+    SystemAbout,
+    SystemFinder,
+    SystemSetting,
+    SystemStore,
+    SystemTask,
+    Demo,
+    DemoDock,
+    DemoUnResize,
+    DemoUnClose,
+    DemoHideDesktop,
+    DemoColorFull,
+    DemoCamera,
+    DemoMultiTask,
+    DemoWeb
+  }
 
   // Props
   const props = defineProps({
@@ -317,6 +335,8 @@
     isBoxResizing.value = true
     moveDirection.value = e.target.className
   }
+
+  // 在 script setup 中，导入的组件会自动注册
 
   // 生命周期
   onMounted(() => {
