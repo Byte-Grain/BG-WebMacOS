@@ -18,7 +18,9 @@
 
 </style>
 <script setup>
+  import bgImageUrl from '@/asset/img/bg.jpg'
+  
   defineProps(['blur'])
 
-  const bgImage = '/src/asset/img/bg.jpg'
+  const bgImage = bgImageUrl
 </script>
