@@ -67,19 +67,5 @@ export default defineConfig({
         }
       }
     }
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern-compiler'
-      }
-    }
   }
-  // css: {
-  //   preprocessorOptions: {
-  //     scss: {
-  //       additionalData: `@import "@/asset/css/variables.scss";`
-  //     }
-  //   }
-  // }
 })
