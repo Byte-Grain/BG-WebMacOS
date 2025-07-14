@@ -1,18 +1,24 @@
 <template>
   <div class="login">
+    <div class="language-switcher-container">
+      <LanguageSwitcher />
+    </div>
     <div class="head" :style="{ backgroundImage: 'url(' + headImage + ')' }"></div>
     <div class="message">
-      {{ haveSavedUserName ? user_name : "Login Please" }}
+      {{ haveSavedUserName ? user_name : $t('login.welcome') }}
     </div>
     <div class="form">
       <div class="item" v-if="!haveSavedUserName" :class="isUserNameError ? 'error' : ''">
-        <input class="account" placeholder="account..." type="email" v-model="user_name" @keyup.enter="login" />
+        <input class="account" :placeholder="$t('login.username')" type="email" v-model="user_name" @keyup.enter="login" />
       </div>
       <div class="item" :class="isUserPasswordError ? 'error' : ''">
-        <input class="password" placeholder="password..." type="password" v-model="user_password"
+        <input class="password" :placeholder="$t('login.password')" type="password" v-model="user_password"
           :class="user_password ? 'password-in' : ''" @keyup.enter="login" />
         <i class="login-button iconfont icon-icon_send" :class="user_password ? 'click-enable' : ''" @click="login"></i>
       </div>
+    </div>
+    <div class="guest-login">
+      <button class="guest-btn" @click="guest">{{ $t('login.guest') }}</button>
     </div>
   </div>
 </template>
@@ -44,6 +50,32 @@
     margin-top: -100px;
     z-index: 99999;
     backdrop-filter: blur(100px);
+
+    .language-switcher-container {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+    }
+
+    .guest-login {
+      margin-top: 30px;
+      
+      .guest-btn {
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.3);
+          border-color: rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
 
     .head {
       background-size: 40% auto;
@@ -139,6 +171,7 @@
   import { ref, onMounted } from 'vue'
   import bgImageUrl from '@/asset/img/bg.jpg'
   import tool from '@/helper/tool'
+  import LanguageSwitcher from './LanguageSwitcher.vue'
 
   const emit = defineEmits(['logined'])
 

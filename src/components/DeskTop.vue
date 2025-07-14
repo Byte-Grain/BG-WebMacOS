@@ -8,29 +8,29 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item @click="openAppByKey('system_about')">
-              <div>关于本站</div>
+              <div>{{ $t('system.about') }}</div>
             </el-dropdown-item>
             <el-dropdown-item class="line"></el-dropdown-item>
             <el-dropdown-item @click="openAppByKey('system_setting')">
-              <div>系统偏好设置</div>
+              <div>{{ $t('system.settings') }}</div>
             </el-dropdown-item>
             <el-dropdown-item @click="openAppByKey('system_store')">
-              <div>应用商店</div>
+              <div>{{ $t('system.appStore') }}</div>
             </el-dropdown-item>
             <el-dropdown-item class="line"></el-dropdown-item>
             <el-dropdown-item @click="openAppByKey('system_task')">
-              <div>强制退出...</div>
+              <div>{{ $t('system.forceQuit') }}</div>
             </el-dropdown-item>
             <el-dropdown-item class="line"></el-dropdown-item>
             <el-dropdown-item @click="shutdown">
-              <div>关机...</div>
+              <div>{{ $t('system.shutdown') }}</div>
             </el-dropdown-item>
             <el-dropdown-item class="line"></el-dropdown-item>
             <el-dropdown-item @click="lockScreen">
-              <div>锁定屏幕</div>
+              <div>{{ $t('system.lockScreen') }}</div>
             </el-dropdown-item>
             <el-dropdown-item @click="logout">
-              <div>退出登录 {{ userName }}...</div>
+              <div>{{ $t('system.logout', { username: userName }) }}</div>
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -95,13 +95,13 @@
       <transition name="fade-menu">
         <div v-show="rightMenuVisible" :style="{ left: rightMenuLeft + 'px', top: rightMenuTop + 'px' }"
           class="contextmenu">
-          <div @click="lockScreen">锁定屏幕...</div>
+          <div @click="lockScreen">{{ $t('system.lockScreen') }}...</div>
           <hr />
-          <div @click="openAppByKey('system_setting')">系统偏好设置...</div>
-          <div @click="openAppByKey('system_task')">强制退出...</div>
+          <div @click="openAppByKey('system_setting')">{{ $t('system.settings') }}...</div>
+          <div @click="openAppByKey('system_task')">{{ $t('system.forceQuit') }}...</div>
           <hr />
-          <div @click="$message.warning('即将上线，敬请期待')">设置壁纸...</div>
-          <div @click="openAppByKey('system_about')">关于我们</div>
+          <div @click="$message.warning($t('system.comingSoon'))">{{ $t('system.setWallpaper') }}...</div>
+          <div @click="openAppByKey('system_about')">{{ $t('system.aboutUs') }}</div>
         </div>
       </transition>
       <transition-group name="fade-widget">
@@ -158,7 +158,7 @@
   })
 
   watch(() => $store.state.nowApp, () => {
-    menu.value = $store.state.nowApp.menu
+    menu.value = $store.state.nowApp ? $store.state.nowApp.menu : []
   })
 
   watch(() => $store.state.launchpad, () => {

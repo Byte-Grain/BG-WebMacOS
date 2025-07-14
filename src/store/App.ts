@@ -48,11 +48,17 @@ const storeConfig = {
         targetApp.hide = true;
       }
       // Find and show the last non-hidden app
+      let foundApp = false;
       for (let i = state.openAppList.length - 1; i >= 0; i--) {
         if (!state.openAppList[i].hide) {
           state.nowApp = state.openAppList[i];
+          foundApp = true;
           break;
         }
+      }
+      // If no non-hidden app found, reset nowApp
+      if (!foundApp) {
+        state.nowApp = false;
       }
     },
 
@@ -65,6 +71,19 @@ const storeConfig = {
       if (dockIndex !== -1) {
         state.dockAppList.splice(dockIndex, 1);
       }
+      // Find and show the last non-hidden app
+      let foundApp = false;
+      for (let i = state.openAppList.length - 1; i >= 0; i--) {
+        if (!state.openAppList[i].hide) {
+          state.nowApp = state.openAppList[i];
+          foundApp = true;
+          break;
+        }
+      }
+      // If no non-hidden app found, reset nowApp
+      if (!foundApp) {
+        state.nowApp = false;
+      }
     },
 
     closeApp(state: AppState, app: AppConfig): void {
@@ -75,11 +94,17 @@ const storeConfig = {
           targetApp.hide = true;
         }
         // Find and show the last non-hidden app
+        let foundApp = false;
         for (let i = state.openAppList.length - 1; i >= 0; i--) {
           if (!state.openAppList[i].hide) {
             state.nowApp = state.openAppList[i];
+            foundApp = true;
             break;
           }
+        }
+        // If no non-hidden app found, reset nowApp
+        if (!foundApp) {
+          state.nowApp = false;
         }
       } else {
         const openIndex = state.openAppList.findIndex(item => 
@@ -96,12 +121,18 @@ const storeConfig = {
             state.dockAppList.splice(dockIndex, 1);
           }
         }
-      }
-      // Find and show the last non-hidden app
-      for (let i = state.openAppList.length - 1; i >= 0; i--) {
-        if (!state.openAppList[i].hide) {
-          state.nowApp = state.openAppList[i];
-          break;
+        // Find and show the last non-hidden app
+        let foundApp = false;
+        for (let i = state.openAppList.length - 1; i >= 0; i--) {
+          if (!state.openAppList[i].hide) {
+            state.nowApp = state.openAppList[i];
+            foundApp = true;
+            break;
+          }
+        }
+        // If no non-hidden app found, reset nowApp
+        if (!foundApp) {
+          state.nowApp = false;
         }
       }
     },
