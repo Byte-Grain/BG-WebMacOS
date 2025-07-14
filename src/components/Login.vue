@@ -149,10 +149,12 @@
 }
 </style>
 <script>
+import bgImageUrl from '@/asset/img/bg.jpg'
+
 export default {
   data() {
     return {
-      headImage: require("@/asset/img/bg.jpg"),
+      headImage: bgImageUrl,
       user_name: "",
       user_password: "",
       haveSavedUserName: false,
