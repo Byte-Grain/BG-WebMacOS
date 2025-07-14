@@ -9,7 +9,8 @@
     </div>
     <div class="form">
       <div class="item" v-if="!haveSavedUserName" :class="isUserNameError ? 'error' : ''">
-        <input class="account" :placeholder="$t('login.username')" type="email" v-model="user_name" @keyup.enter="login" />
+        <input class="account" :placeholder="$t('login.username')" type="email" v-model="user_name"
+          @keyup.enter="login" />
       </div>
       <div class="item" :class="isUserPasswordError ? 'error' : ''">
         <input class="password" :placeholder="$t('login.password')" type="password" v-model="user_password"
@@ -59,7 +60,7 @@
 
     .guest-login {
       margin-top: 30px;
-      
+
       .guest-btn {
         background-color: rgba(255, 255, 255, 0.2);
         border: 1px solid rgba(255, 255, 255, 0.3);
@@ -69,7 +70,7 @@
         cursor: pointer;
         font-size: 14px;
         transition: all 0.3s ease;
-        
+
         &:hover {
           background-color: rgba(255, 255, 255, 0.3);
           border-color: rgba(255, 255, 255, 0.5);
@@ -128,7 +129,9 @@
         }
 
         .password-in {
-          width: 155px;
+          width: 200px;
+          padding-right: 12px;
+
         }
 
         .password {
