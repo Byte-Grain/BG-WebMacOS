@@ -16,55 +16,61 @@
 </template>
 
 <style scoped lang="scss">
-.about {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  color: #333;
-  text-shadow: none;
-  font-weight: 300;
-  .top {
+  .about {
     display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-    padding: 20px 40px;
-    .iconfont {
-      font-size: 48px;
-      margin-right: 20px;
-    }
-    .info {
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    color: #333;
+    text-shadow: none;
+    font-weight: 300;
+
+    .top {
+      display: flex;
+      flex-direction: row;
       flex-grow: 1;
+      padding: 20px 40px;
 
-      .title {
-        font-size: 24px;
+      .iconfont {
+        font-size: 48px;
+        margin-right: 20px;
       }
 
-      .version {
-        font-size: 14px;
-        color: #999;
+      .info {
+        flex-grow: 1;
+
+        .title {
+          font-size: 24px;
+        }
+
+        .version {
+          font-size: 14px;
+          color: #999;
+        }
       }
     }
-  }
-  .badges {
-    text-align: center;
-    img {
-      margin: 0px 3px;
+
+    .badges {
+      text-align: center;
+
+      img {
+        margin: 0px 3px;
+      }
+    }
+
+    .copyright {
+      font-size: 12px;
+      color: #999;
+      padding: 20px;
+      text-align: center;
     }
   }
-  .copyright {
-    font-size: 12px;
-    color: #999;
-    padding: 20px;
-    text-align: center;
-  }
-}
 </style>
 <script setup>
-import { reactive } from 'vue'
-const about = reactive({
-  title: "MacOS WebUI",
-  version: "v0.0.1 2021-08-10 22:22",
-  copyright: "本项目所用MacOS图标版权为Apple.Inc所有,向MacOS致敬!",
-})
+  import { reactive } from 'vue'
+  const about = reactive({
+    title: "MacOS WebUI",
+    version: "v0.0.1 2021-08-10 22:22",
+    copyright: "本项目所用MacOS图标版权为Apple.Inc所有,向MacOS致敬!",
+  })
 </script>
