@@ -14,7 +14,7 @@
       </DeskTop>
     </transition>
     <transition name="fade">
-      <LaunchPad v-if="isLaunchPad"></LaunchPad>
+      <LaunchPad v-if="isLaunchPad" @launchpad="launchpad"></LaunchPad>
     </transition>
   </div>
 </template>
