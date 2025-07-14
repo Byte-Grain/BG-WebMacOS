@@ -44,11 +44,12 @@
 </template>
 
 <script setup>
-  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, getCurrentInstance } from 'vue'
-  import tool from '../utils/tool'
+  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref } from 'vue'
+  import { useAppManager } from '@/composables/useAppManager'
+  import { getAppByKey } from '@/config/apps/app-registry'
 
-  const { proxy } = getCurrentInstance()
-  const $store = proxy.$store
+  // 使用组合式函数
+  const { closeApp: closeAppManager, hideApp: hideAppManager, showApp: showAppManager, openApp: openAppManager, openAppWithData, closeAppByPid, openApps } = useAppManager()
 
   // 组件注册
   const SystemAbout = defineAsyncComponent(() => import('@/views/desktop/system/about.vue'))
@@ -66,6 +67,7 @@
   const DemoMultiTask = defineAsyncComponent(() => import('@/views/apps/demo/multitask.vue'))
   const DemoWeb = defineAsyncComponent(() => import('@/views/apps/demo/web.vue'))
   const ComposablesTest = defineAsyncComponent(() => import('@/views/apps/system/ComposablesTest.vue'))
+  const ConfigManager = defineAsyncComponent(() => import('@/components/apps/ConfigManager.vue'))
 
   // 组件映射对象
   const componentMap = {
@@ -83,7 +85,8 @@
     DemoCamera,
     DemoMultiTask,
     DemoWeb,
-    ComposablesTest
+    ComposablesTest,
+    ConfigManager
   }
 
   // Props
@@ -117,6 +120,8 @@
   const isMaxShowing = ref(false)
   const isFullScreen = ref(false)
 
+
+
   // 计算属性
   const getExtBoxClasses = computed(() => {
     let str = ''
@@ -132,7 +137,7 @@
     if (props.app.disableResize) {
       str += 'resize-disabled '
     }
-    if ($store.state.openAppList[$store.state.openAppList.length - 1].pid == props.app.pid) {
+    if (openApps.value.length > 0 && openApps.value[openApps.value.length - 1].pid == props.app.pid) {
       str += 'isTop '
     }
     return str
@@ -185,20 +190,26 @@
         break
       case 'openApp':
         if (e.data && e.app) {
-          $store.commit('openWithData', {
-            app: tool.getAppByKey(e.app),
-            data: e.data
-          })
+          const app = getAppByKey(e.app)
+          if (app) {
+            openAppWithData(app, e.data)
+          }
         } else {
-          $store.commit('openApp', tool.getAppByKey(e.app))
+          const app = getAppByKey(e.app)
+          if (app) {
+            openAppManager(app)
+          }
         }
         break
       case 'closeApp':
         if (e.pid) {
-          $store.commit('closeWithPid', e.pid)
+          closeAppByPid(e.pid)
         }
         if (e.app) {
-          $store.commit('closeApp', tool.getAppByKey(e.app))
+          const app = getAppByKey(e.app)
+          if (app) {
+            closeAppManager(app)
+          }
         }
         break
       case 'setWindowTitle':
@@ -209,15 +220,15 @@
   }
 
   const closeApp = () => {
-    $store.commit('closeApp', props.app)
+    closeAppManager(props.app)
   }
 
   const hideApp = () => {
-    $store.commit('hideApp', props.app)
+    hideAppManager(props.app)
   }
 
   const showThisApp = () => {
-    $store.commit('showApp', props.app)
+    showAppManager(props.app)
   }
 
   const switchFullScreen = () => {

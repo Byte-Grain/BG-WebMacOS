@@ -41,7 +41,7 @@
       </div>
       <transition-group name="fade-window">
         <template v-for="item in openApps" :key="item.pid">
-          <App v-if="!item.outLink" v-show="!item.hide" :app="item" :key="item.pid"></App>
+          <App v-if="!item.outLink" v-show="!item.hide" :app="item"></App>
         </template>
       </transition-group>
       <transition name="fade-menu">

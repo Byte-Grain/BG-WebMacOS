@@ -12,6 +12,7 @@ declare module 'vue' {
     AppCard: typeof import('./src/components/store/AppCard.vue')['default']
     AppDetailModal: typeof import('./src/components/store/AppDetailModal.vue')['default']
     Bg: typeof import('./src/components/common/Bg.vue')['default']
+    ConfigManager: typeof import('./src/components/apps/ConfigManager.vue')['default']
     ContextMenu: typeof import('./src/components/layout/ContextMenu.vue')['default']
     DeskTop: typeof import('./src/components/layout/DeskTop.vue')['default']
     DesktopArea: typeof import('./src/components/layout/DesktopArea.vue')['default']

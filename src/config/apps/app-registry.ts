@@ -1,42 +1,93 @@
 import { AppRegistry } from './types'
 import { systemApps } from './system-apps'
 import { demoApps } from './demo-apps'
+import { loadAppsFromJson, validateJsonConfig as validateJson } from './json-config-loader'
+
+// 是否使用JSON配置
+const USE_JSON_CONFIG = true
+
+// 从JSON加载的应用注册表
+let jsonAppRegistry: AppRegistry | null = null
+
+// 获取应用注册表
+function getAppRegistry(): AppRegistry {
+  if (USE_JSON_CONFIG) {
+    if (!jsonAppRegistry) {
+      try {
+        jsonAppRegistry = loadAppsFromJson()
+        console.log('✅ 成功从JSON配置加载应用')
+      } catch (error) {
+        console.error('❌ JSON配置加载失败，回退到TypeScript配置:', error)
+        // 回退到原始的TypeScript配置
+        return {
+          system: Object.values(systemApps),
+          demo: Object.values(demoApps),
+          user: []
+        }
+      }
+    }
+    return jsonAppRegistry
+  } else {
+    // 使用原始的TypeScript配置
+    return {
+      system: Object.values(systemApps),
+      demo: Object.values(demoApps),
+      user: []
+    }
+  }
+}
 
 // 应用注册表
-export const appRegistry: AppRegistry = {
-  system: Object.values(systemApps),
-  demo: Object.values(demoApps),
-  user: [], // 用户自定义应用，暂时为空
-}
+export const appRegistry: AppRegistry = getAppRegistry()
 
 // 获取所有应用
 export const getAllApps = () => {
+  const registry = getAppRegistry()
   return [
-    ...appRegistry.system,
-    ...appRegistry.demo,
-    ...appRegistry.user,
+    ...Object.values(registry.system),
+    ...Object.values(registry.demo),
+    ...Object.values(registry.user),
   ]
 }
 
 // 获取系统应用
 export const getSystemApps = () => {
-  return appRegistry.system
+  const registry = getAppRegistry()
+  return Object.values(registry.system)
 }
 
 // 获取演示应用
 export const getDemoApps = () => {
-  return appRegistry.demo
+  const registry = getAppRegistry()
+  return Object.values(registry.demo)
 }
 
 // 获取用户应用
 export const getUserApps = () => {
-  return appRegistry.user
+  const registry = getAppRegistry()
+  return Object.values(registry.user)
 }
 
 // 根据 key 获取应用
 export const getAppByKey = (key: string) => {
-  const allApps = getAllApps()
-  return allApps.find(app => app.key === key)
+  const registry = getAppRegistry()
+  
+  // 在系统应用中查找
+  if (registry.system[key]) {
+    return registry.system[key]
+  }
+  
+  // 在演示应用中查找
+  if (registry.demo[key]) {
+    return registry.demo[key]
+  }
+  
+  // 在用户应用中查找
+  if (registry.user[key]) {
+    return registry.user[key]
+  }
+  
+  return undefined
 }
 
 // 根据分类获取应用
@@ -109,44 +160,99 @@ export const registerApp = (config: any, type: 'system' | 'demo' | 'user' = 'use
     throw new Error(`App with key '${config.key}' already exists`)
   }
   
-  appRegistry[type].push(config)
+  const registry = getAppRegistry()
+  registry[type][config.key] = config
+  
+  // 如果使用JSON配置，更新缓存
+  if (USE_JSON_CONFIG && jsonAppRegistry) {
+    jsonAppRegistry[type][config.key] = config
+  }
+  
   return config
 }
 
 // 注销应用
 export const unregisterApp = (key: string, type: 'system' | 'demo' | 'user' = 'user') => {
-  const index = appRegistry[type].findIndex(app => app.key === key)
-  if (index === -1) {
+  const registry = getAppRegistry()
+  
+  if (!registry[type][key]) {
     throw new Error(`App with key '${key}' not found in ${type} registry`)
   }
   
-  appRegistry[type].splice(index, 1)
+  delete registry[type][key]
+  
+  // 如果使用JSON配置，更新缓存
+  if (USE_JSON_CONFIG && jsonAppRegistry) {
+    delete jsonAppRegistry[type][key]
+  }
+  
   return true
 }
 
 // 更新应用配置
 export const updateAppConfig = (key: string, updates: Partial<any>, type?: 'system' | 'demo' | 'user') => {
+  const registry = getAppRegistry()
   let targetType = type
   
   if (!targetType) {
     // 自动查找应用所在的注册表
-    if (appRegistry.system.find(app => app.key === key)) targetType = 'system'
-    else if (appRegistry.demo.find(app => app.key === key)) targetType = 'demo'
-    else if (appRegistry.user.find(app => app.key === key)) targetType = 'user'
+    if (registry.system[key]) targetType = 'system'
+    else if (registry.demo[key]) targetType = 'demo'
+    else if (registry.user[key]) targetType = 'user'
     else throw new Error(`App with key '${key}' not found`)
   }
   
-  const index = appRegistry[targetType].findIndex(app => app.key === key)
-  if (index === -1) {
+  if (!registry[targetType][key]) {
     throw new Error(`App with key '${key}' not found in ${targetType} registry`)
   }
   
-  appRegistry[targetType][index] = {
-    ...appRegistry[targetType][index],
+  registry[targetType][key] = {
+    ...registry[targetType][key],
     ...updates,
   }
   
-  return appRegistry[targetType][index]
+  // 如果使用JSON配置，更新缓存
+  if (USE_JSON_CONFIG && jsonAppRegistry) {
+    jsonAppRegistry[targetType][key] = registry[targetType][key]
+  }
+  
+  return registry[targetType][key]
+}
+
+// 重新加载配置
+export const reloadConfig = () => {
+  if (USE_JSON_CONFIG) {
+    jsonAppRegistry = null
+    return getAppRegistry()
+  }
+  return appRegistry
+}
+
+// 切换配置模式
+export const toggleConfigMode = (useJson: boolean) => {
+  // 注意：这个函数需要重新启动应用才能生效
+  console.log(`配置模式切换为: ${useJson ? 'JSON' : 'TypeScript'}`)
+  console.log('请重新启动应用以应用更改')
+}
+
+// 验证JSON配置
+export const validateJsonConfig = () => {
+  if (!USE_JSON_CONFIG) {
+    return true
+  }
+  return validateJson()
+}
+
+// 获取配置信息
+export const getConfigInfo = () => {
+  return {
+    mode: USE_JSON_CONFIG ? 'JSON' : 'TypeScript',
+    isJsonValid: USE_JSON_CONFIG ? validateJsonConfig() : true,
+    totalApps: getAllApps().length,
+    systemApps: getSystemApps().length,
+    demoApps: getDemoApps().length,
+    userApps: getUserApps().length
+  }
 }
 
 export default appRegistry

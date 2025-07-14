@@ -39,17 +39,24 @@ export function useAppManager() {
   }
   
   // 打开应用
-  const openApp = (app: AppConfig | string): void => {
+  const openApp = (app: AppConfig | string, data?: any): void => {
     if (typeof app === 'string') {
       const appConfig = getAppByKey(app)
       if (appConfig) {
-        store.commit('openApp', appConfig)
+        const appWithData = data ? { ...appConfig, data } : appConfig
+        store.commit('openApp', appWithData)
       }
     } else {
-      store.commit('openApp', app)
+      const appWithData = data ? { ...app, data } : app
+      store.commit('openApp', appWithData)
     }
   }
-  
+
+  // 带数据打开应用
+  const openAppWithData = (app: AppConfig | string, data: any): void => {
+    openApp(app, data)
+  }
+
   // 通过键名打开应用
   const openAppByKey = (key: string): void => {
     store.commit('openAppByKey', key)
@@ -188,6 +195,7 @@ export function useAppManager() {
     
     // 应用操作
     openApp,
+    openAppWithData,
     openAppByKey,
     closeApp,
     closeAppByPid,

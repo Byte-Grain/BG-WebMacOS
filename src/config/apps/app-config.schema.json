@@ -1,0 +1,370 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WebMacOS App Configuration Schema",
+  "description": "Schema for WebMacOS application configuration",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Configuration version"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    },
+    "description": {
+      "type": "string",
+      "description": "Configuration description"
+    },
+    "system": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+          "$ref": "#/definitions/SystemAppConfig"
+        }
+      },
+      "description": "System applications"
+    },
+    "demo": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+          "$ref": "#/definitions/DemoAppConfig"
+        }
+      },
+      "description": "Demo applications"
+    },
+    "user": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+          "$ref": "#/definitions/AppConfig"
+        }
+      },
+      "description": "User applications"
+    },
+    "defaults": {
+      "$ref": "#/definitions/BaseAppConfig",
+      "description": "Default configuration values"
+    }
+  },
+  "required": ["version", "system", "demo", "user", "defaults"],
+  "definitions": {
+    "BaseAppConfig": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_]+$",
+          "description": "Unique application identifier"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Application display name"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Application icon (CSS class or emoji)"
+        },
+        "iconColor": {
+          "type": "string",
+          "pattern": "^(#[0-9a-fA-F]{3,6}|rgb\\(.*\\)|rgba\\(.*\\)|[a-zA-Z]+)$",
+          "description": "Icon color"
+        },
+        "iconBgColor": {
+          "type": "string",
+          "pattern": "^(#[0-9a-fA-F]{3,6}|rgb\\(.*\\)|rgba\\(.*\\)|[a-zA-Z]+)$",
+          "description": "Icon background color"
+        },
+        "component": {
+          "type": "string",
+          "description": "Vue component name"
+        },
+        "width": {
+          "type": ["number", "string"],
+          "minimum": 100,
+          "description": "Window width"
+        },
+        "height": {
+          "type": ["number", "string"],
+          "minimum": 100,
+          "description": "Window height"
+        },
+        "minWidth": {
+          "type": "number",
+          "minimum": 100,
+          "description": "Minimum window width"
+        },
+        "minHeight": {
+          "type": "number",
+          "minimum": 100,
+          "description": "Minimum window height"
+        },
+        "maxWidth": {
+          "type": "number",
+          "description": "Maximum window width"
+        },
+        "maxHeight": {
+          "type": "number",
+          "description": "Maximum window height"
+        },
+        "x": {
+          "type": "number",
+          "description": "Initial X position"
+        },
+        "y": {
+          "type": "number",
+          "description": "Initial Y position"
+        },
+        "resizable": {
+          "type": "boolean",
+          "description": "Whether window is resizable"
+        },
+        "draggable": {
+          "type": "boolean",
+          "description": "Whether window is draggable"
+        },
+        "closable": {
+          "type": "boolean",
+          "description": "Whether window is closable"
+        },
+        "minimizable": {
+          "type": "boolean",
+          "description": "Whether window is minimizable"
+        },
+        "maximizable": {
+          "type": "boolean",
+          "description": "Whether window is maximizable"
+        },
+        "alwaysOnTop": {
+          "type": "boolean",
+          "description": "Whether window stays on top"
+        },
+        "modal": {
+          "type": "boolean",
+          "description": "Whether window is modal"
+        },
+        "transparent": {
+          "type": "boolean",
+          "description": "Whether window is transparent"
+        },
+        "frame": {
+          "type": "boolean",
+          "description": "Whether window has frame"
+        },
+        "titleBarStyle": {
+          "type": "string",
+          "enum": ["default", "hidden", "hiddenInset"],
+          "description": "Title bar style"
+        },
+        "backgroundColor": {
+          "type": "string",
+          "pattern": "^(#[0-9a-fA-F]{3,6}|rgb\\(.*\\)|rgba\\(.*\\)|[a-zA-Z]+)$",
+          "description": "Window background color"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Window opacity"
+        },
+        "shadow": {
+          "type": "boolean",
+          "description": "Whether window has shadow"
+        },
+        "animation": {
+          "type": "boolean",
+          "description": "Whether window has animations"
+        },
+        "keepInDock": {
+          "type": "boolean",
+          "description": "Whether app stays in dock"
+        },
+        "hideInDesktop": {
+          "type": "boolean",
+          "description": "Whether app is hidden from desktop"
+        },
+        "hideWhenClose": {
+          "type": "boolean",
+          "description": "Whether app hides instead of closing"
+        },
+        "disableResize": {
+          "type": "boolean",
+          "description": "Whether resize is disabled"
+        },
+        "autoFocus": {
+          "type": "boolean",
+          "description": "Whether window auto-focuses"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "system",
+            "productivity",
+            "entertainment",
+            "development",
+            "graphics",
+            "utilities",
+            "games",
+            "education",
+            "business",
+            "social",
+            "other"
+          ],
+          "description": "Application category"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Application tags"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Application version"
+        },
+        "author": {
+          "type": "string",
+          "description": "Application author"
+        },
+        "description": {
+          "type": "string",
+          "description": "Application description"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "filesystem",
+              "network",
+              "camera",
+              "microphone",
+              "location",
+              "notifications",
+              "clipboard",
+              "fullscreen",
+              "storage",
+              "system"
+            ]
+          },
+          "description": "Required permissions"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Application dependencies"
+        },
+        "outLink": {
+          "type": "boolean",
+          "description": "Whether app opens external link"
+        },
+        "innerLink": {
+          "type": "boolean",
+          "description": "Whether app opens internal web page"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for web apps"
+        },
+        "target": {
+          "type": "string",
+          "enum": ["_blank", "_self", "_parent", "_top"],
+          "description": "Link target"
+        },
+        "sandbox": {
+          "type": "boolean",
+          "description": "Whether iframe is sandboxed"
+        },
+        "allowScripts": {
+          "type": "boolean",
+          "description": "Whether scripts are allowed in iframe"
+        },
+        "allowForms": {
+          "type": "boolean",
+          "description": "Whether forms are allowed in iframe"
+        },
+        "allowPopups": {
+          "type": "boolean",
+          "description": "Whether popups are allowed in iframe"
+        },
+        "props": {
+          "type": "object",
+          "description": "Component props"
+        },
+        "slots": {
+          "type": "object",
+          "description": "Component slots"
+        }
+      }
+    },
+    "AppConfig": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseAppConfig"
+        },
+        {
+          "required": ["key", "title", "icon"]
+        }
+      ]
+    },
+    "SystemAppConfig": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AppConfig"
+        },
+        {
+          "properties": {
+            "system": {
+              "type": "boolean",
+              "const": true,
+              "description": "System app flag"
+            },
+            "essential": {
+              "type": "boolean",
+              "description": "Whether app is essential"
+            },
+            "singleton": {
+              "type": "boolean",
+              "description": "Whether app is singleton"
+            }
+          },
+          "required": ["system", "component"]
+        }
+      ]
+    },
+    "DemoAppConfig": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AppConfig"
+        },
+        {
+          "properties": {
+            "demo": {
+              "type": "boolean",
+              "const": true,
+              "description": "Demo app flag"
+            },
+            "featured": {
+              "type": "boolean",
+              "description": "Whether app is featured"
+            }
+          },
+          "required": ["demo"]
+        }
+      ]
+    }
+  }
+}
