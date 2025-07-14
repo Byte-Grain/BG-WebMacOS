@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
+import { fileURLToPath, URL } from 'node:url'
 // import legacy from '@vitejs/plugin-legacy'
 // import eslint from 'vite-plugin-eslint'
 
@@ -18,7 +19,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
   server: {
@@ -29,6 +30,13 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler'
+      }
+    }
+  }
   // css: {
   //   preprocessorOptions: {
   //     scss: {
