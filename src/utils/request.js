@@ -1,6 +1,6 @@
 import axios from 'axios'
-import tool from "./tool"
 import config from "@/config.ts"
+import { STORAGE_KEYS } from '@/constants'
 
 import { ElMessage } from 'element-plus'
 const HTTP_STATUS_CODE = config.httpStatusCode
@@ -54,7 +54,8 @@ function request(data, object = {}) {
     }
     //如未指定不需要传TOKEN，则默认带上
     if (!data.noToken) {
-        header['Authorization'] = tool.getAccessToken()
+        const accessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) || ''
+        header['Authorization'] = accessToken
     }
 
     let axiosResource = false

@@ -173,12 +173,11 @@
 <script setup>
   import { ref, onMounted } from 'vue'
   import bgImageUrl from '@/asset/img/bg.jpg'
-  import tool from '@/utils/tool'
   import LanguageSwitcher from '@/components/business/LanguageSwitcher.vue'
   import { useUtils } from '@/composables/useUtils'
 
   const emit = defineEmits(['logined'])
-  const { storage } = useUtils()
+  const { storage, token } = useUtils()
 
   const headImage = ref(bgImageUrl)
   const user_name = ref('')
@@ -208,7 +207,7 @@
       return
     }
 
-    tool.saveAccessToken('guest')
+    token.saveAccessToken('guest')
     emit('logined')
     storage.set('user_name', user_name.value)
   }

@@ -1,7 +1,7 @@
 <template>
   <div class="task" @click="handleBackgroundClick">
     <div class="task-list">
-      <template v-for="item in $store.state.openAppList" :key="item.pid">
+      <template v-for="item in openApps" :key="item.pid">
         <div v-if="item.key !== 'system_task'" class="task-item" :class="app && app.pid == item.pid ? 'active' : ''"
           @click.stop="selectApp(item)">
           <i class="iconfont" :class="item.icon" :style="{
@@ -90,7 +90,10 @@
 </style>
 <script setup>
   import { reactive, onMounted, onUnmounted } from 'vue'
+  import { useAppManager } from '@/composables'
+  
   const emit = defineEmits(['api'])
+  const { openApps } = useAppManager()
   let app = reactive({})
   
   const selectApp = (item) => {

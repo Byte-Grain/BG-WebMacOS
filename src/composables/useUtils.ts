@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { STORAGE_KEYS, DELAYS, HTTP_STATUS } from '@/constants'
-import { getAppByKey } from '@/config/app.config'
+import { getAppByKey } from '@/config/apps/app-registry'
 import type { AppConfig } from '@/types/app'
 
 // 工具函数组合式函数
@@ -358,6 +358,29 @@ export function useUtils() {
     },
   }
   
+  // Token 管理工具
+  const token = {
+    // 获取访问令牌
+    getAccessToken: (): string => {
+      return storage.get(STORAGE_KEYS.ACCESS_TOKEN, '') || ''
+    },
+    
+    // 保存访问令牌
+    saveAccessToken: (accessToken: string): boolean => {
+      return storage.set(STORAGE_KEYS.ACCESS_TOKEN, accessToken)
+    },
+    
+    // 移除访问令牌
+    removeAccessToken: (): boolean => {
+      return storage.remove(STORAGE_KEYS.ACCESS_TOKEN)
+    },
+    
+    // 检查是否有访问令牌
+    hasAccessToken: (): boolean => {
+      return storage.has(STORAGE_KEYS.ACCESS_TOKEN)
+    },
+  }
+
   return {
     // 函数工具
     debounce,
@@ -395,5 +418,8 @@ export function useUtils() {
     
     // 设备检测
     device,
+    
+    // Token 管理
+    token,
   }
 }

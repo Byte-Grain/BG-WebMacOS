@@ -3,7 +3,7 @@
     <!-- Desktop Applications -->
     <div class="desktop-apps">
       <template v-for="item in desktopAppList" :key="item.key">
-        <div class="app-item" v-if="!item.hideInDesktop" @dblclick="openAppByKey(item.key)">
+        <div class="app-item" v-if="!item.hideInDesktop" @dblclick="openApp(item)">
           <div class="icon">
             <div v-if="item.icon && item.icon.startsWith('icon-')" :style="{
               backgroundColor: item.iconBgColor,
@@ -71,7 +71,7 @@
   const emit = defineEmits(['lockScreen'])
 
   // Composables
-  const { openAppByKey, openApps } = useAppManager()
+  const { openAppByKey, openApp, openApps } = useAppManager()
 
   // Reactive data
   const contextMenuVisible = ref(false)
