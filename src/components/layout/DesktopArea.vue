@@ -1,7 +1,7 @@
 <template>
   <div class="desktop-area" @contextmenu.prevent.self="openContextMenu($event)" @click.stop="hideAllControllers()">
     <!-- Desktop Applications -->
-    <div class="desktop-apps">
+    <!-- <div class="desktop-apps">
       <template v-for="item in desktopAppList" :key="item.key">
         <div class="app-item" v-if="!item.hideInDesktop" @dblclick="openApp(item)">
           <div class="icon">
@@ -24,7 +24,7 @@
           <div class="title">{{ item.title }}</div>
         </div>
       </template>
-    </div>
+</div> -->
 
     <!-- Open Application Windows -->
     <transition-group name="fade-window">
@@ -37,17 +37,6 @@
     <ContextMenu v-show="contextMenuVisible" :x="contextMenuX" :y="contextMenuY" @close="hideContextMenu"
       @lock-screen="$emit('lockScreen')" @open-settings="openAppByKey('system_setting')"
       @open-task-manager="openAppByKey('system_task')" @open-about="openAppByKey('system_about')" />
-
-    <!-- Test Page Overlay -->
-    <div v-show="isTestPageShow" class="test-page-overlay" @click.self="closeTestPage">
-      <div class="test-page-container">
-        <div class="test-page-header">
-          <h3>组合式函数测试</h3>
-          <button class="close-btn" @click="closeTestPage">×</button>
-        </div>
-        <ComposablesTest />
-      </div>
-    </div>
 
     <!-- Widget Container -->
     <transition-group name="fade-widget">
@@ -62,7 +51,6 @@
   import { ref, computed } from 'vue'
   import { useAppManager } from '@/composables'
   import { getDesktopApps } from '@/config/apps/app-registry'
-  import ComposablesTest from '@/views/test/ComposablesTest.vue'
   import ContextMenu from '@/components/common/ContextMenu.vue'
   import App from '@/components/App.vue'
   import Widget from '@/components/common/Widget.vue'

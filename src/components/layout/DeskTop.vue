@@ -68,13 +68,12 @@
   import { ref, watch, onMounted, computed } from 'vue'
   import { ElMessage } from 'element-plus'
   import { useAppManager, useSystem, useUtils } from '@/composables'
-  import { getDesktopApps } from '@/config/apps/app-registry'
 
   const $message = ElMessage
   const emit = defineEmits(['launchpad', 'lockScreen', 'shutdown', 'logout'])
 
   // 使用组合式函数
-  const { openAppByKey, currentMenu, openApps } = useAppManager()
+  const { openAppByKey, currentMenu, openApps, desktopApps } = useAppManager()
   const { volume, setVolume, logout: systemLogout } = useSystem()
   const { date, storage } = useUtils()
 
@@ -90,9 +89,8 @@
   const userName = ref('')
   const timeString = ref('')
   const isWidgetShow = ref(false)
-  const isTestPageShow = ref(false)
 
-  const deskTopAppList = computed(() => getDesktopApps())
+  const deskTopAppList = computed(() => desktopApps.value.filter(app => app && app.key))
 
   // 监听器
   watch(volumn, (newValue) => {

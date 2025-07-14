@@ -20,9 +20,9 @@ function getAppRegistry(): AppRegistry {
         console.error('❌ JSON配置加载失败，回退到TypeScript配置:', error)
         // 回退到原始的TypeScript配置
         return {
-          system: Object.values(systemApps),
-          demo: Object.values(demoApps),
-          user: []
+          system: systemApps,
+          demo: demoApps,
+          user: {}
         }
       }
     }
@@ -30,9 +30,9 @@ function getAppRegistry(): AppRegistry {
   } else {
     // 使用原始的TypeScript配置
     return {
-      system: Object.values(systemApps),
-      demo: Object.values(demoApps),
-      user: []
+      system: systemApps,
+      demo: demoApps,
+      user: {}
     }
   }
 }
