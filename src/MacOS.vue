@@ -7,7 +7,7 @@
       <Loading v-if="isLoading" @loaded="loaded"></Loading>
     </transition>
     <transition name="fade">
-      <Login v-if="isLogin" @logined="logined"></Login>
+      <Login v-if="isNeedLogin" @logined="logined"></Login>
     </transition>
     <transition name="fade">
       <DeskTop v-if="isDeskTop" @lockScreen="lockScreen" @shutdown="shutdown" @logout="logout" @launchpad="launchpad">
@@ -31,13 +31,13 @@
 
 <script lang="ts" setup>
   import { ref, onMounted, getCurrentInstance } from 'vue'
-  
+
   const { proxy } = getCurrentInstance()
   const $store = proxy.$store
 
   const isBg = ref<boolean>(true)
   const isLoading = ref<boolean>(false)
-  const isLogin = ref<boolean>(false)
+  const isNeedLogin = ref<boolean>(false)
   const isDeskTop = ref<boolean>(false)
   const isLaunchPad = ref<boolean>(false)
 
@@ -47,23 +47,23 @@
 
   const loaded = (): void => {
     isLoading.value = false;
-    isLogin.value = true;
+    isNeedLogin.value = true;
     isBg.value = true;
   };
 
   const logined = (): void => {
-    isLogin.value = false;
+    isNeedLogin.value = false;
     isDeskTop.value = true;
   };
 
   const lockScreen = (): void => {
-    isLogin.value = true;
+    isNeedLogin.value = true;
   };
 
   const shutdown = (): void => {
     isDeskTop.value = false;
     isLaunchPad.value = false;
-    isLogin.value = false;
+    isNeedLogin.value = false;
     isLoading.value = false;
     isBg.value = true;
   };
@@ -71,7 +71,8 @@
   const logout = (): void => {
     isDeskTop.value = false;
     isLaunchPad.value = false;
-    isLogin.value = false;
+    isNeedLogin.value = true;
+    $store.commit('logout');
   };
 
   const launchpad = (show: boolean): void => {
