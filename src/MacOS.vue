@@ -4,10 +4,10 @@
       <Background />
     </transition>
     <transition name="fade">
-      <Loading v-if="loading" />
+      <Loading v-if="loading || (!systemInitialized && showLogin)" />
     </transition>
     <transition name="fade">
-      <Login v-if="showLogin" @logined="handleLogin" />
+      <Login v-if="systemInitialized && showLogin" @logined="handleLogin" />
     </transition>
     <transition name="fade">
       <Desktop v-if="!showLogin && !loading && !showDebugTest" />
@@ -104,6 +104,8 @@ const {
 
 // 响应式数据
 const showDebugTest = ref(false)
+// 对于已登录用户，立即标记系统为已初始化状态
+const systemInitialized = ref(!store.state.showLogin)
 
 // 计算属性
 const showLogin = computed(() => !isLoggedIn.value)
@@ -256,6 +258,9 @@ onMounted(async () => {
     
     // 设置事件监听
     setupEventListeners()
+    
+    // 标记系统初始化完成
+    systemInitialized.value = true
     
     const bootTime = Date.now() - startTime
     

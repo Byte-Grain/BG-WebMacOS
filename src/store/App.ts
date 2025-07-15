@@ -1,12 +1,23 @@
 import { AppState, AppConfig } from "@/types/app";
 import { getAllApps, getAppByKey, getDockApps } from "@/config/apps";
+import { STORAGE_KEYS } from "@/constants";
 // createStore 现在通过自动导入，无需手动导入
 // import { createStore } from 'vuex'
+
+// 检查是否有有效的AccessToken
+const hasValidToken = (): boolean => {
+  try {
+    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    return !!token;
+  } catch (error) {
+    return false;
+  }
+};
 
 const storeConfig = {
   state(): AppState {
     return {
-      showLogin: true,
+      showLogin: !hasValidToken(), // 如果有token则不显示登录页
       nowApp: false,
       openAppList: [],
       dockAppList: [],
