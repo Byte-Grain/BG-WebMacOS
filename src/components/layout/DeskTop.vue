@@ -1,43 +1,22 @@
 <template>
   <div class="desktop">
-    <DesktopStatusBar
-      :time-string="timeString"
-      :volume="volumn"
-      :volume-show="isVolumnShow"
-      :calendar-show="isCalendarShow"
-      :widget-show="isWidgetShow"
-      :current-date="nowDate"
-      @toggle-volume="showOrHideVolumn"
-      @change-volume="setVolume"
-      @toggle-calendar="showOrHideCalendar"
-      @change-date="(date) => nowDate = date"
-      @toggle-widget="showOrHideWidget"
-    />
+    <DesktopStatusBar :time-string="timeString" :volume="volumn" :volume-show="isVolumnShow"
+      :calendar-show="isCalendarShow" :widget-show="isWidgetShow" :current-date="nowDate"
+      @toggle-volume="showOrHideVolumn" @change-volume="setVolume" @toggle-calendar="showOrHideCalendar"
+      @change-date="(date) => nowDate = date" @toggle-widget="showOrHideWidget" />
     <div class="body" @contextmenu.prevent.self="
       hideAllController();
     openMenu($event);
     " @click.stop="hideAllController()">
-      <DesktopAppsArea
-        :apps="deskTopAppList"
-        @open-app="openAppByKey"
-      />
+      <DesktopAppsArea :apps="deskTopAppList" @open-app="openAppByKey" />
       <transition-group name="fade-window">
-        <App 
-          v-for="item in visibleOpenApps" 
-          :key="item.pid"
-          :app="item"
-        ></App>
+        <App v-for="item in visibleOpenApps" :key="item.pid" :app="item"></App>
       </transition-group>
-      <DesktopContextMenu
-        :visible="rightMenuVisible"
-        :left="rightMenuLeft"
-        :top="rightMenuTop"
-        @lock-screen="lockScreen"
-        @open-settings="() => openAppByKey('system_setting')"
+      <DesktopContextMenu :visible="rightMenuVisible" :left="rightMenuLeft" :top="rightMenuTop"
+        @lock-screen="lockScreen" @open-settings="() => openAppByKey('system_setting')"
         @open-task-manager="() => openAppByKey('system_task')"
         @set-wallpaper="() => $message.warning($t('system.comingSoon'))"
-        @open-about="() => openAppByKey('system_about')"
-      />
+        @open-about="() => openAppByKey('system_about')" />
       <transition-group name="fade-widget">
         <div v-show="isWidgetShow" key="widget-container">
         </div>
@@ -153,15 +132,15 @@
         timeString.value = newTimeString
       }
     }
-    
+
     // 立即更新一次
     updateTime()
-    
+
     // 计算到下一分钟的毫秒数
     const now = new Date()
     const nextMinute = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1, 0, 0)
     const msToNextMinute = nextMinute.getTime() - now.getTime()
-    
+
     // 在下一分钟开始时更新，然后每分钟更新一次
     setTimeout(() => {
       updateTime()
@@ -199,7 +178,7 @@
   onMounted(() => {
     userName.value = storage.get('user_name', '') || ''
     startTimer()
-    
+
     // 开发环境下定期输出性能报告
     if (import.meta.env.DEV) {
       const performanceInterval = setInterval(logPerformanceReport, 30000) // 每30秒
