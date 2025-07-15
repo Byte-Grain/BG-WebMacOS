@@ -2,6 +2,7 @@
   <div class="desktop">
     <DesktopStatusBar :time-string="timeString" :volume="volumn" :volume-show="isVolumnShow"
       :calendar-show="isCalendarShow" :widget-show="isWidgetShow" :current-date="nowDate"
+      :hide-all-controller="hideAllController"
       @toggle-volume="showOrHideVolumn" @change-volume="setVolume" @toggle-calendar="showOrHideCalendar"
       @change-date="(date) => nowDate = date" @toggle-widget="showOrHideWidget" />
     <div class="body" @contextmenu.prevent.self="
@@ -49,7 +50,7 @@
   const isCalendarShow = ref(false)
   const nowDate = ref(new Date())
   const volumnDelayTimer = ref(null)
-  const volumn = ref(volume.value)
+  const volumn = ref(volume.value || 50)
   const isVolumnShow = ref(false)
   const rightMenuVisible = ref(false)
   const rightMenuLeft = ref(0)

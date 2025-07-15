@@ -3,7 +3,7 @@
     <TopBar />
     <div class="space"></div>
     <div class="status">
-      <VolumeControl :volume="volume" :isVisible="isVolumnShow" @toggle="handleVolumeToggle"
+      <VolumeControl :volume="props.volume || 50" :isVisible="isVolumnShow" @toggle="handleVolumeToggle"
         @change="handleVolumeChange" />
       <DateTimeWidget :timeString="timeString" :isCalendarVisible="isCalendarShow" :currentDate="nowDate"
         @toggle="handleCalendarToggle" @dateChange="handleDateChange" />
@@ -25,6 +25,10 @@
     hideAllController: {
       type: Function,
       required: true
+    },
+    volume: {
+      type: Number,
+      default: 50
     }
   })
 
