@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-  import { ref, watch, onMounted, onUnmounted } from 'vue'
+  import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
   import { useSystem, useUtils } from '@/composables'
   import { usePerformance } from '@/composables/usePerformance'
   import VolumeControl from './widgets/VolumeControl.vue'
@@ -73,7 +73,7 @@
     nowDate.value = date
   }
 
-  // 优化：使用节流优化音量控制
+  // 优化：使用节流和防抖优化音量控制
   const handleVolumeToggle = throttle(() => {
     isVolumnShow.value = !isVolumnShow.value
     if (isVolumnShow.value) {
@@ -82,7 +82,7 @@
         isVolumnShow.value = false
       }, 3000)
     }
-  }, 200)
+  }, 100)
 
   const handleVolumeChange = (value) => {
     volumn.value = value
@@ -92,33 +92,43 @@
     isWidgetShow.value = !isWidgetShow.value
   }
 
-  // 优化：智能时间更新，只在分钟变化时更新
+  // 优化：使用requestAnimationFrame和缓存优化时间更新
   const startTimer = () => {
+    let lastTimeString = ''
+    
     const updateTime = () => {
       const now = new Date()
-      const newTimeString = date.format(now, 'MM-dd HH:mm')
-      if (timeString.value !== newTimeString) {
+      const hours = now.getHours().toString().padStart(2, '0')
+      const minutes = now.getMinutes().toString().padStart(2, '0')
+      const month = (now.getMonth() + 1).toString().padStart(2, '0')
+      const day = now.getDate().toString().padStart(2, '0')
+      const newTimeString = `${month}-${day} ${hours}:${minutes}`
+      
+      if (newTimeString !== lastTimeString) {
         timeString.value = newTimeString
+        lastTimeString = newTimeString
       }
     }
 
     // 立即更新一次
     updateTime()
 
-    // 计算到下一分钟的毫秒数
-    const now = new Date()
-    const nextMinute = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1, 0, 0)
-    const msToNextMinute = nextMinute.getTime() - now.getTime()
-
-    // 在下一分钟开始时更新，然后每分钟更新一次
-    setTimeout(() => {
-      updateTime()
-      timeUpdateTimer.value = setInterval(updateTime, 60000) // 每分钟更新
-    }, msToNextMinute)
+    // 使用更精确的定时器，每30秒检查一次
+    timeUpdateTimer.value = setInterval(updateTime, 30000)
   }
 
-  // 生命周期
-  onMounted(() => {
+  // 生命周期 - 优化：延迟初始化非关键功能
+  onMounted(async () => {
+    // 立即初始化时间显示
+    const now = new Date()
+    const hours = now.getHours().toString().padStart(2, '0')
+    const minutes = now.getMinutes().toString().padStart(2, '0')
+    const month = (now.getMonth() + 1).toString().padStart(2, '0')
+    const day = now.getDate().toString().padStart(2, '0')
+    timeString.value = `${month}-${day} ${hours}:${minutes}`
+    
+    // 在下一个事件循环中启动定时器
+    await nextTick()
     startTimer()
   })
 

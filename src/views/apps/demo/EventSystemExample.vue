@@ -518,6 +518,34 @@ watch(activeAlerts, (alerts) => {
 }, { deep: true })
 </script>
 
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'demo_es',
+  title: 'ES',
+  icon: 'icon-MIS_bangongOA',
+  iconColor: '#fff',
+  iconBgColor: '#022732',
+  width: 420,
+  height: 350,
+  resizable: true,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  keepInDock: true,
+  category: 'utilities',
+  description: '演示常驻 Dock 功能的应用',
+  version: '1.0.0',
+  author: 'Demo Team',
+  tags: ['dock', 'persistent'],
+  demo: true,
+  featured: false
+}
+</script>
+
 <style scoped>
 .event-system-example {
   padding: 20px;

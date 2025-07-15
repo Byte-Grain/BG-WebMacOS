@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref } from 'vue'
+  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, markRaw } from 'vue'
   import { useAppManager } from '@/composables/useAppManager'
   import { enhancedAppRegistry, getAppByKey } from '@/config/apps/enhanced-app-registry'
 
@@ -98,8 +98,13 @@
       // 初始化增强的应用注册表
       await enhancedAppRegistry.initialize()
       
-      // 获取组件映射
-      componentMap.value = enhancedAppRegistry.getComponentMap()
+      // 获取组件映射 - 使用 markRaw 避免组件被转换为响应式对象
+      const rawComponentMap = enhancedAppRegistry.getComponentMap()
+      const markedComponentMap = {}
+      for (const [key, component] of Object.entries(rawComponentMap)) {
+        markedComponentMap[key] = markRaw(component)
+      }
+      componentMap.value = markedComponentMap
       isRegistryInitialized.value = true
       
       // 设置窗口位置

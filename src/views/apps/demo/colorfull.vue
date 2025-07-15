@@ -34,7 +34,7 @@ import type { AppConfig } from '@/types/app.d'
 export const appConfig: AppConfig = {
   key: 'demo_colorfull',
   title: '花里胡哨',
-  icon: 'icon-changyongtubiao-mianxing-86',
+  icon: 'icon-loading',
   iconColor: '#fff',
   iconBgColor: '#ff4500',
   width: 420,

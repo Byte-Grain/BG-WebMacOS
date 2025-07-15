@@ -73,7 +73,7 @@ import type { AppConfig } from '@/types/app.d'
 export const appConfig: AppConfig = {
         key: 'MyTestApp',
         title: '我的测试应用',
-        icon: '🧪',
+        icon: 'icon-loading',
         iconColor: '#667eea',
         iconBgColor: 'rgba(102, 126, 234, 0.1)',
         
