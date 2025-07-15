@@ -13,8 +13,7 @@ export { windowConfig, WINDOW_PRESETS, WINDOW_Z_INDEX, WINDOW_STATES, WINDOW_TYP
 // 应用配置
 export * from './apps'
 export { enhancedAppRegistry, getAllApps, getSystemApps, getDemoApps, getUserApps, getAppByKey, getAppsByCategory, getDesktopApps, getDockApps, getFeaturedApps, searchApps, validateAppConfig, registerApp, unregisterApp, updateAppConfig, appRegistry } from './apps'
-export { systemApps } from './apps/system-apps'
-export { demoApps } from './apps/demo-apps'
+// 旧的静态应用导出已移除，现在使用增强应用注册表
 export { appDefaults } from './apps/app-defaults'
 
 // 主题配置

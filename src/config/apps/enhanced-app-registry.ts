@@ -48,7 +48,7 @@ class EnhancedAppRegistry {
 
     try {
       // 1. 注册静态配置的应用
-      this.registerStaticApps()
+      // this.registerStaticApps()
 
       // 2. 发现并注册动态应用
       await this.discoverAndRegisterApps()
@@ -74,7 +74,10 @@ class EnhancedAppRegistry {
    * 注册静态配置的应用
    */
   private registerStaticApps(): void {
-    const allStaticApps = [...systemApps, ...demoApps, ...customApps]
+    const allStaticApps = [
+      ...systemApps, 
+      ...demoApps, 
+      ...customApps]
     
     for (const app of allStaticApps) {
       // 为静态应用添加分类信息

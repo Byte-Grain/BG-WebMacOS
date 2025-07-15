@@ -158,7 +158,5 @@ const systemAppsConfig: Record<string, SystemAppConfig> = {
 // 导出数组格式供增强应用注册表使用
 export const systemApps = Object.values(systemAppsConfig)
 
-// 导出对象格式保持向后兼容
-export const systemAppsMap = systemAppsConfig
-
+// 默认导出
 export default systemApps

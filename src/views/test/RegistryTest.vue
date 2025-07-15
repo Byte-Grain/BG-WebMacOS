@@ -45,9 +45,9 @@ const runTest = async () => {
     log(`总应用数: ${allApps.length}`)
     
     // 按分类统计
-    const systemApps = allApps.filter(app => app.category === 'system')
-    const demoApps = allApps.filter(app => app.category === 'demo')
-    const customApps = allApps.filter(app => app.category === 'custom')
+    const systemApps = enhancedAppRegistry.getAppsByCategory('system')
+    const demoApps = enhancedAppRegistry.getAppsByCategory('demo')
+    const customApps = enhancedAppRegistry.getAppsByCategory('custom')
     
     log(`系统应用: ${systemApps.length}`)
     log(`演示应用: ${demoApps.length}`)

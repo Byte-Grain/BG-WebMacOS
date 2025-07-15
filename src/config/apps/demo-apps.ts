@@ -207,7 +207,5 @@ const demoAppsConfig: Record<string, DemoAppConfig> = {
 // 导出数组格式供增强应用注册表使用
 export const demoApps = Object.values(demoAppsConfig)
 
-// 导出对象格式保持向后兼容
-export const demoAppsMap = demoAppsConfig
-
+// 默认导出
 export default demoApps

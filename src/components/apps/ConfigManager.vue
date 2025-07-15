@@ -120,9 +120,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { 
   getAllApps, 
-  getSystemApps,
-  getDemoApps,
-  getUserApps
+  enhancedAppRegistry
 } from '../../config/apps'
 import type { AppConfig } from '../../config/apps/types'
 
@@ -141,9 +139,9 @@ const messageType = ref('info')
 
 const categorizedApps = computed(() => {
   return {
-    system: getSystemApps(),
-    demo: getDemoApps(),
-    user: getUserApps()
+    system: enhancedAppRegistry.getAppsByCategory('system'),
+    demo: enhancedAppRegistry.getAppsByCategory('demo'),
+    user: enhancedAppRegistry.getAppsByCategory('custom')
   }
 })
 
@@ -163,7 +161,8 @@ const selectApp = (app: AppConfig) => {
 const reloadConfiguration = () => {
   try {
     // 使用新的增强应用注册表重新加载
-    window.location.reload()
+    await enhancedAppRegistry.reload()
+    updateConfigInfo()
     showMessage('配置重新加载成功', 'success')
   } catch (error) {
     showMessage(`配置重新加载失败: ${error}`, 'error')
@@ -197,13 +196,13 @@ const exportConfig = () => {
     }
 
     // 填充应用数据
-    getSystemApps().forEach(app => {
+    enhancedAppRegistry.getAppsByCategory('system').forEach(app => {
       config.system[app.key] = app
     })
-    getDemoApps().forEach(app => {
+    enhancedAppRegistry.getAppsByCategory('demo').forEach(app => {
       config.demo[app.key] = app
     })
-    getUserApps().forEach(app => {
+    enhancedAppRegistry.getAppsByCategory('custom').forEach(app => {
       config.user[app.key] = app
     })
 
@@ -247,9 +246,9 @@ const showMessage = (msg: string, type: 'info' | 'success' | 'error' = 'info') =
 
 // 更新配置信息的函数
 const updateConfigInfo = () => {
-  const systemApps = getSystemApps()
-  const demoApps = getDemoApps()
-  const userApps = getUserApps()
+  const systemApps = enhancedAppRegistry.getAppsByCategory('system')
+  const demoApps = enhancedAppRegistry.getAppsByCategory('demo')
+  const userApps = enhancedAppRegistry.getAppsByCategory('custom')
   
   configInfo.value = {
     mode: 'Enhanced',

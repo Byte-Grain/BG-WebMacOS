@@ -1,10 +1,7 @@
 // 应用配置统一导出 - 使用新的增强应用注册表
 import { enhancedAppRegistry as registry } from './enhanced-app-registry'
 export { enhancedAppRegistry, getAppByKey } from './enhanced-app-registry'
-export { default as systemApps } from './system-apps'
-export { default as demoApps } from './demo-apps'
-export { default as appDefaults } from './app-defaults'
-export { customApps, dynamicAppConfig } from './custom-apps'
+// 旧的静态导出已移除，现在使用增强应用注册表
 
 export type {
   AppConfig,
