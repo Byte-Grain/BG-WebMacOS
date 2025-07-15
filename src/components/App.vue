@@ -22,7 +22,7 @@
             <div class="controll">
               <div class="close" @click.stop="closeApp"></div>
               <div class="min" @click.stop="hideApp"></div>
-              <div class="full" :class="app.disableResize ? 'full-disabled' : ''" @click="switchFullScreen"></div>
+              <div class="full" :class="app.disableResize ? 'full-disabled' : ''" @click="switchMaximize"></div>
             </div>
             <div class="title" :style="{ color: app.titleColor }">
               {{ appData.title || app.title }}
@@ -49,12 +49,14 @@
 </template>
 
 <script setup>
-  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, markRaw } from 'vue'
+  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, markRaw, onUnmounted } from 'vue'
   import { useAppManager } from '@/composables/useAppManager'
   import { enhancedAppRegistry, getAppByKey } from '@/config/apps/enhanced-app-registry'
+  import { useEventBus, EVENTS } from '@/composables/useEventBus'
 
   // 使用组合式函数
   const { closeApp: closeAppManager, hideApp: hideAppManager, showApp: showAppManager, openApp: openAppManager, openAppWithData, closeAppByPid, openApps } = useAppManager()
+  const eventBus = useEventBus()
 
   // 动态组件映射
   const componentMap = ref({})
@@ -92,6 +94,9 @@
   const isMaxShowing = ref(false)
   const isFullScreen = ref(false)
 
+  // 事件监听器清理函数
+  const eventCleanupFunctions = ref([])
+
   // 初始化
   onMounted(async () => {
     try {
@@ -109,11 +114,116 @@
       
       // 设置窗口位置
       setReact()
+      
+      // 设置窗口事件监听器
+      setupWindowEventListeners()
     } catch (error) {
       console.error('Failed to initialize app registry:', error)
       componentError.value = error
     }
   })
+  
+  // 组件卸载时清理事件监听器
+  onUnmounted(() => {
+    eventCleanupFunctions.value.forEach(cleanup => cleanup())
+    eventCleanupFunctions.value = []
+  })
+  
+  // 设置窗口事件监听器
+  const setupWindowEventListeners = () => {
+    // 监听窗口标题变化事件
+    const titleChangeId = eventBus.on('window:title-change', (data) => {
+      if (data.appKey === props.app.key || data.pid === props.app.pid) {
+        appData.title = data.title
+      }
+    })
+    
+    // 监听应用最大化事件
+    const maximizeId = eventBus.on(EVENTS.APP_MAXIMIZE, (data) => {
+      if (data.appKey === props.app.key || data.pid === props.app.pid) {
+        if (!props.app.disableResize) {
+          isMaxShowing.value = true
+          isFullScreen.value = false
+        }
+      }
+    })
+    
+    // 监听应用最小化事件
+    const minimizeId = eventBus.on(EVENTS.APP_MINIMIZE, (data) => {
+      if (data.appKey === props.app.key || data.pid === props.app.pid) {
+        hideApp()
+      }
+    })
+    
+    // 监听窗口全屏事件
+    const fullscreenId = eventBus.on(EVENTS.WINDOW_FULLSCREEN, (data) => {
+      if (data.windowId === props.app.key) {
+        if (!props.app.disableResize) {
+          isFullScreen.value = data.enabled
+          if (data.enabled) {
+            isMaxShowing.value = false
+          }
+        }
+      }
+    })
+    
+    // 监听窗口调整大小事件
+    const resizeId = eventBus.on(EVENTS.WINDOW_RESIZE, (data) => {
+      if (data.windowId === props.app.key) {
+        if (!props.app.disableResize) {
+          isMaxShowing.value = false
+          isFullScreen.value = false
+          // 这里可以添加具体的窗口大小调整逻辑
+        }
+      }
+    })
+    
+    // 监听应用移动事件
+    const moveId = eventBus.on(EVENTS.APP_MOVE, (data) => {
+      if (data.appKey === props.app.key || data.pid === props.app.pid) {
+        // 更新窗口位置
+        nowRect.left = data.x
+        nowRect.right = document.body.clientWidth - data.x - (props.app.width || 600)
+        nowRect.top = data.y
+        nowRect.bottom = document.body.clientHeight - data.y - (props.app.height || 400)
+      }
+    })
+    
+    // 监听应用调整大小事件
+    const appResizeId = eventBus.on(EVENTS.APP_RESIZE, (data) => {
+      if (data.appKey === props.app.key || data.pid === props.app.pid) {
+        if (!props.app.disableResize) {
+          // 更新窗口大小
+          const centerX = (nowRect.left + document.body.clientWidth - nowRect.right) / 2
+          const centerY = (nowRect.top + document.body.clientHeight - nowRect.bottom) / 2
+          
+          nowRect.left = centerX - data.width / 2
+          nowRect.right = centerX - data.width / 2
+          nowRect.top = centerY - data.height / 2
+          nowRect.bottom = centerY - data.height / 2
+        }
+      }
+    })
+    
+    // 监听应用焦点事件
+    const focusId = eventBus.on(EVENTS.APP_FOCUS, (data) => {
+      if (data.appKey === props.app.key || data.pid === props.app.pid) {
+        showThisApp()
+      }
+    })
+    
+    // 保存清理函数
+    eventCleanupFunctions.value.push(
+      () => eventBus.off('window:title-change', titleChangeId),
+      () => eventBus.off(EVENTS.APP_MAXIMIZE, maximizeId),
+      () => eventBus.off(EVENTS.APP_MINIMIZE, minimizeId),
+      () => eventBus.off(EVENTS.WINDOW_FULLSCREEN, fullscreenId),
+      () => eventBus.off(EVENTS.WINDOW_RESIZE, resizeId),
+      () => eventBus.off(EVENTS.APP_MOVE, moveId),
+      () => eventBus.off(EVENTS.APP_RESIZE, appResizeId),
+      () => eventBus.off(EVENTS.APP_FOCUS, focusId)
+    )
+  }
 
   // 计算属性
   const getExtBoxClasses = computed(() => {
@@ -194,7 +304,7 @@
           return
         }
         isFullScreen.value = true
-        isMaxShowing.value = true
+        isMaxShowing.value = false
         break
       case 'windowMinSize':
         hideApp()
@@ -251,9 +361,19 @@
     }
     isFullScreen.value = !isFullScreen.value
     if (isFullScreen.value) {
-      isMaxShowing.value = true
+      isMaxShowing.value = false
     } else {
       isMaxShowing.value = false
+    }
+  }
+
+  const switchMaximize = () => {
+    if (props.app.disableResize) {
+      return
+    }
+    isMaxShowing.value = !isMaxShowing.value
+    if (!isMaxShowing.value) {
+      isFullScreen.value = false
     }
   }
 

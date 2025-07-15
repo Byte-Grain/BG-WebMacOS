@@ -94,8 +94,12 @@ export const appConfig: AppConfig = {
 
 <script setup lang="ts">
   import { ref } from 'vue'
+  import { useWindowEvents } from '@/composables/useWindowEvents'
 
-  // 定义事件
+  // 使用窗口事件系统
+  const windowEvents = useWindowEvents()
+
+  // 定义事件（保持向后兼容）
   const emit = defineEmits(['api'])
 
   // 响应式数据
@@ -104,38 +108,62 @@ export const appConfig: AppConfig = {
     desc: "这是一个示例APP，用于一些交互相关功能的实现",
   })
 
-  // 方法
+  // 方法 - 使用新的窗口事件系统
   const windowMaxSize = () => {
+    // 使用新的事件系统
+    windowEvents.maximizeWindow()
+    
+    // 保持向后兼容
     emit("api", {
       event: "windowMaxSize",
     })
   }
 
   const windowNormalSize = () => {
+    // 使用新的事件系统
+    windowEvents.normalizeWindow()
+    
+    // 保持向后兼容
     emit("api", {
       event: "windowNormalSize",
     })
   }
 
   const windowMinSize = () => {
+    // 使用新的事件系统
+    windowEvents.minimizeWindow()
+    
+    // 保持向后兼容
     emit("api", {
       event: "windowMinSize",
     })
   }
 
   const windowFullSize = () => {
+    // 使用新的事件系统
+    // windowEvents.fullscreenWindow()
+    
+    // 保持向后兼容
     emit("api", {
       event: "windowFullSize",
     })
   }
 
   const windowClose = () => {
+    // 使用新的事件系统
+    windowEvents.closeWindow()
+    
+    // 保持向后兼容
     emit("api", {
       event: "windowClose",
     })
   }
 
   const openApp = () => {
+    // 使用新的事件系统
+    windowEvents.openApp("system_about")
+    
+    // 保持向后兼容
     emit("api", {
       event: "openApp",
       app: "system_about",
@@ -143,6 +171,10 @@ export const appConfig: AppConfig = {
   }
 
   const closeApp = () => {
+    // 使用新的事件系统
+    windowEvents.closeApp("system_about")
+    
+    // 保持向后兼容
     emit("api", {
       event: "closeApp",
       app: "system_about",
@@ -150,13 +182,23 @@ export const appConfig: AppConfig = {
   }
 
   const setWindowTitle = () => {
+    const newTitle = new Date().valueOf().toString()
+    
+    // 使用新的事件系统
+    windowEvents.setWindowTitle(newTitle)
+    
+    // 保持向后兼容
     emit("api", {
       event: "setWindowTitle",
-      title: new Date().valueOf(),
+      title: newTitle,
     })
   }
 
   const openAppWithData = () => {
+    // 使用新的事件系统
+    windowEvents.openApp("demo_colorfull", "我是传入的参数")
+    
+    // 保持向后兼容
     emit("api", {
       event: "openApp",
       app: "demo_colorfull",

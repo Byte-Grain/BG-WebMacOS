@@ -40,7 +40,6 @@ export function useAppManager() {
   
   // 打开应用
   const openApp = (app: AppConfig | string, data?: any): void => {
-    console.log("---------------openApp", app);
     if (typeof app === 'string') {
       const appConfig = getAppByKey(app)
       if (appConfig) {
