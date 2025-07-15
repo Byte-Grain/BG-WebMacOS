@@ -1,11 +1,11 @@
 <template>
-  <div class="desktop">
+  <div class="desktop gesture-disabled">
     <DesktopStatusBar :time-string="timeString" :volume="volumn" :volume-show="isVolumnShow"
       :calendar-show="isCalendarShow" :widget-show="isWidgetShow" :current-date="nowDate"
       :hide-all-controller="hideAllController"
       @toggle-volume="showOrHideVolumn" @change-volume="setVolume" @toggle-calendar="showOrHideCalendar"
       @change-date="(date) => nowDate = date" @toggle-widget="showOrHideWidget" />
-    <div class="body" @contextmenu.prevent.self="
+    <div class="body gesture-disabled" @contextmenu.prevent.self="
       hideAllController();
     openMenu($event);
     " @click.stop="hideAllController()">
@@ -29,7 +29,7 @@
 <script setup lang="ts">
   import { ref, watch, onMounted, onUnmounted, computed, nextTick } from 'vue'
   import { ElMessage } from 'element-plus'
-  import { useAppManager, useSystem, useUtils } from '@/composables'
+  import { useAppManager, useSystem, useUtils, useDesktopGesture } from '@/composables'
   import { usePerformance } from '@/composables/usePerformance'
   import DesktopStatusBar from '@/components/layout/DesktopStatusBar.vue'
   import DesktopAppsArea from '@/components/layout/DesktopAppsArea.vue'
@@ -45,6 +45,19 @@
   const { volume, setVolume, logout: systemLogout } = useSystem()
   const { date, storage } = useUtils()
   const { debounce: performanceDebounce, throttle, getPerformanceReport } = usePerformance('Desktop')
+  
+  // 桌面手势控制
+  const { init: initGesture, cleanup: cleanupGesture } = useDesktopGesture({
+    enableSwipeUp: false,
+    enableSwipeDown: false,
+    enableSwipeLeft: false,
+    enableSwipeRight: false,
+    enableDrag: false,
+    enableTwoFingerGestures: false,
+    enableMouseWheel: false,
+    allowWheelInApps: true,
+    preventDefault: true
+  })
 
   // 响应式数据
   const isCalendarShow = ref(false)
@@ -179,6 +192,14 @@
   onMounted(() => {
     userName.value = storage.get('user_name', '') || ''
     startTimer()
+    
+    // 初始化桌面手势控制
+    nextTick(() => {
+      const desktopElement = document.querySelector('.desktop')
+      if (desktopElement) {
+        initGesture(desktopElement as HTMLElement)
+      }
+    })
 
     // 开发环境下定期输出性能报告
     if (import.meta.env.DEV) {
@@ -197,6 +218,8 @@
     if (volumnDelayTimer.value) {
       clearTimeout(volumnDelayTimer.value)
     }
+    // 清理手势控制
+    cleanupGesture()
   })
 </script>
 <style scoped lang="scss">
@@ -223,7 +246,38 @@
       align-items: center;
       position: relative;
     }
+  }
 
+  /* 手势禁用样式 */
+  .gesture-disabled {
+    /* 禁用用户选择 */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    
+    /* 禁用拖拽 */
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    
+    /* 禁用触摸操作 */
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    
+    /* 禁用右键菜单（在某些情况下） */
+    -webkit-context-menu: none;
+    
+    /* 禁用文本选择高亮 */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   /* 优化：添加更流畅的过渡动画 */
