@@ -1,15 +1,12 @@
-// import AppModel from "@/model/App";
-// import tool from "@/helper/tool";
-// import eventBus from 'vue3-eventbus';
 import { AppState, AppConfig } from "@/types/app";
-import AppModel from "@/model/App";
+import { getAllApps, getAppByKey, getDockApps } from "@/config/apps";
 // createStore 现在通过自动导入，无需手动导入
 // import { createStore } from 'vuex'
 
 const storeConfig = {
   state(): AppState {
     return {
-      showLogin: false,
+      showLogin: true,
       nowApp: false,
       openAppList: [],
       dockAppList: [],
@@ -48,11 +45,17 @@ const storeConfig = {
         targetApp.hide = true;
       }
       // Find and show the last non-hidden app
+      let foundApp = false;
       for (let i = state.openAppList.length - 1; i >= 0; i--) {
         if (!state.openAppList[i].hide) {
           state.nowApp = state.openAppList[i];
+          foundApp = true;
           break;
         }
+      }
+      // If no non-hidden app found, reset nowApp
+      if (!foundApp) {
+        state.nowApp = false;
       }
     },
 
@@ -65,6 +68,19 @@ const storeConfig = {
       if (dockIndex !== -1) {
         state.dockAppList.splice(dockIndex, 1);
       }
+      // Find and show the last non-hidden app
+      let foundApp = false;
+      for (let i = state.openAppList.length - 1; i >= 0; i--) {
+        if (!state.openAppList[i].hide) {
+          state.nowApp = state.openAppList[i];
+          foundApp = true;
+          break;
+        }
+      }
+      // If no non-hidden app found, reset nowApp
+      if (!foundApp) {
+        state.nowApp = false;
+      }
     },
 
     closeApp(state: AppState, app: AppConfig): void {
@@ -75,11 +91,17 @@ const storeConfig = {
           targetApp.hide = true;
         }
         // Find and show the last non-hidden app
+        let foundApp = false;
         for (let i = state.openAppList.length - 1; i >= 0; i--) {
           if (!state.openAppList[i].hide) {
             state.nowApp = state.openAppList[i];
+            foundApp = true;
             break;
           }
+        }
+        // If no non-hidden app found, reset nowApp
+        if (!foundApp) {
+          state.nowApp = false;
         }
       } else {
         const openIndex = state.openAppList.findIndex(item => 
@@ -96,19 +118,25 @@ const storeConfig = {
             state.dockAppList.splice(dockIndex, 1);
           }
         }
-      }
-      // Find and show the last non-hidden app
-      for (let i = state.openAppList.length - 1; i >= 0; i--) {
-        if (!state.openAppList[i].hide) {
-          state.nowApp = state.openAppList[i];
-          break;
+        // Find and show the last non-hidden app
+        let foundApp = false;
+        for (let i = state.openAppList.length - 1; i >= 0; i--) {
+          if (!state.openAppList[i].hide) {
+            state.nowApp = state.openAppList[i];
+            foundApp = true;
+            break;
+          }
+        }
+        // If no non-hidden app found, reset nowApp
+        if (!foundApp) {
+          state.nowApp = false;
         }
       }
     },
 
     getDockAppList(state: AppState): void {
       // Initialize dock app list with apps that have keepInDock: true
-      state.dockAppList = AppModel.allAppList.filter(app => app.keepInDock);
+      state.dockAppList = getDockApps();
     },
 
     openApp(state: AppState, app: AppConfig): void {
@@ -141,7 +169,7 @@ const storeConfig = {
     },
 
     openAppByKey(state: AppState, key: string): void {
-      const app = AppModel.allAppList.find(item => item.key === key);
+      const app = getAppByKey(key);
       if (app) {
         // Use openApp mutation to handle the opening logic
         const existingApp = state.openAppList.find(item => item.key === app.key);
@@ -179,8 +207,6 @@ const storeConfig = {
 
     openMenu(state: AppState, menuKey: string): void {
       // Handle menu operations - this could be extended based on specific menu actions
-      // For now, we'll just log the menu key or handle basic menu operations
-      console.log('Menu opened:', menuKey);
       // Add specific menu handling logic here if needed
     },
 

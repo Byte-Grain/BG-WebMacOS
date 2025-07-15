@@ -29,7 +29,12 @@
             </div>
           </div>
           <div class="app-body">
-            <component :is="componentMap[app.component]" :app="app" @api="appEvent"></component>
+            <component 
+              :is="getAppComponent(app)" 
+              :app="app" 
+              @api="appEvent"
+              @error="handleComponentError"
+            ></component>
           </div>
         </div>
         <div class="box-center-right" @mousedown="resizeMouseDown"></div>
@@ -44,45 +49,17 @@
 </template>
 
 <script setup>
-  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, getCurrentInstance } from 'vue'
-  import tool from '../helper/tool'
+  import { defineAsyncComponent, reactive, watch, onMounted, computed, ref } from 'vue'
+  import { useAppManager } from '@/composables/useAppManager'
+  import { enhancedAppRegistry, getAppByKey } from '@/config/apps/enhanced-app-registry'
 
-  const { proxy } = getCurrentInstance()
-  const $store = proxy.$store
+  // 使用组合式函数
+  const { closeApp: closeAppManager, hideApp: hideAppManager, showApp: showAppManager, openApp: openAppManager, openAppWithData, closeAppByPid, openApps } = useAppManager()
 
-  // 组件注册
-  const SystemAbout = defineAsyncComponent(() => import('@/view/system/about.vue'))
-  const SystemFinder = defineAsyncComponent(() => import('@/view/system/finder.vue'))
-  const SystemSetting = defineAsyncComponent(() => import('@/view/system/setting.vue'))
-  const SystemStore = defineAsyncComponent(() => import('@/view/system/store.vue'))
-  const SystemTask = defineAsyncComponent(() => import('@/view/system/task.vue'))
-  const Demo = defineAsyncComponent(() => import('@/view/demo/demo.vue'))
-  const DemoDock = defineAsyncComponent(() => import('@/view/demo/dock.vue'))
-  const DemoUnResize = defineAsyncComponent(() => import('@/view/demo/unresize.vue'))
-  const DemoUnClose = defineAsyncComponent(() => import('@/view/demo/unclose.vue'))
-  const DemoHideDesktop = defineAsyncComponent(() => import('@/view/demo/hidedesktop.vue'))
-  const DemoColorFull = defineAsyncComponent(() => import('@/view/demo/colorfull.vue'))
-  const DemoCamera = defineAsyncComponent(() => import('@/view/demo/camera.vue'))
-  const DemoMultiTask = defineAsyncComponent(() => import('@/view/demo/multitask.vue'))
-  const DemoWeb = defineAsyncComponent(() => import('@/view/demo/web.vue'))
-
-  // 组件映射对象
-  const componentMap = {
-    SystemAbout,
-    SystemFinder,
-    SystemSetting,
-    SystemStore,
-    SystemTask,
-    Demo,
-    DemoDock,
-    DemoUnResize,
-    DemoUnClose,
-    DemoHideDesktop,
-    DemoColorFull,
-    DemoCamera,
-    DemoMultiTask,
-    DemoWeb
-  }
+  // 动态组件映射
+  const componentMap = ref({})
+  const componentError = ref(null)
+  const isRegistryInitialized = ref(false)
 
   // Props
   const props = defineProps({
@@ -115,6 +92,24 @@
   const isMaxShowing = ref(false)
   const isFullScreen = ref(false)
 
+  // 初始化
+  onMounted(async () => {
+    try {
+      // 初始化增强的应用注册表
+      await enhancedAppRegistry.initialize()
+      
+      // 获取组件映射
+      componentMap.value = enhancedAppRegistry.getComponentMap()
+      isRegistryInitialized.value = true
+      
+      // 设置窗口位置
+      setReact()
+    } catch (error) {
+      console.error('Failed to initialize app registry:', error)
+      componentError.value = error
+    }
+  })
+
   // 计算属性
   const getExtBoxClasses = computed(() => {
     let str = ''
@@ -130,7 +125,7 @@
     if (props.app.disableResize) {
       str += 'resize-disabled '
     }
-    if ($store.state.openAppList[$store.state.openAppList.length - 1].pid == props.app.pid) {
+    if (openApps.value.length > 0 && openApps.value[openApps.value.length - 1].pid == props.app.pid) {
       str += 'isTop '
     }
     return str
@@ -142,6 +137,27 @@
   })
 
   // 方法
+  const getAppComponent = (app) => {
+    if (!isRegistryInitialized.value) {
+      return null
+    }
+    
+    const componentKey = app.component || app.key
+    const component = componentMap.value[componentKey]
+    
+    if (!component) {
+      console.warn(`Component not found for app: ${app.key}`)
+      return null
+    }
+    
+    return component
+  }
+
+  const handleComponentError = (error) => {
+    console.error('Component error:', error)
+    componentError.value = error
+  }
+
   const setReact = () => {
     if (props.app.width) {
       nowRect.left = nowRect.right = (document.body.clientWidth - props.app.width) / 2
@@ -183,20 +199,26 @@
         break
       case 'openApp':
         if (e.data && e.app) {
-          $store.commit('openWithData', {
-            app: tool.getAppByKey(e.app),
-            data: e.data
-          })
+          const app = getAppByKey(e.app)
+          if (app) {
+            openAppWithData(app, e.data)
+          }
         } else {
-          $store.commit('openApp', tool.getAppByKey(e.app))
+          const app = getAppByKey(e.app)
+          if (app) {
+            openAppManager(app)
+          }
         }
         break
       case 'closeApp':
         if (e.pid) {
-          $store.commit('closeWithPid', e.pid)
+          closeAppByPid(e.pid)
         }
         if (e.app) {
-          $store.commit('closeApp', tool.getAppByKey(e.app))
+          const app = getAppByKey(e.app)
+          if (app) {
+            closeAppManager(app)
+          }
         }
         break
       case 'setWindowTitle':
@@ -207,15 +229,15 @@
   }
 
   const closeApp = () => {
-    $store.commit('closeApp', props.app)
+    closeAppManager(props.app)
   }
 
   const hideApp = () => {
-    $store.commit('hideApp', props.app)
+    hideAppManager(props.app)
   }
 
   const showThisApp = () => {
-    $store.commit('showApp', props.app)
+    showAppManager(props.app)
   }
 
   const switchFullScreen = () => {

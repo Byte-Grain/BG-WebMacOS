@@ -7,13 +7,14 @@ export interface AppMenu {
 
 export interface AppConfig {
   key: string;
-  component: string;
+  component?: string;
+  componentPath?: string;        // 组件路径（用于动态加载）
   icon: string;
   title: string;
   iconColor: string;
   iconBgColor: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   disableResize?: boolean;
   hideInDesktop?: boolean;
   keepInDock?: boolean;
@@ -21,6 +22,18 @@ export interface AppConfig {
   menu?: AppMenu[];
   pid?: number;
   hide?: boolean;
+  outLink?: boolean;
+  url?: string;
+  innerLink?: boolean;
+  titleBgColor?: string;
+  titleColor?: string;
+  // 新增字段
+  category?: 'system' | 'demo' | 'custom';  // 应用分类
+  version?: string;              // 应用版本
+  author?: string;               // 应用作者
+  description?: string;          // 应用描述
+  permissions?: string[];        // 应用权限
+  resizable?: boolean;           // 是否可调整大小（替代 disableResize）
 }
 
 export interface AppState {

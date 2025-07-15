@@ -1,0 +1,57 @@
+{
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  "system": {
+    "desktop": "Desktop",
+    "dock": "Dock",
+    "launchpad": "Launchpad",
+    "finder": "Finder",
+    "safari": "Safari",
+    "settings": "System Preferences",
+    "trash": "Trash",
+    "about": "About This Site",
+    "appStore": "App Store",
+    "forceQuit": "Force Quit...",
+    "shutdown": "Shut Down...",
+    "lockScreen": "Lock Screen",
+    "logout": "Log Out {username}...",
+    "setWallpaper": "Set Wallpaper",
+    "aboutUs": "About Us",
+    "comingSoon": "Coming Soon"
+  },
+  "menu": {
+    "file": "File",
+    "edit": "Edit",
+    "view": "View",
+    "window": "Window",
+    "help": "Help"
+  },
+  "login": {
+    "welcome": "Welcome to macOS Web",
+    "username": "Username",
+    "password": "Password",
+    "login": "Login",
+    "guest": "Guest Login"
+  },
+  "app": {
+    "calculator": "Calculator",
+    "calendar": "Calendar",
+    "notes": "Notes",
+    "photos": "Photos",
+    "music": "Music",
+    "maps": "Maps",
+    "weather": "Weather",
+    "clock": "Clock"
+  }
+}

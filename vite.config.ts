@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
 import { fileURLToPath, URL } from 'node:url'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -58,20 +57,15 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern-compiler'
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue', 'vue-router', 'vuex'],
+          elementPlus: ['element-plus']
+        }
       }
     }
   }
-  // css: {
-  //   preprocessorOptions: {
-  //     scss: {
-  //       additionalData: `@import "@/asset/css/variables.scss";`
-  //     }
-  //   }
-  // }
 })

@@ -1,0 +1,57 @@
+{
+  "common": {
+    "confirm": "确认",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "close": "关闭",
+    "loading": "加载中...",
+    "success": "成功",
+    "error": "错误",
+    "warning": "警告",
+    "info": "信息"
+  },
+  "system": {
+    "desktop": "桌面",
+    "dock": "程序坞",
+    "launchpad": "启动台",
+    "finder": "访达",
+    "safari": "Safari 浏览器",
+    "settings": "系统偏好设置",
+    "trash": "废纸篓",
+    "about": "关于本站",
+    "appStore": "应用商店",
+    "forceQuit": "强制退出...",
+    "shutdown": "关机...",
+    "lockScreen": "锁定屏幕",
+    "logout": "退出登录 {username}...",
+    "setWallpaper": "设置壁纸",
+    "aboutUs": "关于我们",
+    "comingSoon": "即将上线，敬请期待"
+  },
+  "menu": {
+    "file": "文件",
+    "edit": "编辑",
+    "view": "显示",
+    "window": "窗口",
+    "help": "帮助"
+  },
+  "login": {
+    "welcome": "欢迎使用 macOS Web",
+    "username": "用户名",
+    "password": "密码",
+    "login": "登录",
+    "guest": "访客登录"
+  },
+  "app": {
+    "calculator": "计算器",
+    "calendar": "日历",
+    "notes": "备忘录",
+    "photos": "照片",
+    "music": "音乐",
+    "maps": "地图",
+    "weather": "天气",
+    "clock": "时钟"
+  }
+}
