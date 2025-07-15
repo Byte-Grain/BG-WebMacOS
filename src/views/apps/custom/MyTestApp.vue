@@ -307,4 +307,4 @@ export const appConfig: AppConfig = {
             }
         }
     }
-</style>
+</style>// Trigger regeneration

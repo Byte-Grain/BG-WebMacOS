@@ -4,12 +4,21 @@ import { fileURLToPath, URL } from 'node:url'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { autoGenerateApps } from './plugins/auto-generate-apps.js'
 // import legacy from '@vitejs/plugin-legacy'
 // import eslint from 'vite-plugin-eslint'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    // 使用多目录扫描功能
+    autoGenerateApps({
+      scanDirs: [
+        'src/views/apps',        // 主要应用目录
+        'src/applications',     // 用户自定义应用
+      ],
+      outputFile: 'src/config/apps/system-apps.ts'
+    }),
     vue(),
     AutoImport({
       imports: [

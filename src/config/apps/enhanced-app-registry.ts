@@ -2,6 +2,7 @@ import { dynamicComponentLoader } from '@/utils/dynamicComponentLoader'
 import { AppDiscovery, type AppDiscoveryConfig } from '@/utils/appDiscovery'
 import type { AppConfig } from '@/types/app.d'
 
+import { systemApps } from './system-apps'
 import { customApps } from './custom-apps'
 
 /**
@@ -44,8 +45,8 @@ class EnhancedAppRegistry {
       // 1. 注册静态配置的应用
       this.registerStaticApps()
 
-      // 2. 发现并注册动态应用
-      await this.discoverAndRegisterApps()
+      // 2. 跳过动态应用发现，只使用静态导入
+      // await this.discoverAndRegisterApps()
 
       // 3. 生成组件映射
       this.generateComponentMap()
@@ -68,7 +69,7 @@ class EnhancedAppRegistry {
    * 注册静态配置的应用
    */
   private registerStaticApps(): void {
-    const allStaticApps = [...customApps]
+    const allStaticApps = [...customApps,...systemApps]
     
     for (const app of allStaticApps) {
       // 为静态应用添加分类信息
@@ -127,14 +128,31 @@ class EnhancedAppRegistry {
    * 生成组件映射
    */
   private generateComponentMap(): void {
+    console.log('🔧 Generating component map...')
+    
     for (const app of this.apps.values()) {
-      const componentKey = app.component || app.key
+      const componentKey = app.key // 使用 app.key 作为组件映射的键
       
       if (!this.componentMap.has(componentKey)) {
-        const component = dynamicComponentLoader.loadComponent(app)
-        this.componentMap.set(componentKey, component)
+        // 如果app配置中直接包含component（静态导入的组件），直接使用
+        if (app.component && (typeof app.component === 'object' || typeof app.component === 'function')) {
+          console.log(`✅ Using static component for ${app.key}:`, typeof app.component)
+          this.componentMap.set(componentKey, app.component)
+        } else {
+          console.log(`🔄 Using dynamic loader for ${app.key}`)
+          // 否则使用动态加载器（向后兼容）
+          const component = dynamicComponentLoader.loadComponent(app)
+          this.componentMap.set(componentKey, component)
+        }
+      } else {
+        console.log(`⚠️ Component already exists for ${app.key}`)
       }
     }
+    
+    console.log('🔧 Component map generated:', {
+      totalComponents: this.componentMap.size,
+      componentKeys: Array.from(this.componentMap.keys())
+    })
   }
 
   /**
@@ -175,7 +193,7 @@ class EnhancedAppRegistry {
    * 获取组件
    */
   getComponent(app: AppConfig): any {
-    const componentKey = app.component || app.key
+    const componentKey = app.key // 使用 app.key 作为组件映射的键
     return this.componentMap.get(componentKey)
   }
 
@@ -196,10 +214,16 @@ class EnhancedAppRegistry {
     this.apps.set(app.key, enhancedApp)
     
     // 生成组件映射
-    const componentKey = app.component || app.key
+    const componentKey = app.key // 使用 app.key 作为组件映射的键
     if (!this.componentMap.has(componentKey)) {
-      const component = dynamicComponentLoader.loadComponent(enhancedApp)
-      this.componentMap.set(componentKey, component)
+      // 如果app配置中直接包含component（静态导入的组件），直接使用
+      if (app.component && (typeof app.component === 'object' || typeof app.component === 'function')) {
+        this.componentMap.set(componentKey, app.component)
+      } else {
+        // 否则使用动态加载器（向后兼容）
+        const component = dynamicComponentLoader.loadComponent(enhancedApp)
+        this.componentMap.set(componentKey, component)
+      }
     }
     
     console.log(`✅ Registered app: ${app.key}`)
@@ -216,7 +240,7 @@ class EnhancedAppRegistry {
 
     this.apps.delete(key)
     
-    const componentKey = app.component || app.key
+    const componentKey = app.key // 使用 app.key 作为组件映射的键
     this.componentMap.delete(componentKey)
     
     console.log(`🗑️ Unregistered app: ${key}`)

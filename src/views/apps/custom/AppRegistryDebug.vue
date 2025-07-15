@@ -76,32 +76,7 @@ export const appConfig: AppConfig = {
   category: 'development',
   tags: ['debug', 'registry', 'development'],
   version: '1.0.0',
-  description: '用于调试应用注册表状态的工具',
-  window: {
-    width: 1000,
-    height: 700,
-    minWidth: 800,
-    minHeight: 600,
-    resizable: true
-  },
-  behavior: {
-    singleton: true,
-    autoStart: false
-  },
-  appearance: {
-    showInDock: true,
-    showInLaunchpad: true,
-    showInDesktop: true
-  },
-  display: {
-    keepInDock: false,
-    hideInDesktop: false
-  },
-  permissions: {
-    system: true,
-    network: false,
-    storage: false
-  }
+  description: '用于调试应用注册表状态的工具'
 }
 </script>
 
