@@ -2,9 +2,6 @@ import { dynamicComponentLoader } from '@/utils/dynamicComponentLoader'
 import { AppDiscovery, type AppDiscoveryConfig } from '@/utils/appDiscovery'
 import type { AppConfig } from '@/types/app.d'
 
-// 导入现有配置
-import { systemApps } from './system-apps'
-import { demoApps } from './demo-apps'
 import { customApps } from './custom-apps'
 
 /**
@@ -21,10 +18,7 @@ class EnhancedAppRegistry {
     const discoveryConfig: AppDiscoveryConfig = {
       autoScan: import.meta.env.DEV, // 仅在开发环境启用自动扫描
       scanPaths: [
-        '/src/views/apps/system',
-        '/src/views/apps/demo',
         '/src/views/apps/custom',
-        '/src/components/apps'
       ],
       excludePatterns: [
         '.*\\.test\\.vue$',
@@ -48,7 +42,7 @@ class EnhancedAppRegistry {
 
     try {
       // 1. 注册静态配置的应用
-      // this.registerStaticApps()
+      this.registerStaticApps()
 
       // 2. 发现并注册动态应用
       await this.discoverAndRegisterApps()
@@ -74,10 +68,7 @@ class EnhancedAppRegistry {
    * 注册静态配置的应用
    */
   private registerStaticApps(): void {
-    const allStaticApps = [
-      ...systemApps, 
-      ...demoApps, 
-      ...customApps]
+    const allStaticApps = [...customApps]
     
     for (const app of allStaticApps) {
       // 为静态应用添加分类信息

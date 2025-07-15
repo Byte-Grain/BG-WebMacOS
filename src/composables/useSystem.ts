@@ -75,6 +75,12 @@ export function useSystem() {
   const logout = (): void => {
     store.commit('logout')
     clearAccessToken()
+    // 清除用户名缓存
+    try {
+      localStorage.removeItem('user_name')
+    } catch (error) {
+      console.warn('Failed to clear user_name from localStorage:', error)
+    }
   }
   
   // 设置加载状态
