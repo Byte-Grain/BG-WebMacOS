@@ -6,28 +6,7 @@
     </div>
 
     <div class="test-sections">
-      <!-- SDK 测试 -->
-      <div class="test-section">
-        <h3>应用 SDK 测试</h3>
-        <div class="test-controls">
-          <button @click="testSystemAPI" class="test-btn">
-            测试系统 API
-          </button>
-          <button @click="testWindowAPI" class="test-btn">
-            测试窗口 API
-          </button>
-          <button @click="testStorageAPI" class="test-btn">
-            测试存储 API
-          </button>
-          <button @click="testNotificationAPI" class="test-btn">
-            测试通知 API
-          </button>
-        </div>
-        <div class="test-results">
-          <h4>测试结果:</h4>
-          <pre>{{ sdkTestResults }}</pre>
-        </div>
-      </div>
+
 
       <!-- 响应式数据测试 -->
       <div class="test-section">
@@ -135,10 +114,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
-import { useAppSDK } from '@/sdk'
-
-// 应用 SDK
-const sdk = useAppSDK()
 
 // 响应式数据
 const counter = ref(0)
@@ -149,7 +124,6 @@ const mousePosition = ref({ x: 0, y: 0 })
 const localStorageValue = ref('')
 
 // 测试结果
-const sdkTestResults = ref('')
 const asyncResults = ref('')
 const lifecycleLogs = ref<Array<{ time: string; event: string }>>([])
 const watchLogs = ref<Array<{ time: string; oldValue: any; newValue: any }>>([])
@@ -211,63 +185,7 @@ function resetCounter() {
   counter.value = 0
 }
 
-// SDK 测试方法
-async function testSystemAPI() {
-  try {
-    const systemInfo = await sdk.system.getSystemInfo()
-    const theme = await sdk.system.getTheme()
-    
-    sdkTestResults.value = JSON.stringify({
-      systemInfo,
-      theme,
-      timestamp: new Date().toISOString()
-    }, null, 2)
-  } catch (error) {
-    sdkTestResults.value = `系统 API 测试失败: ${error.message}`
-  }
-}
 
-async function testWindowAPI() {
-  try {
-    await sdk.window.setTitle('测试标题 - ' + new Date().toLocaleTimeString())
-    
-    sdkTestResults.value = '窗口 API 测试成功 - 标题已更新'
-  } catch (error) {
-    sdkTestResults.value = `窗口 API 测试失败: ${error.message}`
-  }
-}
-
-async function testStorageAPI() {
-  try {
-    const testKey = 'composables-test-key'
-    const testValue = { message: 'Hello from SDK', timestamp: Date.now() }
-    
-    await sdk.storage.setItem(testKey, testValue)
-    const retrieved = await sdk.storage.getItem(testKey)
-    
-    sdkTestResults.value = JSON.stringify({
-      stored: testValue,
-      retrieved,
-      success: JSON.stringify(testValue) === JSON.stringify(retrieved)
-    }, null, 2)
-  } catch (error) {
-    sdkTestResults.value = `存储 API 测试失败: ${error.message}`
-  }
-}
-
-async function testNotificationAPI() {
-  try {
-    await sdk.system.showNotification({
-      title: 'Composables 测试',
-      message: '通知 API 测试成功！',
-      type: 'success'
-    })
-    
-    sdkTestResults.value = '通知 API 测试成功 - 通知已显示'
-  } catch (error) {
-    sdkTestResults.value = `通知 API 测试失败: ${error.message}`
-  }
-}
 
 // 异步操作测试
 async function testAsyncOperation() {

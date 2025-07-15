@@ -294,36 +294,48 @@ export function useEnterpriseEventManager(initialConfig?: Partial<EventManagerCo
     const { middlewareConfig } = config.value
     
     if (middlewareConfig.enableLogging) {
-      middleware.register('logging', builtInMiddlewares.createLoggingMiddleware())
+      const loggerMw = builtInMiddlewares.createLoggerMiddleware()
+      middleware.registerMiddleware(loggerMw.config, loggerMw.handler)
     }
     
     if (middlewareConfig.enableValidation) {
-      middleware.register('validation', builtInMiddlewares.createValidationMiddleware())
+      const validationMw = builtInMiddlewares.createValidationMiddleware({ required: [], enabled: true })
+      middleware.registerMiddleware(validationMw.config, validationMw.handler)
     }
     
     if (middlewareConfig.enableCaching) {
-      middleware.register('caching', builtInMiddlewares.createCachingMiddleware())
+      const cacheMw = builtInMiddlewares.createCacheMiddleware({ maxSize: 100, ttl: 60000, enabled: true })
+      middleware.registerMiddleware(cacheMw.config, cacheMw.handler)
     }
     
     if (middlewareConfig.enableRateLimit) {
-      middleware.register('rateLimit', builtInMiddlewares.createRateLimitMiddleware())
+      const rateLimitMw = builtInMiddlewares.createRateLimitMiddleware({ maxRequests: 10, windowMs: 1000, enabled: true })
+      middleware.registerMiddleware(rateLimitMw.config, rateLimitMw.handler)
     }
     
     if (middlewareConfig.enablePerformanceMonitoring) {
-      middleware.register('performance', builtInMiddlewares.createPerformanceMiddleware())
+      const performanceMw = builtInMiddlewares.createPerformanceMiddleware({ slowThreshold: 100, enabled: true })
+      middleware.registerMiddleware(performanceMw.config, performanceMw.handler)
     }
     
     if (middlewareConfig.enableSecurity) {
-      middleware.register('security', builtInMiddlewares.createSecurityMiddleware())
+      const securityMw = builtInMiddlewares.createSecurityMiddleware()
+      middleware.registerMiddleware(securityMw.config, securityMw.handler)
     }
     
     if (middlewareConfig.enableErrorHandling) {
-      middleware.register('errorHandling', builtInMiddlewares.createErrorHandlingMiddleware())
+      const errorHandlerMw = builtInMiddlewares.createErrorHandlerMiddleware()
+      middleware.registerMiddleware(errorHandlerMw.config, errorHandlerMw.handler)
     }
     
     // 注册自定义中间件
     middlewareConfig.customMiddlewares.forEach((mw, index) => {
-      middleware.register(`custom_${index}`, mw)
+      middleware.registerMiddleware({
+        name: `custom_${index}`,
+        type: 'before',
+        priority: 500,
+        enabled: true
+      }, mw)
     })
   }
 

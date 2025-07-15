@@ -283,7 +283,11 @@ export function useSystem() {
   // 初始化系统设置
   const initializeSystem = (): void => {
     initializeVolume()
-    getAccessToken()
+    const token = getAccessToken()
+    // 如果存在有效的AccessToken，自动登录
+    if (token) {
+      login()
+    }
   }
   
   return {

@@ -63,16 +63,24 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
+  import { computed, shallowRef, watchEffect } from 'vue'
   import { useAppManager, useSystem } from '@/composables'
 
   // Composables
   const { openAppByKey, currentMenu } = useAppManager()
   const { userInfo, logout: systemLogout, lockScreen: systemLockScreen, shutdown: systemShutdown } = useSystem()
 
-  // Computed
-  const menu = computed(() => currentMenu.value)
+  // 优化：使用shallowRef和缓存优化菜单渲染
+  const menu = shallowRef([])
   const userName = computed(() => userInfo.value?.name || '')
+  
+  // 使用watchEffect优化菜单更新
+  watchEffect(() => {
+    const newMenu = currentMenu.value
+    if (JSON.stringify(menu.value) !== JSON.stringify(newMenu)) {
+      menu.value = newMenu
+    }
+  })
 
   // Methods - 直接在组件内部处理系统功能
   const handleLockScreen = () => {

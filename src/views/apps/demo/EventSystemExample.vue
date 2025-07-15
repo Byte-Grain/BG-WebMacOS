@@ -1,6 +1,81 @@
 <template>
   <div class="event-system-example">
     <div class="header">
+      <h2>窗口事件系统示例</h2>
+      <p>展示统一的窗口事件系统和增强的事件总线功能</p>
+    </div>
+    
+    <!-- 窗口操作区域 -->
+    <div class="section">
+      <h3>窗口操作</h3>
+      <div class="button-group">
+        <el-button size="small" type="primary" @click="windowEvents.window.maximize()">最大化</el-button>
+        <el-button size="small" type="primary" @click="windowEvents.window.normalize()">正常大小</el-button>
+        <el-button size="small" type="primary" @click="windowEvents.window.minimize()">最小化</el-button>
+        <el-button size="small" type="primary" @click="windowEvents.window.fullscreen()">全屏</el-button>
+        <el-button size="small" type="danger" @click="windowEvents.window.close()">关闭</el-button>
+      </div>
+    </div>
+    
+    <!-- 窗口属性区域 -->
+    <div class="section">
+      <h3>窗口属性</h3>
+      <div class="form-group">
+        <el-input 
+          v-model="windowTitle" 
+          placeholder="输入新的窗口标题"
+          style="width: 200px; margin-right: 10px;"
+        />
+        <el-button size="small" @click="setWindowTitle">设置标题</el-button>
+      </div>
+      <div class="form-group">
+        <el-input-number v-model="windowX" :min="0" :max="1920" style="width: 100px; margin-right: 5px;" />
+        <el-input-number v-model="windowY" :min="0" :max="1080" style="width: 100px; margin-right: 10px;" />
+        <el-button size="small" @click="setWindowPosition">设置位置</el-button>
+      </div>
+      <div class="form-group">
+        <el-input-number v-model="windowWidth" :min="300" :max="1920" style="width: 100px; margin-right: 5px;" />
+        <el-input-number v-model="windowHeight" :min="200" :max="1080" style="width: 100px; margin-right: 10px;" />
+        <el-button size="small" @click="setWindowSize">设置大小</el-button>
+      </div>
+    </div>
+    
+    <!-- 应用操作区域 -->
+    <div class="section">
+      <h3>应用操作</h3>
+      <div class="button-group">
+        <el-button size="small" type="success" @click="openAboutApp">打开关于</el-button>
+        <el-button size="small" type="success" @click="openColorfulApp">打开彩色应用</el-button>
+        <el-button size="small" type="warning" @click="closeAboutApp">关闭关于</el-button>
+      </div>
+    </div>
+    
+    <!-- 事件监听状态 -->
+    <div class="section">
+      <h3>事件监听状态</h3>
+      <div class="status-grid">
+        <div class="status-item">
+          <span class="label">窗口状态:</span>
+          <span class="value" :class="windowState">{{ windowState }}</span>
+        </div>
+        <div class="status-item">
+          <span class="label">窗口焦点:</span>
+          <span class="value" :class="{ focused: windowFocused, blurred: !windowFocused }">
+            {{ windowFocused ? '已聚焦' : '未聚焦' }}
+          </span>
+        </div>
+        <div class="status-item">
+          <span class="label">窗口位置:</span>
+          <span class="value">{{ windowPosition.x }}, {{ windowPosition.y }}</span>
+        </div>
+        <div class="status-item">
+          <span class="label">窗口大小:</span>
+          <span class="value">{{ windowSize.width }} × {{ windowSize.height }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="header">
       <h2>事件系统中期优化示例</h2>
       <div class="status-indicators">
         <div class="status-item" :class="{ healthy: systemStatus.isHealthy }">
@@ -213,8 +288,19 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useEnterpriseEventManager } from '@/composables'
+import { useAppWindowEvents } from '@/composables/useAppWindowEvents'
 import type { PerformanceReport, Alert } from '@/composables/useEnterpriseEventManager'
 import type { DebugRecord, DebugFilter } from '@/composables/useEventDebugger'
+
+// 定义props来接收app信息
+defineProps<{
+  app: {
+    key: string
+    pid: number
+    title?: string
+    [key: string]: any
+  }
+}>()
 
 // 事件管理器
 const eventManager = useEnterpriseEventManager({
@@ -253,10 +339,24 @@ const eventManager = useEnterpriseEventManager({
   }
 })
 
+// 窗口事件系统
+const windowEvents = useAppWindowEvents()
+
+// 窗口状态数据
+const windowTitle = ref('新窗口标题')
+const windowX = ref(100)
+const windowY = ref(100)
+const windowWidth = ref(800)
+const windowHeight = ref(600)
+const windowState = ref('normal')
+const windowFocused = ref(true)
+const windowPosition = ref({ x: 0, y: 0 })
+const windowSize = ref({ width: 800, height: 600 })
+
 // 响应式数据
 const systemStatus = eventManager.systemStatus
 const activeAlerts = eventManager.activeAlerts
-const performanceMetrics = eventManager.debugger.performanceMetrics
+const performanceMetrics = eventManager.eventDebugger.performanceMetrics
 const performanceReport = ref<PerformanceReport | null>(null)
 
 // 调试相关
@@ -267,11 +367,11 @@ const debugFilter = ref<Partial<DebugFilter>>({
 
 // 计算属性
 const recentDebugRecords = computed(() => {
-  return eventManager.debugger.filteredRecords.value.slice(0, 50)
+  return eventManager.eventDebugger.filteredRecords.value.slice(0, 50)
 })
 
 const eventFlows = computed(() => {
-  return eventManager.debugger.getEventFlowData().slice(0, 10)
+  return eventManager.eventDebugger.getEventFlowData().slice(0, 10)
 })
 
 // 设置路由
@@ -430,18 +530,18 @@ function resolveAlert(alertId: string) {
 
 // 调试日志管理
 function updateDebugFilter() {
-  eventManager.debugger.filter.value = {
+  eventManager.eventDebugger.filter.value = {
     ...debugFilter.value,
     levels: debugFilter.value.level ? [debugFilter.value.level as any] : undefined
   }
 }
 
 function clearDebugLogs() {
-  eventManager.debugger.clearRecords()
+  eventManager.eventDebugger.clearRecords()
 }
 
 function exportDebugLogs() {
-  const data = eventManager.debugger.exportData({
+  const data = eventManager.eventDebugger.exportData({
     format: 'json',
     includeMetadata: true,
     includeStack: true
@@ -488,6 +588,31 @@ function formatTime(timestamp: number): string {
   return new Date(timestamp).toLocaleTimeString()
 }
 
+// 窗口操作方法
+function setWindowTitle() {
+  windowEvents.window.setTitle(windowTitle.value)
+}
+
+function setWindowPosition() {
+  windowEvents.window.setPosition(windowX.value, windowY.value)
+}
+
+function setWindowSize() {
+  windowEvents.window.setSize(windowWidth.value, windowHeight.value)
+}
+
+function openAboutApp() {
+  windowEvents.app.open('about')
+}
+
+function openColorfulApp() {
+  windowEvents.app.open('colorful')
+}
+
+function closeAboutApp() {
+  windowEvents.app.close('about')
+}
+
 // 生命周期
 onMounted(() => {
   setupRoutes()
@@ -502,6 +627,27 @@ onMounted(() => {
     await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50))
     return { processed: true, index: data.index }
   })
+  
+  // 监听窗口事件
+   windowEvents.on.onWindowStateChange((state) => {
+     windowState.value = state
+   })
+   
+   windowEvents.on.onWindowFocusChange((focused) => {
+     windowFocused.value = focused
+   })
+   
+   windowEvents.on.onWindowPositionChange((position) => {
+     windowPosition.value = position
+     windowX.value = position.x
+     windowY.value = position.y
+   })
+   
+   windowEvents.on.onWindowSizeChange((size) => {
+     windowSize.value = size
+     windowWidth.value = size.width
+     windowHeight.value = size.height
+   })
 })
 
 onUnmounted(() => {
@@ -518,11 +664,39 @@ watch(activeAlerts, (alerts) => {
 }, { deep: true })
 </script>
 
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'demo_es',
+  title: 'ES',
+  icon: 'icon-MIS_bangongOA',
+  iconColor: '#fff',
+  iconBgColor: '#022732',
+  width: 420,
+  height: 350,
+  resizable: true,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  keepInDock: true,
+  category: 'utilities',
+  description: '演示常驻 Dock 功能的应用',
+  version: '1.0.0',
+  author: 'Demo Team',
+  tags: ['dock', 'persistent'],
+  demo: true,
+  featured: false
+}
+</script>
+
 <style scoped>
 .event-system-example {
   padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  height: 100%;
+  overflow-y: auto;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -531,8 +705,16 @@ watch(activeAlerts, (alerts) => {
 }
 
 .header h2 {
-  margin: 0 0 15px 0;
-  color: #333;
+  color: #1d1d1f;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.header p {
+  color: #86868b;
+  font-size: 16px;
+  margin: 0;
 }
 
 .status-indicators {
@@ -573,17 +755,82 @@ watch(activeAlerts, (alerts) => {
 }
 
 .section {
-  background: white;
-  border-radius: 8px;
+  margin-bottom: 30px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #f5f5f7;
+  border-radius: 12px;
 }
 
 .section h3 {
+  color: #1d1d1f;
+  font-size: 20px;
+  font-weight: 600;
   margin: 0 0 15px 0;
-  color: #333;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 8px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.status-item .label {
+  font-weight: 500;
+  color: #1d1d1f;
+}
+
+.status-item .value {
+  font-weight: 600;
+}
+
+.status-item .value.maximized {
+  color: #007aff;
+}
+
+.status-item .value.minimized {
+  color: #ff9500;
+}
+
+.status-item .value.fullscreen {
+  color: #34c759;
+}
+
+.status-item .value.normal {
+  color: #8e8e93;
+}
+
+.status-item .value.focused {
+  color: #34c759;
+}
+
+.status-item .value.blurred {
+  color: #8e8e93;
 }
 
 .event-triggers {

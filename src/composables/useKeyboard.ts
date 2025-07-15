@@ -54,13 +54,14 @@ export function useKeyboard() {
     if (config.modifiers?.shift) modifiers.push('shift')
     if (config.modifiers?.meta) modifiers.push('meta')
     
-    return `${modifiers.join('+')}${modifiers.length ? '+' : ''}${config.key.toLowerCase()}`
+    const key = config.key ? config.key.toLowerCase() : ''
+    return `${modifiers.join('+')}${modifiers.length ? '+' : ''}${key}`
   }
 
   // 检查快捷键是否匹配
   const isShortcutMatch = (event: KeyboardEvent, config: ShortcutConfig): boolean => {
     // 检查主键
-    if (event.key.toLowerCase() !== config.key.toLowerCase()) {
+    if (!event.key || event.key.toLowerCase() !== config.key.toLowerCase()) {
       return false
     }
 
@@ -77,7 +78,7 @@ export function useKeyboard() {
   // 键盘按下事件处理
   const handleKeyDown = (event: KeyboardEvent): void => {
     // 更新按键状态
-    if (event.key) {
+    if (event.key && event.key !== null) {
       pressedKeys.value.add(event.key.toLowerCase())
     }
     
@@ -125,7 +126,7 @@ export function useKeyboard() {
   // 键盘释放事件处理
   const handleKeyUp = (event: KeyboardEvent): void => {
     // 更新按键状态
-    if (event.key) {
+    if (event.key && event.key !== null) {
       pressedKeys.value.delete(event.key.toLowerCase())
     }
     
@@ -213,7 +214,9 @@ export function useKeyboard() {
       parts.push(navigator.platform.includes('Mac') ? '⇧' : 'Shift')
     }
     
-    parts.push(config.key.toUpperCase())
+    if (config.key) {
+      parts.push(config.key.toUpperCase())
+    }
     
     return parts.join(navigator.platform.includes('Mac') ? '' : '+')
   }

@@ -10,6 +10,7 @@ import { useErrorMonitor } from './useErrorMonitor'
 import { usePerformanceMonitor } from './usePerformanceMonitor'
 import { usePerformance } from './usePerformance'
 import { useEnterpriseEventManager } from './useEnterpriseEventManager'
+import { useDesktopGesture, GESTURE_DIRECTIONS, DEFAULT_GESTURE_CONFIG } from './useDesktopGesture'
 
 // 组合式函数统一导出
 export { useAppManager } from './useAppManager'
@@ -25,6 +26,7 @@ export {
 } from './useEventBus'
 export { useKeyboard, globalKeyboard } from './useKeyboard'
 export { useNotification, globalNotification, notify } from './useNotification'
+export { useDesktopGesture, GESTURE_DIRECTIONS, DEFAULT_GESTURE_CONFIG } from './useDesktopGesture'
 
 // 事件系统中期优化组件
 export { useEventMiddleware } from './useEventMiddleware'
@@ -86,6 +88,7 @@ export type {
 // 其他类型导出
 export type { ModifierKeys, ShortcutConfig, ShortcutHandler } from './useKeyboard'
 export type { NotificationType, NotificationPosition, NotificationConfig, NotificationAction, NotificationInstance } from './useNotification'
+export type { GestureConfig, GestureEventData, GestureDirection } from './useDesktopGesture'
 
 // 类型导出
 export type {
