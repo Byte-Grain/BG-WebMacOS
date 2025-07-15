@@ -19,8 +19,6 @@
 </template>
 <script setup>
   import { useAppManager } from '@/composables'
-  import { getDockApps } from '@/config/app.config'
-  import { APP_KEYS } from '@/constants'
 
   // 使用组合式函数
   const { 

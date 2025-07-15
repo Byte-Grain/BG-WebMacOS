@@ -1,94 +1,94 @@
 /**
  * 应用服务层 - 管理应用的业务逻辑
  */
-import { appConfig } from '@/config/app.config'
-import type { AppConfiguration } from '@/types/app'
+import { getAllApps, getAppByKey, getDockApps, getSystemApps, getDemoApps, searchApps } from '@/config/apps/app-registry'
+import type { AppConfig } from '@/config/apps/types'
 
 export class AppService {
   /**
    * 根据应用key获取应用配置
    */
-  static getAppByKey(key: string): AppConfiguration | undefined {
-    return appConfig.apps.find(app => app.key === key)
+  static getAppByKey(key: string): AppConfig | undefined {
+    return getAppByKey(key)
   }
 
   /**
    * 获取所有应用
    */
-  static getAllApps(): AppConfiguration[] {
-    return appConfig.apps
+  static getAllApps(): AppConfig[] {
+    return getAllApps()
   }
 
   /**
    * 获取Dock应用列表
    */
-  static getDockApps(): AppConfiguration[] {
-    return appConfig.dockApps
+  static getDockApps(): AppConfig[] {
+    return getDockApps()
   }
 
   /**
    * 获取系统应用
    */
-  static getSystemApps(): AppConfiguration[] {
-    return appConfig.apps.filter(app => app.category === 'system')
+  static getSystemApps(): AppConfig[] {
+    return getSystemApps()
   }
 
   /**
    * 获取演示应用
    */
-  static getDemoApps(): AppConfiguration[] {
-    return appConfig.apps.filter(app => app.category === 'demo')
+  static getDemoApps(): AppConfig[] {
+    return getDemoApps()
   }
 
   /**
    * 检查应用是否存在
    */
   static appExists(key: string): boolean {
-    return appConfig.apps.some(app => app.key === key)
+    return !!getAppByKey(key)
   }
 
   /**
    * 获取应用图标URL
    */
-  static getAppIcon(app: AppConfiguration): string {
+  static getAppIcon(app: AppConfig): string {
     return app.icon || '/default-app-icon.png'
   }
 
   /**
    * 检查应用是否可以调整大小
    */
-  static canResize(app: AppConfiguration): boolean {
-    return !app.disableResize
+  static canResize(app: AppConfig): boolean {
+    return app.resizable !== false
   }
 
   /**
    * 检查应用是否可以关闭
    */
-  static canClose(app: AppConfiguration): boolean {
-    return !app.unclose
+  static canClose(app: AppConfig): boolean {
+    return app.closable !== false
   }
 
   /**
    * 检查应用是否应该保持在Dock中
    */
-  static shouldKeepInDock(app: AppConfiguration): boolean {
+  static shouldKeepInDock(app: AppConfig): boolean {
     return app.keepInDock || false
   }
 
   /**
    * 检查应用是否应该隐藏桌面
    */
-  static shouldHideDesktop(app: AppConfiguration): boolean {
-    return app.hideDesktop || false
+  static shouldHideDesktop(app: AppConfig): boolean {
+    return app.hideInDesktop || false
   }
 
   /**
    * 获取应用的默认尺寸
    */
-  static getDefaultSize(app: AppConfiguration): { width?: number; height?: number } {
+  static getDefaultSize(app: AppConfig): { width?: number; height?: number } {
     return {
-      width: app.width,
-      height: app.height
+      width: typeof app.width === 'number' ? app.width : undefined,
+      height: typeof app.height === 'number' ? app.height : undefined
     }
   }
 
@@ -102,14 +102,14 @@ export class AppService {
   /**
    * 验证应用配置
    */
-  static validateAppConfig(app: Partial<AppConfiguration>): boolean {
-    return !!(app.key && app.title && app.component)
+  static validateAppConfig(app: Partial<AppConfig>): boolean {
+    return !!(app.key && app.title && (app.component || ('outLink' in app && app.outLink) || ('innerLink' in app && app.innerLink)))
   }
 
   /**
    * 格式化应用标题
    */
-  static formatAppTitle(app: AppConfiguration, customTitle?: string): string {
+  static formatAppTitle(app: AppConfig, customTitle?: string): string {
     return customTitle || app.title
   }
 
@@ -131,26 +131,22 @@ export class AppService {
   /**
    * 搜索应用
    */
-  static searchApps(query: string): AppConfiguration[] {
-    const lowercaseQuery = query.toLowerCase()
-    return appConfig.apps.filter(app => 
-      app.title.toLowerCase().includes(lowercaseQuery) ||
-      app.key.toLowerCase().includes(lowercaseQuery) ||
-      (app.description && app.description.toLowerCase().includes(lowercaseQuery))
-    )
+  static searchApps(query: string): AppConfig[] {
+    return searchApps(query)
   }
 
   /**
    * 按分类分组应用
    */
-  static groupAppsByCategory(): Record<string, AppConfiguration[]> {
-    return appConfig.apps.reduce((groups, app) => {
+  static groupAppsByCategory(): Record<string, AppConfig[]> {
+    const allApps = getAllApps()
+    return allApps.reduce((groups, app) => {
       const category = app.category || 'other'
       if (!groups[category]) {
         groups[category] = []
       }
       groups[category].push(app)
       return groups
-    }, {} as Record<string, AppConfiguration[]>)
+    }, {} as Record<string, AppConfig[]>)
   }
 }

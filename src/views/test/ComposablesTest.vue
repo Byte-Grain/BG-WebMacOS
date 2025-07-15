@@ -76,6 +76,17 @@
         </div>
       </div>
 
+      <!-- 事件调试面板 -->
+      <div class="test-section debug-panel-section">
+        <h3>🔍 事件调试面板</h3>
+        <div class="test-controls">
+          <button @click="toggleDebugPanel" :class="['btn', showDebugPanel ? 'btn-warning' : 'btn-primary']">
+            {{ showDebugPanel ? '隐藏调试面板' : '显示调试面板' }}
+          </button>
+          <p>实时监控事件系统状态、性能指标和调试信息</p>
+        </div>
+      </div>
+
       <!-- 系统信息测试 -->
       <div class="test-section">
         <h3>系统信息</h3>
@@ -86,6 +97,17 @@
           <p>浏览器: {{ deviceInfo.browser }}</p>
           <p>屏幕尺寸: {{ systemInfo.screen.width }}x{{ systemInfo.screen.height }}</p>
         </div>
+      </div>
+    </div>
+
+    <!-- 事件调试面板 -->
+    <div v-if="showDebugPanel" class="debug-panel-overlay">
+      <div class="debug-panel-container">
+        <div class="debug-panel-header">
+          <h3>事件系统调试面板</h3>
+          <button @click="toggleDebugPanel" class="close-btn">×</button>
+        </div>
+        <EventDebugPanel />
       </div>
     </div>
   </div>
@@ -102,6 +124,7 @@ import {
   checkPerformanceHealth,
   EVENTS 
 } from '@/composables'
+import EventDebugPanel from '@/components/business/EventDebugPanel.vue'
 
 // 使用核心组合式函数
 const {
@@ -142,6 +165,7 @@ const isOnline = ref(getNetworkStatus().online)
 // 响应式数据
 const eventCount = ref(0)
 const shortcutRegistered = ref(false)
+const showDebugPanel = ref(true)
 const deviceInfo = ref({
   type: device.isMobile() ? 'Mobile' : device.isTablet() ? 'Tablet' : 'Desktop',
   os: device.getOS(),
@@ -427,6 +451,16 @@ const triggerPerformanceEvent = () => {
   })
 }
 
+// 调试面板控制
+const toggleDebugPanel = () => {
+  showDebugPanel.value = !showDebugPanel.value
+  if (showDebugPanel.value) {
+    success('事件调试面板已打开')
+  } else {
+    info('事件调试面板已关闭')
+  }
+}
+
 // 生命周期
 onMounted(() => {
   // 注册事件监听器
@@ -615,6 +649,76 @@ onUnmounted(() => {
   border-left: 3px solid rgba(0, 122, 255, 0.8);
 }
 
+/* 调试面板样式 */
+.debug-panel-section {
+  border: 2px solid rgba(0, 122, 255, 0.3);
+  background: rgba(0, 122, 255, 0.05);
+}
+
+.debug-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.debug-panel-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  width: 90vw;
+  height: 80vh;
+  max-width: 1200px;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.debug-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(0, 122, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 122, 255, 0.2);
+}
+
+.debug-panel-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.close-btn {
+  background: rgba(220, 53, 69, 0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(220, 53, 69, 1);
+  transform: scale(1.1);
+}
+
 @media (max-width: 768px) {
   .composables-test {
     padding: 15px;
@@ -622,6 +726,23 @@ onUnmounted(() => {
   
   .test-sections {
     grid-template-columns: 1fr;
+  }
+  
+  .debug-panel-overlay {
+    padding: 10px;
+  }
+  
+  .debug-panel-container {
+    width: 95vw;
+    height: 85vh;
+  }
+  
+  .debug-panel-header {
+    padding: 12px 16px;
+  }
+  
+  .debug-panel-header h3 {
+    font-size: 16px;
   }
 }
 </style>

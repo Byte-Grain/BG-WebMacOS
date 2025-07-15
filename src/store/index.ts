@@ -1,6 +1,6 @@
 import { createStore } from 'vuex'
 import { AppState, AppConfig } from '@/types/app'
-import { appConfig } from '@/config/app.config'
+import { getDockApps, getAppByKey } from '@/config/apps/app-registry'
 
 // 定义应用状态接口
 interface AppState {
@@ -144,7 +144,7 @@ const mutations = {
 
   getDockAppList(state: AppState): void {
     // Initialize dock app list with apps that have keepInDock: true
-    state.dockAppList = appConfig.apps.filter(app => app.keepInDock)
+    state.dockAppList = getDockApps()
   },
 
   openApp(state: AppState, app: AppConfig): void {
@@ -177,7 +177,7 @@ const mutations = {
   },
 
   openAppByKey(state: AppState, key: string): void {
-    const app = appConfig.apps.find(item => item.key === key)
+    const app = getAppByKey(key)
     if (app) {
       // Use openApp mutation to handle the opening logic
       const existingApp = state.openAppList.find(item => item.key === app.key)
