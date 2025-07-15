@@ -1,6 +1,5 @@
 <template>
   <div class="footer">
-    <div class="space"></div>
     <div class="dock">
       <template v-for="item in dockApps" :key="item.key">
         <div class="item" @click="handleAppClick(item)" :class="currentApp?.key === item.key ? 'jump' : ''"
@@ -14,7 +13,6 @@
         </div>
       </template>
     </div>
-    <div class="space"></div>
   </div>
 </template>
 <script setup>
@@ -36,16 +34,27 @@
 </script>
 
 <style scoped lang="scss">
+  .footer {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99990;
+  }
+
   .dock {
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(20px);
     border-radius: 10px;
-    flex-direction: row;
     display: flex;
+    flex-direction: row;
     padding: 2px;
-    z-index: 99990;
+    width: fit-content;
 
     .item {
       padding: 3px;

@@ -1,73 +1,61 @@
 <template>
   <div class="desktop">
-    <div class="top">
-      <TopBar></TopBar>
-      <div class="space"></div>
-      <div class="status">
-        <div class="audio">
-          <i class="iconfont icon-changyongtubiao-xianxingdaochu-zhuanqu-39" @click="showOrHideVolumn"></i>
-
-          <transition name="fade">
-            <el-slider v-show="isVolumnShow" v-model="volumn" :show-tooltip="false" vertical></el-slider>
-          </transition>
-        </div>
-        <div class="datetime" @click.self="showOrHideCalendar">
-          {{ timeString }}
-          <transition name="fade">
-            <el-calendar v-model="nowDate" v-if="isCalendarShow"></el-calendar>
-          </transition>
-        </div>
-        <div class="notification">
-          <i class="iconfont icon-changyongtubiao-xianxingdaochu-zhuanqu-25" @click="showOrHideWidget"></i>
-        </div>
-      </div>
-    </div>
+    <DesktopStatusBar
+      :time-string="timeString"
+      :volume="volumn"
+      :volume-show="isVolumnShow"
+      :calendar-show="isCalendarShow"
+      :widget-show="isWidgetShow"
+      :current-date="nowDate"
+      @toggle-volume="showOrHideVolumn"
+      @change-volume="setVolume"
+      @toggle-calendar="showOrHideCalendar"
+      @change-date="(date) => nowDate = date"
+      @toggle-widget="showOrHideWidget"
+    />
     <div class="body" @contextmenu.prevent.self="
       hideAllController();
     openMenu($event);
     " @click.stop="hideAllController()">
-      <div class="desktop-app">
-        <template v-for="item in deskTopAppList" :key="item.key">
-          <div class="app-item" v-on:dblclick="openAppByKey(item.key)" v-if="!item.hideInDesktop">
-            <div class="icon">
-              <i :style="{
-                backgroundColor: item.iconBgColor,
-                color: item.iconColor,
-              }" class="iconfont" :class="item.icon"></i>
-            </div>
-            <div class="title">{{ item.title }}</div>
-          </div>
-        </template>
-      </div>
+      <DesktopAppsArea
+        :apps="deskTopAppList"
+        @open-app="openAppByKey"
+      />
       <transition-group name="fade-window">
-        <template v-for="item in openApps" :key="item.pid">
-          <App v-if="!item.outLink" v-show="!item.hide" :app="item"></App>
-        </template>
+        <App 
+          v-for="item in visibleOpenApps" 
+          :key="item.pid"
+          :app="item"
+        ></App>
       </transition-group>
-      <transition name="fade-menu">
-        <div v-show="rightMenuVisible" :style="{ left: rightMenuLeft + 'px', top: rightMenuTop + 'px' }"
-          class="contextmenu">
-          <div @click="lockScreen">{{ $t('system.lockScreen') }}...</div>
-          <hr />
-          <div @click="openAppByKey('system_setting')">{{ $t('system.settings') }}...</div>
-          <div @click="openAppByKey('system_task')">{{ $t('system.forceQuit') }}...</div>
-          <hr />
-          <div @click="$message.warning($t('system.comingSoon'))">{{ $t('system.setWallpaper') }}...</div>
-          <div @click="openAppByKey('system_about')">{{ $t('system.aboutUs') }}</div>
-        </div>
-      </transition>
+      <DesktopContextMenu
+        :visible="rightMenuVisible"
+        :left="rightMenuLeft"
+        :top="rightMenuTop"
+        @lock-screen="lockScreen"
+        @open-settings="() => openAppByKey('system_setting')"
+        @open-task-manager="() => openAppByKey('system_task')"
+        @set-wallpaper="() => $message.warning($t('system.comingSoon'))"
+        @open-about="() => openAppByKey('system_about')"
+      />
       <transition-group name="fade-widget">
         <div v-show="isWidgetShow" key="widget-container">
         </div>
       </transition-group>
     </div>
-    <Dock></Dock>
+    <Dock />
   </div>
 </template>
 <script setup>
-  import { ref, watch, onMounted, computed } from 'vue'
+  import { ref, watch, onMounted, onUnmounted, computed, nextTick } from 'vue'
   import { ElMessage } from 'element-plus'
   import { useAppManager, useSystem, useUtils } from '@/composables'
+  import { usePerformance } from '@/composables/usePerformance'
+  import DesktopStatusBar from '@/components/layout/DesktopStatusBar.vue'
+  import DesktopAppsArea from '@/components/layout/DesktopAppsArea.vue'
+  import DesktopContextMenu from '@/components/layout/DesktopContextMenu.vue'
+  import Dock from '@/components/layout/Dock.vue'
+  import App from '@/components/App.vue'
 
   const $message = ElMessage
   const emit = defineEmits(['launchpad', 'lockScreen', 'shutdown', 'logout'])
@@ -76,6 +64,7 @@
   const { openAppByKey, currentMenu, openApps, desktopApps } = useAppManager()
   const { volume, setVolume, logout: systemLogout } = useSystem()
   const { date, storage } = useUtils()
+  const { debounce: performanceDebounce, throttle, getPerformanceReport } = usePerformance('Desktop')
 
   // 响应式数据
   const isCalendarShow = ref(false)
@@ -89,8 +78,17 @@
   const userName = ref('')
   const timeString = ref('')
   const isWidgetShow = ref(false)
+  const timeUpdateTimer = ref(null)
 
-  const deskTopAppList = computed(() => desktopApps.value.filter(app => app && app.key))
+  // 优化：使用计算属性缓存桌面应用列表
+  const deskTopAppList = computed(() => {
+    return desktopApps.value.filter(app => app && app.key && !app.hideInDesktop)
+  })
+
+  // 优化：缓存可见的打开应用
+  const visibleOpenApps = computed(() => {
+    return openApps.value.filter(app => !app.outLink && !app.hide)
+  })
 
   // 监听器
   watch(volumn, (newValue) => {
@@ -111,6 +109,7 @@
     isCalendarShow.value = !isCalendarShow.value
   }
 
+  // 优化：使用节流优化音量控制
   const showOrHideVolumn = () => {
     isVolumnShow.value = !isVolumnShow.value
     if (isVolumnShow.value) {
@@ -121,6 +120,7 @@
     }
   }
 
+  // 优化：使用防抖的隐藏控制器函数
   const hideAllController = () => {
     isVolumnShow.value = false
     rightMenuVisible.value = false
@@ -144,10 +144,29 @@
     rightMenuVisible.value = true
   }
 
+  // 优化：智能时间更新，只在分钟变化时更新
   const startTimer = () => {
-    setInterval(() => {
-      timeString.value = date.format(new Date(), 'MM-dd HH:mm')
-    }, 1000)
+    const updateTime = () => {
+      const now = new Date()
+      const newTimeString = date.format(now, 'MM-dd HH:mm')
+      if (timeString.value !== newTimeString) {
+        timeString.value = newTimeString
+      }
+    }
+    
+    // 立即更新一次
+    updateTime()
+    
+    // 计算到下一分钟的毫秒数
+    const now = new Date()
+    const nextMinute = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1, 0, 0)
+    const msToNextMinute = nextMinute.getTime() - now.getTime()
+    
+    // 在下一分钟开始时更新，然后每分钟更新一次
+    setTimeout(() => {
+      updateTime()
+      timeUpdateTimer.value = setInterval(updateTime, 60000) // 每分钟更新
+    }, msToNextMinute)
   }
 
   const lockScreen = () => {
@@ -167,10 +186,37 @@
     isWidgetShow.value = !isWidgetShow.value
   }
 
+  // 优化：添加性能报告功能（仅开发环境）
+  const logPerformanceReport = () => {
+    if (import.meta.env.DEV) {
+      console.group('🖥️ Desktop 组件性能报告')
+      console.table(getPerformanceReport())
+      console.groupEnd()
+    }
+  }
+
   // 生命周期
   onMounted(() => {
     userName.value = storage.get('user_name', '') || ''
     startTimer()
+    
+    // 开发环境下定期输出性能报告
+    if (import.meta.env.DEV) {
+      const performanceInterval = setInterval(logPerformanceReport, 30000) // 每30秒
+      onUnmounted(() => {
+        clearInterval(performanceInterval)
+      })
+    }
+  })
+
+  // 优化：清理定时器
+  onUnmounted(() => {
+    if (timeUpdateTimer.value) {
+      clearInterval(timeUpdateTimer.value)
+    }
+    if (volumnDelayTimer.value) {
+      clearTimeout(volumnDelayTimer.value)
+    }
   })
 </script>
 <style scoped lang="scss">
@@ -185,99 +231,9 @@
     color: white;
     overflow: hidden;
     text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
-
-    .top {
-      height: 28px;
-      background-color: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(20px);
-      display: flex;
-      flex-direction: row;
-      font-size: 14px;
-      align-items: center;
-      justify-content: center;
-      padding: 0px 5px;
-      z-index: 100;
-
-      .space {
-        flex-grow: 1;
-      }
-
-      .status {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-
-        .audio {
-          cursor: pointer;
-          padding: 0px 10px;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          position: relative;
-
-          .iconfont {
-            font-size: 20px;
-          }
-
-          .el-slider {
-            position: absolute;
-            top: 40px;
-            height: 80px;
-          }
-        }
-
-        .audio:hover {
-          background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .datetime {
-          cursor: pointer;
-          padding: 0px 10px;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          position: relative;
-
-          .el-calendar {
-            color: #333;
-            background: rgba(255, 255, 255, 0.98);
-            position: fixed;
-            top: 40px;
-            right: 20px;
-            width: 500px;
-            border-radius: 10px;
-          }
-        }
-
-        .datetime:hover {
-          background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .notification {
-          cursor: pointer;
-          padding: 0px 10px;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-
-          .iconfont {
-            font-size: 20px;
-          }
-
-          .notification:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-          }
-        }
-      }
-    }
+    /* 优化：启用硬件加速 */
+    transform: translateZ(0);
+    will-change: transform;
 
     .body {
       flex-grow: 1;
@@ -286,109 +242,55 @@
       justify-content: center;
       align-items: center;
       position: relative;
-
-      .desktop-app {
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-end;
-        padding: 20px;
-        flex-wrap: wrap-reverse;
-
-        .app-item {
-          padding: 10px 0px;
-          flex-direction: column;
-          text-align: center;
-          text-shadow: 0px 0px 2px rgb(0 0 0 / 50%);
-          cursor: pointer;
-          border-radius: 10px;
-          border: 2px solid transparent;
-          justify-content: center;
-          align-items: center;
-          width: 80px;
-
-          .icon {
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-          }
-
-          .iconfont {
-            font-size: 28px;
-            border-radius: 10px;
-            padding: 8px;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-
-          .title {
-            font-size: 12px;
-            margin-top: 5px;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-          }
-        }
-
-        .app-item:hover {
-          border: 2px solid rgba(255, 255, 255, 0.5);
-        }
-      }
-
-      .contextmenu {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 5px;
-        box-shadow: 0px 0px 10px rgb(0 0 0 / 30%);
-        color: #333;
-        font-size: 14px;
-        text-align: left;
-        width: 200px;
-        overflow: hidden;
-        padding: 2px 0px;
-        text-shadow: none;
-        z-index: 100;
-
-        hr {
-          border: none;
-          border-top: 1px solid #ddd;
-        }
-
-        div {
-          cursor: pointer;
-          font-size: 13px !important;
-          color: #333;
-          border-radius: 5px;
-          line-height: 2;
-          padding: 0px 12px;
-          display: flex;
-          align-items: center;
-          margin: 3px 5px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        div:hover {
-          background: #4b9efb;
-          color: white;
-          border-radius: 5px;
-        }
-      }
     }
 
-    .footer {
-      display: flex;
-      z-index: 100;
-    }
+  }
+
+  /* 优化：添加更流畅的过渡动画 */
+  .fade-window-enter-active,
+  .fade-window-leave-active {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .fade-window-enter-from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+
+  .fade-window-leave-to {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+
+  .fade-menu-enter-active,
+  .fade-menu-leave-active {
+    transition: all 0.2s ease;
+  }
+
+  .fade-menu-enter-from,
+  .fade-menu-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  .fade-widget-enter-active,
+  .fade-widget-leave-active {
+    transition: all 0.3s ease;
+  }
+
+  .fade-widget-enter-from,
+  .fade-widget-leave-to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.2s ease;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
   }
 </style>

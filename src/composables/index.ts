@@ -8,6 +8,7 @@ import { useNotification } from './useNotification'
 import { useEventBus, useEventBusLegacy } from './useEventBus'
 import { useErrorMonitor } from './useErrorMonitor'
 import { usePerformanceMonitor } from './usePerformanceMonitor'
+import { usePerformance } from './usePerformance'
 import { useEnterpriseEventManager } from './useEnterpriseEventManager'
 
 // 组合式函数统一导出
@@ -48,6 +49,12 @@ export {
   getCurrentPerformanceMetrics,
   checkPerformanceHealth,
 } from './usePerformanceMonitor'
+
+// 性能优化工具导出
+export {
+  usePerformance,
+  useVirtualScroll
+} from './usePerformance'
 
 // 事件系统类型导出
 export type { 
