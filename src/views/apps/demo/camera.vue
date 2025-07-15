@@ -129,7 +129,35 @@
     margin: 10%;
   }
 </style>
-<script setup>
+
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'demo_camera',
+  title: 'Photo Booth',
+  icon: 'icon-camera1',
+  iconColor: '#fff',
+  iconBgColor: '#E24637',
+  width: 540,
+  height: 540,
+  resizable: false,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  category: 'graphics',
+  description: '相机拍照应用演示',
+  version: '1.0.0',
+  author: 'Demo Team',
+  demo: true,
+  featured: false
+}
+</script>
+
+<script setup lang="ts">
+  import { ref } from 'vue'
 
   // 响应式数据
   const canUse = ref(false)

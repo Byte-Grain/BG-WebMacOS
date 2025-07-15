@@ -339,6 +339,35 @@ function testLocalStorage() {
 }
 </script>
 
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'composables_test',
+  title: 'Composables Test',
+  icon: '🧪',
+  iconColor: '#fff',
+  iconBgColor: '#4CAF50',
+  width: 800,
+  height: 600,
+  resizable: true,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  hideInDesktop: false,
+  category: 'development',
+  description: '测试和演示组合式函数功能',
+  version: '1.0.0',
+  author: 'Developer',
+  tags: ['test', 'composables', 'vue'],
+  system: true,
+  essential: false,
+  singleton: false
+}
+</script>
+
 <style scoped>
 .composables-test {
   padding: 20px;

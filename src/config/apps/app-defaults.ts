@@ -28,12 +28,14 @@ export const appDefaults: Partial<BaseAppConfig> = {
   animation: true,
   
   // 显示设置
-  keepInDock: false,
+  keepInDock: false, // 保持在Dock栏
   hideInDesktop: false,
   hideWhenClose: false,
   autoFocus: true,
+  draggable:false,
   
   // 图标设置
+  icon:"",
   iconColor: '#333333',
   iconBgColor: '#ffffff',
   

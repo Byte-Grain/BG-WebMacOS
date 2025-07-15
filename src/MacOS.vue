@@ -18,13 +18,7 @@
     <transition name="fade">
       <RegistryTest v-if="showDebugTest" />
     </transition>
-    
-    <!-- 调试按钮 -->
-    <div v-if="!showLogin && !loading" class="debug-controls">
-      <button @click="toggleDebugTest" class="debug-btn">
-        {{ showDebugTest ? '返回桌面' : '注册表测试' }}
-      </button>
-    </div>
+  
     <!-- AppWindow 组件暂时移除，等待后续实现 -->
     <!-- <AppWindow v-for="item in openAppList" :key="item.pid" :app="item" /> -->
     
@@ -91,7 +85,7 @@ const store = useStore()
 // 使用核心组合式函数（包含错误监控）
 const {
   // 系统相关
-  systemState, isLoggedIn, isLoading, initializeSystem,
+  isLoggedIn, isLoading, initializeSystem,
   // 应用管理
   openApps, isLaunchpadOpen, initializeDockApps, openAppByKey,
   // 主题
@@ -102,8 +96,6 @@ const {
   registerShortcut, COMMON_SHORTCUTS,
   // 通知
   success, info,
-  // 错误监控
-  errorMonitor
 } = useCore({
   namespace: 'macos-main',
   debugMode: process.env.NODE_ENV === 'development',
@@ -117,12 +109,6 @@ const showDebugTest = ref(false)
 const showLogin = computed(() => !isLoggedIn.value)
 const loading = computed(() => isLoading.value)
 const launchpad = computed(() => isLaunchpadOpen.value)
-const openAppList = computed(() => openApps.value)
-
-// 方法
-const toggleDebugTest = () => {
-  showDebugTest.value = !showDebugTest.value
-}
 
 // 注册系统快捷键
 const registerSystemShortcuts = () => {

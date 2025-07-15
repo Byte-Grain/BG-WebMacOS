@@ -148,13 +148,8 @@ export class AppDiscovery {
     const pathParts = filePath.split('/')
     const fileName = pathParts[pathParts.length - 1].replace('.vue', '')
     
-    // 确定应用分类
-    let category: 'system' | 'demo' | 'custom' = 'custom'
-    if (pathParts.includes('system')) {
-      category = 'system'
-    } else if (pathParts.includes('demo')) {
-      category = 'demo'
-    }
+    // 获取最后一级文件夹名称
+    const category = pathParts[pathParts.length - 2]
 
     // 生成应用 key（确保唯一性）
     const key = this.generateUniqueKey(fileName, category)

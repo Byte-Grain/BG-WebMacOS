@@ -88,7 +88,7 @@
     }
   }
 </style>
-<script setup>
+<script setup lang="ts">
   import { reactive, onMounted, onUnmounted } from 'vue'
   import { useAppManager } from '@/composables'
   
@@ -140,4 +140,33 @@
     // 移除键盘事件监听
     document.removeEventListener('keydown', handleKeydown)
   })
+</script>
+
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'system_task',
+  title: 'Activity Monitor',
+  icon: '📊',
+  iconColor: '#fff',
+  iconBgColor: '#34C759',
+  width: 600,
+  height: 400,
+  resizable: true,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  hideInDesktop: false,
+  category: 'system',
+  description: '活动监视器',
+  version: '1.0.0',
+  author: 'System',
+  tags: ['system', 'monitor', 'task'],
+  system: true,
+  essential: false,
+  singleton: true
+}
 </script>

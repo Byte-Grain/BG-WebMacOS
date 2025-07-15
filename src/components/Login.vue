@@ -168,7 +168,7 @@
     }
   }
 </style>
-<script setup>
+<script setup lang="ts">
   import { ref, onMounted } from 'vue'
   import bgImageUrl from '@/asset/img/bg.jpg'
   // import LanguageSwitcher from './business/LanguageSwitcher'

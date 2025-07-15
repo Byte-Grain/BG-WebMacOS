@@ -65,7 +65,34 @@
     }
   }
 </style>
-<script setup>
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'demo_demo',
+  title: 'DEMO',
+  icon: 'icon-MIS_chanpinshezhi',
+  iconColor: '#fff',
+  iconBgColor: '#db5048',
+  width: 600,
+  height: 400,
+  resizable: true,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  keepInDock: true,
+  description: '基础功能演示应用',
+  version: '1.0.0',
+  author: 'Demo Team',
+  tags: ['demo', 'showcase'],
+  demo: true,
+  featured: true
+}
+</script>
+
+<script setup lang="ts">
   import { ref } from 'vue'
 
   // 定义事件

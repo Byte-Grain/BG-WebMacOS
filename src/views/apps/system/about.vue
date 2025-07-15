@@ -66,7 +66,36 @@
     }
   }
 </style>
-<script setup>
+
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'system_about',
+  title: '关于本机',
+  icon: 'icon-about',
+  iconColor: '#fff',
+  iconBgColor: '#23282d',
+  width: 400,
+  height: 250,
+  resizable: false,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  hideInDesktop: true,
+  category: 'system',
+  description: '显示系统信息和版本详情',
+  version: '1.0.0',
+  author: 'System',
+  system: true,
+  essential: false,
+  singleton: true
+}
+</script>
+
+<script setup lang="ts">
   import { reactive } from 'vue'
   const about = reactive({
     title: "MacOS WebUI",

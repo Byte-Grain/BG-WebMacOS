@@ -590,6 +590,35 @@ watch(activeTab, (newTab) => {
 })
 </script>
 
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'system_store',
+  title: 'App Store',
+  icon: 'icon-store',
+  iconColor: '#fff',
+  iconBgColor: '#23282d',
+  width: 800,
+  height: 600,
+  resizable: false,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  keepInDock: true,
+  category: 'system',
+  description: '应用程序商店',
+  version: '1.0.0',
+  author: 'System',
+  permissions: ['network'],
+  system: true,
+  essential: false,
+  singleton: true
+}
+</script>
+
 <style scoped>
 .app-store {
   height: 100%;

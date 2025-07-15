@@ -24,6 +24,34 @@
     }
   }
 </style>
-<script setup>
+
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'demo_unresize',
+  title: '固定尺寸应用',
+  icon: 'icon-smallscreen_fill',
+  iconColor: '#fff',
+  iconBgColor: '#1573fa',
+  width: 600,
+  height: 400,
+  resizable: false,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  category: 'utilities',
+  description: '演示固定窗口尺寸功能',
+  version: '1.0.0',
+  author: 'Demo Team',
+  tags: ['window', 'fixed-size'],
+  demo: true,
+  featured: false
+}
+</script>
+
+<script setup lang="ts">
   // 这个组件目前没有逻辑，只是一个空的组件
 </script>

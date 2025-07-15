@@ -26,7 +26,37 @@
     }
   }
 </style>
-<script setup>
+
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'demo_hidedesktop',
+  title: '不在桌面显示',
+  icon: 'icon-shezhi',
+  iconColor: '#333',
+  iconBgColor: '#d4dbef',
+  width: 500,
+  height: 300,
+  resizable: true,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  hideInDesktop: true,
+  keepInDock: true,
+  category: 'utilities',
+  description: '演示仅在 Dock 显示的应用',
+  version: '1.0.0',
+  author: 'Demo Team',
+  tags: ['dock-only', 'hidden'],
+  demo: true,
+  featured: false
+}
+</script>
+
+<script setup lang="ts">
   // 定义事件
   const emit = defineEmits(['api'])
 

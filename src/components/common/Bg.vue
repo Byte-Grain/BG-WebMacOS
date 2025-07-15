@@ -17,7 +17,7 @@
   }
 
 </style>
-<script setup>
+<script setup lang="ts">
   import bgImageUrl from '@/asset/img/bg.jpg'
   
   defineProps(['blur'])

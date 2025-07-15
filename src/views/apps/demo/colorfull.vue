@@ -26,7 +26,35 @@
     }
   }
 </style>
-<script setup>
+
+<script lang="ts">
+import type { AppConfig } from '@/types/app.d'
+
+// 应用配置
+export const appConfig: AppConfig = {
+  key: 'demo_colorfull',
+  title: '花里胡哨',
+  icon: 'icon-changyongtubiao-mianxing-86',
+  iconColor: '#fff',
+  iconBgColor: '#ff4500',
+  width: 420,
+  height: 310,
+  resizable: true,
+  draggable: true,
+  closable: true,
+  minimizable: true,
+  maximizable: true,
+  category: 'entertainment',
+  description: '演示自定义窗口样式功能',
+  version: '1.0.0',
+  author: 'Demo Team',
+  tags: ['colorful', 'custom-style'],
+  demo: true,
+  featured: false
+}
+</script>
+
+<script setup lang="ts">
   // 定义props
   defineProps({
     app: Object,

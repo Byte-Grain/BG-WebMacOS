@@ -2,7 +2,7 @@
   <div class="widget"></div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   // 这个组件目前没有逻辑，只是一个空的组件
 </script>
 
