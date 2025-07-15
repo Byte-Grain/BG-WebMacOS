@@ -120,16 +120,21 @@
 import { ref, computed, onMounted } from 'vue'
 import { 
   getAllApps, 
-  getSystemApps, 
-  getDemoApps, 
-  getUserApps,
-  getConfigInfo,
-  reloadConfig,
-  validateJsonConfig
-} from '../../config/apps/app-registry'
+  getSystemApps,
+  getDemoApps,
+  getUserApps
+} from '../../config/apps'
 import type { AppConfig } from '../../config/apps/types'
 
-const configInfo = ref(getConfigInfo())
+// 配置信息的替代实现
+const configInfo = ref({
+  mode: 'Enhanced',
+  isJsonValid: true,
+  totalApps: 0,
+  systemApps: 0,
+  demoApps: 0,
+  userApps: 0
+})
 const selectedApp = ref<AppConfig | null>(null)
 const message = ref('')
 const messageType = ref('info')
@@ -157,8 +162,8 @@ const selectApp = (app: AppConfig) => {
 
 const reloadConfiguration = () => {
   try {
-    reloadConfig()
-    configInfo.value = getConfigInfo()
+    // 使用新的增强应用注册表重新加载
+    window.location.reload()
     showMessage('配置重新加载成功', 'success')
   } catch (error) {
     showMessage(`配置重新加载失败: ${error}`, 'error')
@@ -218,13 +223,15 @@ const exportConfig = () => {
 
 const validateConfig = () => {
   try {
-    const isValid = validateJsonConfig()
+    // 简化的配置验证
+    const allApps = getAllApps()
+    const isValid = allApps.every(app => app.key && app.title && app.icon)
     if (isValid) {
       showMessage('配置验证通过', 'success')
     } else {
       showMessage('配置验证失败', 'error')
     }
-    configInfo.value = getConfigInfo()
+    updateConfigInfo()
   } catch (error) {
     showMessage(`配置验证失败: ${error}`, 'error')
   }
@@ -238,8 +245,24 @@ const showMessage = (msg: string, type: 'info' | 'success' | 'error' = 'info') =
   }, 3000)
 }
 
+// 更新配置信息的函数
+const updateConfigInfo = () => {
+  const systemApps = getSystemApps()
+  const demoApps = getDemoApps()
+  const userApps = getUserApps()
+  
+  configInfo.value = {
+    mode: 'Enhanced',
+    isJsonValid: true,
+    totalApps: systemApps.length + demoApps.length + userApps.length,
+    systemApps: systemApps.length,
+    demoApps: demoApps.length,
+    userApps: userApps.length
+  }
+}
+
 onMounted(() => {
-  configInfo.value = getConfigInfo()
+  updateConfigInfo()
 })
 </script>
 

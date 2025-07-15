@@ -69,7 +69,7 @@ export interface ComponentAppConfig extends BaseAppConfig {
 }
 
 // 应用配置联合类型
-export type AppConfig = ComponentAppConfig | ExternalAppConfig | WebAppConfig
+export type AppConfig = ComponentAppConfig | ExternalAppConfig | WebAppConfig | SystemAppConfig | DemoAppConfig
 
 // 系统应用配置
 export interface SystemAppConfig extends ComponentAppConfig {

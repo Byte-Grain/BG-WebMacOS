@@ -2,13 +2,13 @@ import { DemoAppConfig } from './types'
 import { WINDOW_PRESETS } from '../system/window.config'
 
 // 演示应用配置
-export const demoApps: Record<string, DemoAppConfig> = {
+const demoAppsConfig: Record<string, DemoAppConfig> = {
   // 基础演示
   demo_demo: {
     key: 'demo_demo',
     demo: true,
     featured: true,
-    component: 'Demo',
+    component: 'demo',
     title: 'DEMO',
     icon: 'icon-MIS_chanpinshezhi',
     iconColor: '#fff',
@@ -66,7 +66,7 @@ export const demoApps: Record<string, DemoAppConfig> = {
     key: 'demo_dy',
     demo: true,
     featured: false,
-    component: 'DemoWeb',
+    component: 'web',
     title: '抖音去水印',
     icon: 'icon-video_fill',
     iconColor: '#fff',
@@ -87,7 +87,7 @@ export const demoApps: Record<string, DemoAppConfig> = {
     key: 'demo_dock',
     demo: true,
     featured: false,
-    component: 'DemoDock',
+    component: 'dock',
     title: '常驻 Dock 应用',
     icon: 'icon-MIS_bangongOA',
     iconColor: '#fff',
@@ -107,7 +107,7 @@ export const demoApps: Record<string, DemoAppConfig> = {
     key: 'demo_unresize',
     demo: true,
     featured: false,
-    component: 'DemoUnResize',
+    component: 'unresize',
     title: '固定尺寸应用',
     icon: 'icon-smallscreen_fill',
     iconColor: '#fff',
@@ -127,7 +127,7 @@ export const demoApps: Record<string, DemoAppConfig> = {
     key: 'demo_unclose',
     demo: true,
     featured: false,
-    component: 'DemoUnClose',
+    component: 'unclose',
     title: '无法彻底关闭',
     icon: 'icon-wechat-fill',
     iconColor: '#fff',
@@ -147,7 +147,7 @@ export const demoApps: Record<string, DemoAppConfig> = {
     key: 'demo_hidedesktop',
     demo: true,
     featured: false,
-    component: 'DemoHideDesktop',
+    component: 'hidedesktop',
     title: '不在桌面显示',
     icon: 'icon-shezhi',
     iconColor: '#333',
@@ -168,7 +168,7 @@ export const demoApps: Record<string, DemoAppConfig> = {
     key: 'demo_colorfull',
     demo: true,
     featured: false,
-    component: 'DemoColorFull',
+    component: 'colorfull',
     title: '花里胡哨',
     icon: 'icon-changyongtubiao-mianxing-86',
     iconColor: '#fff',
@@ -186,8 +186,8 @@ export const demoApps: Record<string, DemoAppConfig> = {
   demo_camera: {
     key: 'demo_camera',
     demo: true,
-    featured: true,
-    component: 'DemoCamera',
+    featured: false,
+    component: 'camera',
     title: 'Photo Booth',
     icon: 'icon-camera1',
     iconColor: '#fff',
@@ -203,5 +203,11 @@ export const demoApps: Record<string, DemoAppConfig> = {
     tags: ['camera', 'photo'],
   },
 }
+
+// 导出数组格式供增强应用注册表使用
+export const demoApps = Object.values(demoAppsConfig)
+
+// 导出对象格式保持向后兼容
+export const demoAppsMap = demoAppsConfig
 
 export default demoApps

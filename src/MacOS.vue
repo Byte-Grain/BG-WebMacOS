@@ -10,11 +10,21 @@
       <Login v-if="showLogin" @logined="handleLogin" />
     </transition>
     <transition name="fade">
-      <Desktop v-if="!showLogin && !loading" />
+      <Desktop v-if="!showLogin && !loading && !showDebugTest" />
     </transition>
     <transition name="fade">
       <Launchpad v-if="launchpad" />
     </transition>
+    <transition name="fade">
+      <RegistryTest v-if="showDebugTest" />
+    </transition>
+    
+    <!-- 调试按钮 -->
+    <div v-if="!showLogin && !loading" class="debug-controls">
+      <button @click="toggleDebugTest" class="debug-btn">
+        {{ showDebugTest ? '返回桌面' : '注册表测试' }}
+      </button>
+    </div>
     <!-- AppWindow 组件暂时移除，等待后续实现 -->
     <!-- <AppWindow v-for="item in openAppList" :key="item.pid" :app="item" /> -->
     
@@ -31,10 +41,34 @@
     top: 0;
     bottom: 0;
   }
+  
+  .debug-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    
+    .debug-btn {
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.9);
+        transform: scale(1.05);
+      }
+    }
+  }
 </style>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { 
   useCore,
@@ -49,6 +83,7 @@ import Login from './views/login/Login.vue'
 import Desktop from './components/layout/DeskTop.vue'
 import Launchpad from './components/layout/LaunchPad.vue'
 import Notification from './components/common/Notification.vue'
+import RegistryTest from './views/test/RegistryTest.vue'
 // AppWindow 组件暂时移除，等待后续实现
 
 const store = useStore()
@@ -75,11 +110,19 @@ const {
   enableErrorMonitoring: true
 })
 
+// 响应式数据
+const showDebugTest = ref(false)
+
 // 计算属性
 const showLogin = computed(() => !isLoggedIn.value)
 const loading = computed(() => isLoading.value)
 const launchpad = computed(() => isLaunchpadOpen.value)
 const openAppList = computed(() => openApps.value)
+
+// 方法
+const toggleDebugTest = () => {
+  showDebugTest.value = !showDebugTest.value
+}
 
 // 注册系统快捷键
 const registerSystemShortcuts = () => {
@@ -250,10 +293,13 @@ onMounted(async () => {
   }
 })
 
-const handleLogin = () => {
+const handleLogin = async () => {
   try {
     // 处理登录成功事件
     store.commit('login')
+    
+    // 初始化Dock应用列表
+    await initializeDockApps()
     
     const loginData = {
       username: 'user', // 这里可以从实际登录数据获取

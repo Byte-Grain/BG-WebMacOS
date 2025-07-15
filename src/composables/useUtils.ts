@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { STORAGE_KEYS, DELAYS, HTTP_STATUS } from '@/constants'
-import { getAppByKey } from '@/config/apps/app-registry'
+import { getAppByKey } from '@/config/apps'
 import type { AppConfig } from '@/types/app'
 
 // 工具函数组合式函数

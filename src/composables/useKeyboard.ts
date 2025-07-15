@@ -77,7 +77,9 @@ export function useKeyboard() {
   // 键盘按下事件处理
   const handleKeyDown = (event: KeyboardEvent): void => {
     // 更新按键状态
-    pressedKeys.value.add(event.key.toLowerCase())
+    if (event.key) {
+      pressedKeys.value.add(event.key.toLowerCase())
+    }
     
     // 更新修饰键状态
     modifierState.value = {
@@ -123,7 +125,9 @@ export function useKeyboard() {
   // 键盘释放事件处理
   const handleKeyUp = (event: KeyboardEvent): void => {
     // 更新按键状态
-    pressedKeys.value.delete(event.key.toLowerCase())
+    if (event.key) {
+      pressedKeys.value.delete(event.key.toLowerCase())
+    }
     
     // 更新修饰键状态
     modifierState.value = {
@@ -178,6 +182,7 @@ export function useKeyboard() {
 
   // 检查某个键是否正在被按下
   const isKeyPressed = (key: string): boolean => {
+    if (!key) return false
     return pressedKeys.value.has(key.toLowerCase())
   }
 

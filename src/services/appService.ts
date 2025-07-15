@@ -1,7 +1,7 @@
 /**
  * 应用服务层 - 管理应用的业务逻辑
  */
-import { getAllApps, getAppByKey, getDockApps, getSystemApps, getDemoApps, searchApps } from '@/config/apps/app-registry'
+import { getAllApps, getAppByKey, getDockApps, getSystemApps, getDemoApps, searchApps } from '@/config/apps'
 import type { AppConfig } from '@/config/apps/types'
 
 export class AppService {

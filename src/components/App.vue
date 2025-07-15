@@ -29,7 +29,12 @@
             </div>
           </div>
           <div class="app-body">
-            <component :is="componentMap[app.component]" :app="app" @api="appEvent"></component>
+            <component 
+              :is="getAppComponent(app)" 
+              :app="app" 
+              @api="appEvent"
+              @error="handleComponentError"
+            ></component>
           </div>
         </div>
         <div class="box-center-right" @mousedown="resizeMouseDown"></div>
@@ -46,48 +51,15 @@
 <script setup>
   import { defineAsyncComponent, reactive, watch, onMounted, computed, ref } from 'vue'
   import { useAppManager } from '@/composables/useAppManager'
-  import { getAppByKey } from '@/config/apps/app-registry'
+  import { enhancedAppRegistry, getAppByKey } from '@/config/apps/enhanced-app-registry'
 
   // 使用组合式函数
   const { closeApp: closeAppManager, hideApp: hideAppManager, showApp: showAppManager, openApp: openAppManager, openAppWithData, closeAppByPid, openApps } = useAppManager()
 
-  // 组件注册
-  const SystemAbout = defineAsyncComponent(() => import('@/views/desktop/system/about.vue'))
-  const SystemFinder = defineAsyncComponent(() => import('@/views/desktop/system/finder.vue'))
-  const SystemSetting = defineAsyncComponent(() => import('@/views/desktop/system/setting.vue'))
-  const SystemStore = defineAsyncComponent(() => import('@/views/apps/system/SystemStore.vue'))
-  const SystemTask = defineAsyncComponent(() => import('@/views/desktop/system/task.vue'))
-  const Demo = defineAsyncComponent(() => import('@/views/apps/demo/demo.vue'))
-  const DemoDock = defineAsyncComponent(() => import('@/views/apps/demo/dock.vue'))
-  const DemoUnResize = defineAsyncComponent(() => import('@/views/apps/demo/unresize.vue'))
-  const DemoUnClose = defineAsyncComponent(() => import('@/views/apps/demo/unclose.vue'))
-  const DemoHideDesktop = defineAsyncComponent(() => import('@/views/apps/demo/hidedesktop.vue'))
-  const DemoColorFull = defineAsyncComponent(() => import('@/views/apps/demo/colorfull.vue'))
-  const DemoCamera = defineAsyncComponent(() => import('@/views/apps/demo/camera.vue'))
-  const DemoMultiTask = defineAsyncComponent(() => import('@/views/apps/demo/multitask.vue'))
-  const DemoWeb = defineAsyncComponent(() => import('@/views/apps/demo/web.vue'))
-  const ComposablesTest = defineAsyncComponent(() => import('@/views/apps/system/ComposablesTest.vue'))
-  const ConfigManager = defineAsyncComponent(() => import('@/components/apps/ConfigManager.vue'))
-
-  // 组件映射对象
-  const componentMap = {
-    SystemAbout,
-    SystemFinder,
-    SystemSetting,
-    SystemStore,
-    SystemTask,
-    Demo,
-    DemoDock,
-    DemoUnResize,
-    DemoUnClose,
-    DemoHideDesktop,
-    DemoColorFull,
-    DemoCamera,
-    DemoMultiTask,
-    DemoWeb,
-    ComposablesTest,
-    ConfigManager
-  }
+  // 动态组件映射
+  const componentMap = ref({})
+  const componentError = ref(null)
+  const isRegistryInitialized = ref(false)
 
   // Props
   const props = defineProps({
@@ -120,7 +92,23 @@
   const isMaxShowing = ref(false)
   const isFullScreen = ref(false)
 
-
+  // 初始化
+  onMounted(async () => {
+    try {
+      // 初始化增强的应用注册表
+      await enhancedAppRegistry.initialize()
+      
+      // 获取组件映射
+      componentMap.value = enhancedAppRegistry.getComponentMap()
+      isRegistryInitialized.value = true
+      
+      // 设置窗口位置
+      setReact()
+    } catch (error) {
+      console.error('Failed to initialize app registry:', error)
+      componentError.value = error
+    }
+  })
 
   // 计算属性
   const getExtBoxClasses = computed(() => {
@@ -149,6 +137,27 @@
   })
 
   // 方法
+  const getAppComponent = (app) => {
+    if (!isRegistryInitialized.value) {
+      return null
+    }
+    
+    const componentKey = app.component || app.key
+    const component = componentMap.value[componentKey]
+    
+    if (!component) {
+      console.warn(`Component not found for app: ${app.key}`)
+      return null
+    }
+    
+    return component
+  }
+
+  const handleComponentError = (error) => {
+    console.error('Component error:', error)
+    componentError.value = error
+  }
+
   const setReact = () => {
     if (props.app.width) {
       nowRect.left = nowRect.right = (document.body.clientWidth - props.app.width) / 2

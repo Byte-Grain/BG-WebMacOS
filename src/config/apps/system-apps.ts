@@ -2,16 +2,16 @@ import { SystemAppConfig } from './types'
 import { WINDOW_PRESETS } from '../system/window.config'
 
 // 系统应用配置
-export const systemApps: Record<string, SystemAppConfig> = {
+const systemAppsConfig: Record<string, SystemAppConfig> = {
   // 关于本站
   system_about: {
     key: 'system_about',
     system: true,
     essential: false,
     singleton: true,
-    component: 'SystemAbout',
-    title: '关于本站',
-    icon: 'icon-question',
+    component: 'about',
+    title: '关于本机',
+    icon: 'icon-about',
     iconColor: '#fff',
     iconBgColor: '#23282d',
     width: WINDOW_PRESETS.SMALL.width,
@@ -30,9 +30,9 @@ export const systemApps: Record<string, SystemAppConfig> = {
     system: true,
     essential: true,
     singleton: false,
-    component: 'SystemFinder',
+    component: 'finder',
     title: '访达',
-    icon: 'icon-MIS_chanpinshezhi',
+    icon: 'icon-finder',
     iconColor: '#fff',
     iconBgColor: '#db5048',
     width: WINDOW_PRESETS.LARGE.width,
@@ -51,7 +51,8 @@ export const systemApps: Record<string, SystemAppConfig> = {
     system: true,
     essential: true,
     singleton: true,
-    component: 'SystemLaunchPad',
+    component: 'LaunchPad',
+    componentPath: '/src/components/layout/LaunchPad.vue',
     title: '启动台',
     icon: 'icon-shezhi',
     iconColor: '#333',
@@ -72,7 +73,7 @@ export const systemApps: Record<string, SystemAppConfig> = {
     system: true,
     essential: true,
     singleton: true,
-    component: 'SystemSetting',
+    component: 'setting',
     title: '系统偏好设置',
     icon: 'icon-setting',
     iconColor: '#fff',
@@ -94,7 +95,7 @@ export const systemApps: Record<string, SystemAppConfig> = {
     system: true,
     essential: false,
     singleton: true,
-    component: 'SystemStore',
+    component: 'AppStore',
     title: 'App Store',
     icon: 'icon-store',
     iconColor: '#fff',
@@ -116,8 +117,8 @@ export const systemApps: Record<string, SystemAppConfig> = {
     system: true,
     essential: false,
     singleton: true,
-    component: 'SystemTask',
-    title: '强制退出',
+    component: 'task',
+    title: '活动监视器',
     icon: 'icon-task',
     iconColor: '#fff',
     iconBgColor: '#ff6b6b',
@@ -153,5 +154,11 @@ export const systemApps: Record<string, SystemAppConfig> = {
     tags: ['test', 'composables', 'vue'],
   },
 }
+
+// 导出数组格式供增强应用注册表使用
+export const systemApps = Object.values(systemAppsConfig)
+
+// 导出对象格式保持向后兼容
+export const systemAppsMap = systemAppsConfig
 
 export default systemApps

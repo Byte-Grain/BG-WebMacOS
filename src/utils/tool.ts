@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/constants'
-import { getAppByKey as getAppByKeyFromConfig, getAllApps, getDockApps } from '@/config/apps/app-registry'
+import { getAppByKey as getAppByKeyFromConfig, getAllApps, getDockApps } from '@/config/apps'
 import type { AppConfig } from '@/types/app'
 
 /**

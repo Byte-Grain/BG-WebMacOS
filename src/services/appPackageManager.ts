@@ -3,13 +3,67 @@
  * 负责应用包的安装、卸载、更新等操作
  */
 
-import { AppManifest, InstallResult, ValidationResult, UpdateResult } from '@/types/app-package'
-import { AppConfig } from '@/types/app'
-import { registerApp, unregisterApp, updateAppConfig } from '@/config/apps/app-registry'
+import { AppManifest, InstallResult, ValidationResult, UpdateResult, InstalledAppInfo } from '@/types/app-package'
+import { AppConfig } from '@/types/app.d'
+import { registerApp, unregisterApp, updateAppConfig } from '@/config/apps'
+import { enhancedAppRegistry } from '@/config/apps/enhanced-app-registry'
 
 export class AppPackageManager {
   private static readonly STORAGE_KEY = 'installed_apps'
   private static readonly PACKAGE_CACHE_KEY = 'app_packages_cache'
+
+  /**
+   * 获取已安装应用列表（实例方法）
+   */
+  async getInstalledApps(): Promise<InstalledAppInfo[]> {
+    try {
+      // 从增强应用注册表获取所有已注册的应用
+      const allApps = enhancedAppRegistry.getAllApps()
+      const installedApps: InstalledAppInfo[] = []
+
+      // 将系统应用和演示应用转换为已安装应用格式
+      for (const app of allApps) {
+        const installedApp: InstalledAppInfo = {
+          appKey: app.key,
+          manifest: {
+            id: app.key,
+            key: app.key,
+            name: app.title,
+            version: app.version || '1.0.0',
+            description: app.description || '',
+            author: app.author || 'System',
+            category: app.category || 'other',
+            icon: app.icon,
+            entry: app.component + '.vue',
+            window: {
+              width: app.width || 800,
+              height: app.height || 600,
+              resizable: app.resizable !== false,
+              closable: app.closable !== false
+            },
+            permissions: app.permissions || [],
+            tags: app.tags || []
+          },
+          installedAt: Date.now(),
+          source: app.source || 'system'
+        }
+        installedApps.push(installedApp)
+      }
+
+      return installedApps
+    } catch (error) {
+      console.error('Failed to get installed apps:', error)
+      return []
+    }
+  }
+
+  /**
+   * 获取已安装应用信息（实例方法）
+   */
+  async getInstalledApp(appKey: string): Promise<InstalledAppInfo | null> {
+    const installedApps = await this.getInstalledApps()
+    return installedApps.find(app => app.appKey === appKey) || null
+  }
 
   /**
    * 安装应用包
@@ -401,7 +455,7 @@ export class AppPackageManager {
   }
 
   /**
-   * 获取已安装应用信息
+   * 获取已安装应用信息（静态方法，用于内部使用）
    */
   private static async getInstalledApp(appKey: string) {
     const installedApps = await this.getInstalledApps()
@@ -409,7 +463,7 @@ export class AppPackageManager {
   }
 
   /**
-   * 获取所有已安装应用
+   * 获取所有已安装应用（静态方法，用于内部使用）
    */
   private static async getInstalledApps(): Promise<Record<string, any>> {
     try {

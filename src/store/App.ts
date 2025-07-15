@@ -1,12 +1,12 @@
 import { AppState, AppConfig } from "@/types/app";
-import { getAllApps, getAppByKey, getDockApps } from "@/config/apps/app-registry";
+import { getAllApps, getAppByKey, getDockApps } from "@/config/apps";
 // createStore 现在通过自动导入，无需手动导入
 // import { createStore } from 'vuex'
 
 const storeConfig = {
   state(): AppState {
     return {
-      showLogin: false,
+      showLogin: true,
       nowApp: false,
       openAppList: [],
       dockAppList: [],
