@@ -194,9 +194,10 @@ export function useDesktopGesture(initialConfig?: GestureConfig) {
     
     // 检查是否为双指手势
     if (event.touches.length === 2) {
-      // 如果在应用内部，允许双指手势
+      // 如果在应用内部，阻止事件传播到桌面
       if (inApp) {
-        return // 不阻止应用内的双指手势
+        event.stopPropagation()
+        return // 阻止双指手势传播到桌面，但允许应用内正常处理
       }
       
       // 只在桌面区域禁用双指手势
@@ -233,7 +234,17 @@ export function useDesktopGesture(initialConfig?: GestureConfig) {
     
     if (scrollableParent) {
       const direction = deltaY > 0 ? 'down' : 'up'
-      return canScroll(scrollableParent, direction)
+      const { scrollTop, scrollHeight, clientHeight } = scrollableParent
+      
+      // 只有在真正到达边界且移动量较大时才返回false
+      if (!canScroll(scrollableParent, direction) && Math.abs(deltaY) > 10) {
+        const atTopBoundary = direction === 'up' && scrollTop <= 0
+        const atBottomBoundary = direction === 'down' && scrollTop >= scrollHeight - clientHeight
+        
+        return !(atTopBoundary || atBottomBoundary)
+      }
+      
+      return true
     }
     
     return true
@@ -246,7 +257,7 @@ export function useDesktopGesture(initialConfig?: GestureConfig) {
     
     // 检查双指手势
     if (event.touches.length === 2) {
-      // 如果在应用内部，检查滚动边界
+      // 如果在应用内部，完全阻止双指手势传播到桌面
       if (inApp) {
         // 计算双指移动的垂直方向
         if (startTouch.value && currentTouch.value) {
@@ -257,12 +268,15 @@ export function useDesktopGesture(initialConfig?: GestureConfig) {
           const deltaY = centerY - prevCenterY
           
           // 如果是垂直滚动且到达边界，阻止过度滚动
-          if (Math.abs(deltaY) > 2 && !checkTouchScrollBoundary(target, deltaY)) {
+          if (Math.abs(deltaY) > 5 && !checkTouchScrollBoundary(target, deltaY)) {
             event.preventDefault()
+            event.stopPropagation()
             return
           }
         }
-        return // 允许应用内双指手势
+        // 在应用内部时，阻止事件冒泡到桌面，但允许应用内正常滚动
+        event.stopPropagation()
+        return
       }
       
       // 只在桌面区域禁用双指手势
@@ -283,7 +297,7 @@ export function useDesktopGesture(initialConfig?: GestureConfig) {
       const deltaY = currentTouch.value.y - startTouch.value.y
       
       // 如果是垂直滚动且到达边界，阻止过度滚动
-      if (Math.abs(deltaY) > 5 && !checkTouchScrollBoundary(target, -deltaY)) {
+      if (Math.abs(deltaY) > 10 && !checkTouchScrollBoundary(target, -deltaY)) {
         event.preventDefault()
         return
       }
@@ -308,6 +322,18 @@ export function useDesktopGesture(initialConfig?: GestureConfig) {
   
   // 触摸结束事件处理
   const handleTouchEnd = (event: TouchEvent) => {
+    const target = event.target as HTMLElement
+    const inApp = isInAppArea(target)
+    
+    // 如果在应用内部且是双指手势结束，阻止事件传播
+    if (inApp && event.changedTouches.length >= 1) {
+      // 检查是否是双指手势的结束
+      const remainingTouches = event.touches.length
+      if (remainingTouches <= 1) {
+        event.stopPropagation()
+      }
+    }
+    
     if (!isGestureActive.value || !startTouch.value || !currentTouch.value) {
       return
     }
@@ -442,9 +468,9 @@ export function useDesktopGesture(initialConfig?: GestureConfig) {
     const { scrollTop, scrollHeight, clientHeight } = element
     
     if (direction === 'up') {
-      return scrollTop > 0
+      return scrollTop > 5 // 增加一些容差，避免过于严格的边界检查
     } else {
-      return scrollTop < scrollHeight - clientHeight - 1
+      return scrollTop < scrollHeight - clientHeight - 5 // 增加一些容差
     }
   }
   
@@ -480,15 +506,29 @@ export function useDesktopGesture(initialConfig?: GestureConfig) {
       
       if (scrollableParent) {
         const direction = event.deltaY > 0 ? 'down' : 'up'
+        const { scrollTop, scrollHeight, clientHeight } = scrollableParent
         
-        // 如果已经到达滚动边界，阻止过度滚动
-        if (!canScroll(scrollableParent, direction)) {
-          event.preventDefault()
-          return
+        // 更精确的边界检查，只在真正到达边界且滚动量较大时才阻止
+        if (!canScroll(scrollableParent, direction) && Math.abs(event.deltaY) > 10) {
+          // 检查是否已经完全到达边界
+          const atTopBoundary = direction === 'up' && scrollTop <= 0
+          const atBottomBoundary = direction === 'down' && scrollTop >= scrollHeight - clientHeight
+          
+          if (atTopBoundary || atBottomBoundary) {
+            event.preventDefault()
+            return
+          }
         }
+      } else {
+        // 如果在应用内部但没有可滚动的父元素，阻止事件传播到桌面
+        event.stopPropagation()
+        event.preventDefault()
+        return
       }
       
-      return // 允许应用内正常滚动
+      // 在应用内部时，阻止事件传播到桌面，但允许应用内正常滚动
+      event.stopPropagation()
+      return
     }
     
     // 只在桌面区域禁用滚轮
