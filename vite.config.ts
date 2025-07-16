@@ -14,10 +14,11 @@ export default defineConfig({
     // 使用多目录扫描功能
     autoGenerateApps({
       scanDirs: [
-        'src/views/apps',        // 主要应用目录
-        'src/applications',     // 用户自定义应用
+        'src/applications/built-in',     // 内置应用
+        'src/applications/user-custom',  // 用户自定义应用
+        'src/applications/third-party',  // 第三方应用
       ],
-      outputFile: 'src/config/apps/system-apps.ts'
+      outputFile: 'src/core/app-registry/system-apps.ts'
     }),
     vue(),
     AutoImport({
@@ -57,7 +58,13 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@core': fileURLToPath(new URL('./src/core', import.meta.url)),
+      '@platform': fileURLToPath(new URL('./src/platform', import.meta.url)),
+      '@applications': fileURLToPath(new URL('./src/applications', import.meta.url)),
+      '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
+      '@features': fileURLToPath(new URL('./src/features', import.meta.url)),
+      '@api': fileURLToPath(new URL('./src/api', import.meta.url))
     }
   },
   server: {

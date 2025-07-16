@@ -2,7 +2,7 @@
  * 应用包相关类型定义
  */
 
-import { AppPermission, AppCategory } from '@/config/apps/types'
+import { AppPermission, AppCategory } from '@core/app-registry/types'
 
 // 应用清单接口
 export interface AppManifest {

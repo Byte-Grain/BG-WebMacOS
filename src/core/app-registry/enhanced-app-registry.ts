@@ -1,39 +1,25 @@
-import { dynamicComponentLoader } from '../component-loader'
-import { AppDiscovery } from './app-discovery'
-import type { AppConfig, AppDiscoveryConfig, AppRegistryConfig, AppCategory } from './types'
+import { dynamicComponentLoader } from '@core/component-loader/dynamicComponentLoader'
+import { AppDiscovery, type AppDiscoveryConfig } from '@/utils/appDiscovery'
+import type { AppConfig } from '@/types/app.d'
 
-// 导入静态应用配置
-import { systemApps } from '@/config/apps/system-apps'
-import { customApps } from '@/config/apps/custom-apps'
+import { systemApps } from './system-apps'
+import { customApps } from './custom-apps'
 
 /**
  * 增强的应用注册表
- * 统一管理应用的注册、发现、加载和生命周期
  */
-export class EnhancedAppRegistry {
+class EnhancedAppRegistry {
   private apps = new Map<string, AppConfig>()
   private componentMap = new Map<string, any>()
   private appDiscovery: AppDiscovery
   private initialized = false
-  private config: AppRegistryConfig
 
-  constructor(config: AppRegistryConfig = {}) {
-    this.config = {
-      enableStaticApps: true,
-      enableDynamicApps: import.meta.env.DEV,
-      enableCache: true,
-      validateApps: true,
-      debugMode: import.meta.env.DEV,
-      ...config
-    }
-
+  constructor() {
     // 配置应用发现器
     const discoveryConfig: AppDiscoveryConfig = {
-      autoScan: this.config.enableDynamicApps || false,
+      autoScan: import.meta.env.DEV, // 仅在开发环境启用自动扫描
       scanPaths: [
         '/src/views/apps/custom',
-        '/src/applications/user-custom',
-        '/src/applications/third-party'
       ],
       excludePatterns: [
         '.*\\.test\\.vue$',
@@ -41,11 +27,7 @@ export class EnhancedAppRegistry {
         '.*\\.story\\.vue$',
         '.*\\.d\\.ts$'
       ],
-      fileExtensions: ['.vue'],
-      watchMode: import.meta.env.DEV,
-      cacheEnabled: this.config.enableCache,
-      maxCacheAge: 5 * 60 * 1000, // 5分钟
-      ...this.config.discovery
+      fileExtensions: ['.vue']
     }
 
     this.appDiscovery = new AppDiscovery(discoveryConfig)
@@ -60,34 +42,23 @@ export class EnhancedAppRegistry {
     }
 
     try {
-      const startTime = performance.now()
-
       // 1. 注册静态配置的应用
-      if (this.config.enableStaticApps) {
-        this.registerStaticApps()
-      }
+      this.registerStaticApps()
 
-      // 2. 发现并注册动态应用
-      if (this.config.enableDynamicApps) {
-        await this.discoverAndRegisterApps()
-      }
+      // 2. 跳过动态应用发现，只使用静态导入
+      // await this.discoverAndRegisterApps()
 
       // 3. 生成组件映射
       this.generateComponentMap()
 
-      // 4. 验证应用配置
-      if (this.config.validateApps) {
-        this.validateAllApps()
-      }
-
       this.initialized = true
-      const endTime = performance.now()
+      console.log(`✅ Initialized app registry with ${this.apps.size} apps`)
       
-      if (this.config.debugMode) {
-        console.log(`✅ Initialized app registry with ${this.apps.size} apps in ${(endTime - startTime).toFixed(2)}ms`)
+      // 输出调试信息
+      if (import.meta.env.DEV) {
         console.log('📱 Registered apps:', Array.from(this.apps.keys()))
         console.log('🧩 Component map:', dynamicComponentLoader.getCacheInfo())
-      }
+      } 
     } catch (error) {
       console.error('❌ Failed to initialize app registry:', error)
       throw error
@@ -98,32 +69,17 @@ export class EnhancedAppRegistry {
    * 注册静态配置的应用
    */
   private registerStaticApps(): void {
-    const allStaticApps = [...customApps, ...systemApps]
+    const allStaticApps = [...customApps,...systemApps]
     
     for (const app of allStaticApps) {
-      // 为静态应用添加完整的配置信息
+      // 为静态应用添加分类信息
       const enhancedApp: AppConfig = {
-        category: this.inferCategoryFromKey(app.key),
-        version: '1.0.0',
-        author: 'System',
-        description: `${app.title} application`,
-        permissions: [],
-        window: {
-          width: app.width,
-          height: app.height,
-          resizable: app.resizable !== false,
-          draggable: app.draggable !== false,
-          closable: app.closable !== false,
-          minimizable: app.minimizable !== false,
-          maximizable: app.maximizable !== false
-        },
-        theme: {
-          iconColor: app.iconColor,
-          iconBgColor: app.iconBgColor,
-          titleBgColor: app.titleBgColor,
-          titleColor: app.titleColor
-        },
-        ...app
+        ...app,
+        category: app.category || this.inferCategoryFromKey(app.key),
+        version: app.version || '1.0.0',
+        author: app.author || 'System',
+        description: app.description || `${app.title} application`,
+        permissions: app.permissions || []
       }
       
       this.apps.set(app.key, enhancedApp)
@@ -133,22 +89,12 @@ export class EnhancedAppRegistry {
   /**
    * 从应用 key 推断分类
    */
-  private inferCategoryFromKey(key: string): AppCategory {
-    const keyLower = key.toLowerCase()
-    
-    if (keyLower.startsWith('system')) return 'system'
-    if (keyLower.startsWith('demo')) return 'demo'
-    if (keyLower.includes('util')) return 'utilities'
-    if (keyLower.includes('dev')) return 'development'
-    if (keyLower.includes('game')) return 'games'
-    if (keyLower.includes('media')) return 'multimedia'
-    if (keyLower.includes('social')) return 'social'
-    if (keyLower.includes('business')) return 'business'
-    if (keyLower.includes('education')) return 'education'
-    if (keyLower.includes('graphic')) return 'graphics'
-    if (keyLower.includes('product')) return 'productivity'
-    if (keyLower.includes('entertainment')) return 'entertainment'
-    
+  private inferCategoryFromKey(key: string): 'system' | 'demo' | 'custom' {
+    if (key.toLowerCase().startsWith('system')) {
+      return 'system'
+    } else if (key.toLowerCase().startsWith('demo')) {
+      return 'demo'
+    }
     return 'custom'
   }
 
@@ -164,11 +110,11 @@ export class EnhancedAppRegistry {
         if (!this.apps.has(app.key)) {
           this.apps.set(app.key, app)
           
-          if (this.config.debugMode) {
+          if (import.meta.env.DEV) {
             console.log(`🔍 Discovered app: ${app.key} (${app.componentPath})`)
           }
         } else {
-          if (this.config.debugMode) {
+          if (import.meta.env.DEV) {
             console.log(`⚠️ Skipped duplicate app: ${app.key}`)
           }
         }
@@ -182,69 +128,31 @@ export class EnhancedAppRegistry {
    * 生成组件映射
    */
   private generateComponentMap(): void {
-    if (this.config.debugMode) {
-      console.log('🔧 Generating component map...')
-    }
+    console.log('🔧 Generating component map...')
     
     for (const app of this.apps.values()) {
-      const componentKey = app.key
+      const componentKey = app.key // 使用 app.key 作为组件映射的键
       
       if (!this.componentMap.has(componentKey)) {
         // 如果app配置中直接包含component（静态导入的组件），直接使用
         if (app.component && (typeof app.component === 'object' || typeof app.component === 'function')) {
-          if (this.config.debugMode) {
-            console.log(`✅ Using static component for ${app.key}:`, typeof app.component)
-          }
+          console.log(`✅ Using static component for ${app.key}:`, typeof app.component)
           this.componentMap.set(componentKey, app.component)
         } else {
-          if (this.config.debugMode) {
-            console.log(`🔄 Using dynamic loader for ${app.key}`)
-          }
+          console.log(`🔄 Using dynamic loader for ${app.key}`)
           // 否则使用动态加载器（向后兼容）
           const component = dynamicComponentLoader.loadComponent(app)
           this.componentMap.set(componentKey, component)
         }
       } else {
-        if (this.config.debugMode) {
-          console.log(`⚠️ Component already exists for ${app.key}`)
-        }
+        console.log(`⚠️ Component already exists for ${app.key}`)
       }
     }
     
-    if (this.config.debugMode) {
-      console.log('🔧 Component map generated:', {
-        totalComponents: this.componentMap.size,
-        componentKeys: Array.from(this.componentMap.keys())
-      })
-    }
-  }
-
-  /**
-   * 验证所有应用配置
-   */
-  private validateAllApps(): void {
-    let validCount = 0
-    let invalidCount = 0
-
-    for (const [key, app] of this.apps.entries()) {
-      if (this.validateAppConfig(app)) {
-        validCount++
-      } else {
-        invalidCount++
-        console.warn(`⚠️ Invalid app config: ${key}`, app)
-      }
-    }
-
-    if (this.config.debugMode) {
-      console.log(`📋 App validation: ${validCount} valid, ${invalidCount} invalid`)
-    }
-  }
-
-  /**
-   * 验证应用配置
-   */
-  private validateAppConfig(app: AppConfig): boolean {
-    return !!(app.key && app.title && (app.component || app.componentPath || app.outLink))
+    console.log('🔧 Component map generated:', {
+      totalComponents: this.componentMap.size,
+      componentKeys: Array.from(this.componentMap.keys())
+    })
   }
 
   /**
@@ -257,7 +165,7 @@ export class EnhancedAppRegistry {
   /**
    * 根据分类获取应用
    */
-  getAppsByCategory(category: AppCategory): AppConfig[] {
+  getAppsByCategory(category: 'system' | 'demo' | 'custom'): AppConfig[] {
     return this.getAllApps().filter(app => app.category === category)
   }
 
@@ -285,7 +193,8 @@ export class EnhancedAppRegistry {
    * 获取组件
    */
   getComponent(app: AppConfig): any {
-    return this.componentMap.get(app.key)
+    const componentKey = app.key // 使用 app.key 作为组件映射的键
+    return this.componentMap.get(componentKey)
   }
 
   /**
@@ -299,36 +208,25 @@ export class EnhancedAppRegistry {
       author: 'Unknown',
       description: `${app.title} application`,
       permissions: [],
-      window: {
-        resizable: true,
-        draggable: true,
-        closable: true,
-        minimizable: true,
-        maximizable: true
-      },
       ...app
-    }
-    
-    // 验证应用配置
-    if (this.config.validateApps && !this.validateAppConfig(enhancedApp)) {
-      throw new Error(`Invalid app config for: ${app.key}`)
     }
     
     this.apps.set(app.key, enhancedApp)
     
     // 生成组件映射
-    if (!this.componentMap.has(app.key)) {
+    const componentKey = app.key // 使用 app.key 作为组件映射的键
+    if (!this.componentMap.has(componentKey)) {
+      // 如果app配置中直接包含component（静态导入的组件），直接使用
       if (app.component && (typeof app.component === 'object' || typeof app.component === 'function')) {
-        this.componentMap.set(app.key, app.component)
+        this.componentMap.set(componentKey, app.component)
       } else {
+        // 否则使用动态加载器（向后兼容）
         const component = dynamicComponentLoader.loadComponent(enhancedApp)
-        this.componentMap.set(app.key, component)
+        this.componentMap.set(componentKey, component)
       }
     }
     
-    if (this.config.debugMode) {
-      console.log(`✅ Registered app: ${app.key}`)
-    }
+    console.log(`✅ Registered app: ${app.key}`)
   }
 
   /**
@@ -341,11 +239,11 @@ export class EnhancedAppRegistry {
     }
 
     this.apps.delete(key)
-    this.componentMap.delete(key)
     
-    if (this.config.debugMode) {
-      console.log(`🗑️ Unregistered app: ${key}`)
-    }
+    const componentKey = app.key // 使用 app.key 作为组件映射的键
+    this.componentMap.delete(componentKey)
+    
+    console.log(`🗑️ Unregistered app: ${key}`)
     return true
   }
 
@@ -353,9 +251,7 @@ export class EnhancedAppRegistry {
    * 重新加载应用注册表
    */
   async reload(): Promise<void> {
-    if (this.config.debugMode) {
-      console.log('🔄 Reloading app registry...')
-    }
+    console.log('🔄 Reloading app registry...')
     
     this.apps.clear()
     this.componentMap.clear()
@@ -381,76 +277,24 @@ export class EnhancedAppRegistry {
 
     try {
       await Promise.allSettled(preloadPromises)
-      if (this.config.debugMode) {
-        console.log(`🚀 Preloaded ${appsToPreload.length} apps`)
-      }
+      console.log(`🚀 Preloaded ${appsToPreload.length} apps`)
     } catch (error) {
       console.warn('⚠️ Some apps failed to preload:', error)
     }
   }
 
   /**
-   * 搜索应用
-   */
-  searchApps(query: string, options: { category?: AppCategory; limit?: number } = {}): AppConfig[] {
-    const { category, limit = 50 } = options
-    const queryLower = query.toLowerCase()
-    
-    let results = this.getAllApps().filter(app => {
-      // 分类过滤
-      if (category && app.category !== category) {
-        return false
-      }
-      
-      // 文本搜索
-      return (
-        app.title.toLowerCase().includes(queryLower) ||
-        app.description?.toLowerCase().includes(queryLower) ||
-        app.author?.toLowerCase().includes(queryLower) ||
-        app.tags?.some(tag => tag.toLowerCase().includes(queryLower)) ||
-        app.keywords?.some(keyword => keyword.toLowerCase().includes(queryLower))
-      )
-    })
-    
-    // 限制结果数量
-    if (limit > 0) {
-      results = results.slice(0, limit)
-    }
-    
-    return results
-  }
-
-  /**
    * 获取注册表状态
    */
   getStatus() {
-    const categoryStats = this.getAllApps().reduce((stats, app) => {
-      const category = app.category || 'unknown'
-      stats[category] = (stats[category] || 0) + 1
-      return stats
-    }, {} as Record<string, number>)
-
     return {
       initialized: this.initialized,
       totalApps: this.apps.size,
-      categoryStats,
-      componentCache: dynamicComponentLoader.getCacheInfo(),
-      config: this.config
+      systemApps: this.getAppsByCategory('system').length,
+      demoApps: this.getAppsByCategory('demo').length,
+      customApps: this.getAppsByCategory('custom').length,
+      componentCache: dynamicComponentLoader.getCacheInfo()
     }
-  }
-
-  /**
-   * 获取配置
-   */
-  getConfig(): AppRegistryConfig {
-    return { ...this.config }
-  }
-
-  /**
-   * 更新配置
-   */
-  updateConfig(newConfig: Partial<AppRegistryConfig>): void {
-    this.config = { ...this.config, ...newConfig }
   }
 }
 
@@ -464,13 +308,11 @@ export const registerApp = (app: AppConfig) => enhancedAppRegistry.registerApp(a
 export const unregisterApp = (key: string) => enhancedAppRegistry.unregisterApp(key)
 
 // 新增导出
-export const getAppsByCategory = (category: AppCategory) => 
+export const getAppsByCategory = (category: 'system' | 'demo' | 'custom') => 
   enhancedAppRegistry.getAppsByCategory(category)
 export const getComponent = (app: AppConfig) => 
   enhancedAppRegistry.getComponent(app)
 export const preloadApps = (appKeys?: string[]) => 
   enhancedAppRegistry.preloadApps(appKeys)
-export const searchApps = (query: string, options?: { category?: AppCategory; limit?: number }) => 
-  enhancedAppRegistry.searchApps(query, options)
 export const getRegistryStatus = () => 
   enhancedAppRegistry.getStatus()

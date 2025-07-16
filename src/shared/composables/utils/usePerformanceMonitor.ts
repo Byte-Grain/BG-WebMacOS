@@ -1,5 +1,5 @@
 import { ref, computed, readonly, onMounted, onUnmounted } from 'vue'
-import { useEventBus } from '../core/useEventBus'
+import { useEventBus } from '../../../core/event-system/useEventBus'
 
 // 性能指标类型
 export interface PerformanceMetrics {
@@ -409,3 +409,4 @@ export function checkPerformanceHealth() {
   const monitor = getGlobalPerformanceMonitor()
   return monitor.performanceStatus.value
 }
+

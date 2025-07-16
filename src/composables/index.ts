@@ -5,13 +5,13 @@ import { useSystem } from '../shared/composables/core/useSystem'
 import { useUtils } from '../shared/composables/utils/useUtils'
 import { useKeyboard } from '../shared/composables/ui/useKeyboard'
 import { useNotification } from '../shared/composables/ui/useNotification'
-import { useEventBus, useEventBusLegacy } from '../shared/composables/core/useEventBus'
+import { useEventBus, useEventBusLegacy } from '../core/event-system/useEventBus'
 import { useErrorMonitor } from '../shared/composables/utils/useErrorMonitor'
 import { usePerformanceMonitor } from '../shared/composables/utils/usePerformanceMonitor'
 import { usePerformance } from '../shared/composables/utils/usePerformance'
-import { useEnterpriseEventManager } from '../shared/composables/core/useEnterpriseEventManager'
+import { useEnterpriseEventManager } from '../core/event-system/useEnterpriseEventManager'
 import { useDesktopGesture, GESTURE_DIRECTIONS, DEFAULT_GESTURE_CONFIG } from '../shared/composables/ui/useDesktopGesture'
-import { useAppWindowEvents } from '../shared/composables/core/useAppWindowEvents'
+import { useAppWindowEvents } from '../core/event-system/useAppWindowEvents'
 
 // 组合式函数统一导出
 export { useAppManager } from '../shared/composables/core/useAppManager'
@@ -24,19 +24,19 @@ export {
   eventBus, 
   EVENTS, 
   EVENT_NAMESPACES 
-} from '../shared/composables/core/useEventBus'
+} from '../core/event-system/useEventBus'
 export { useKeyboard, globalKeyboard } from '../shared/composables/ui/useKeyboard'
 export { useNotification, globalNotification, notify } from '../shared/composables/ui/useNotification'
 export { useDesktopGesture, GESTURE_DIRECTIONS, DEFAULT_GESTURE_CONFIG } from '../shared/composables/ui/useDesktopGesture'
 
 // 事件系统中期优化组件
-export { useEventMiddleware } from '../shared/composables/core/useEventMiddleware'
-export { useBuiltInMiddlewares } from '../shared/composables/core/useBuiltInMiddlewares'
-export { useEventRouter } from '../shared/composables/core/useEventRouter'
-export { useEventLifecycle } from '../shared/composables/core/useEventLifecycle'
-export { useEventDebugger } from '../shared/composables/core/useEventDebugger'
-export { useEnterpriseEventManager } from '../shared/composables/core/useEnterpriseEventManager'
-export { useAppWindowEvents } from '../shared/composables/core/useAppWindowEvents'
+export { useEventMiddleware } from '../core/event-system/useEventMiddleware'
+export { useBuiltInMiddlewares } from '../core/event-system/useBuiltInMiddlewares'
+export { useEventRouter } from '../core/event-system/useEventRouter'
+export { useEventLifecycle } from '../core/event-system/useEventLifecycle'
+export { useEventDebugger } from '../core/event-system/useEventDebugger'
+export { useEnterpriseEventManager } from '../core/event-system/useEnterpriseEventManager'
+export { useAppWindowEvents } from '../core/event-system/useAppWindowEvents'
 
 // 错误监控导出
 export {
@@ -69,7 +69,7 @@ export type {
   EventDataMap,
   EventStats,
   EventFilter
-} from '../shared/composables/core/useEventBus'
+} from '../core/event-system/useEventBus'
 
 // 错误监控类型导出
 export type {

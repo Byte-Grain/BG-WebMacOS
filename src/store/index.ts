@@ -1,6 +1,6 @@
 import { createStore } from 'vuex'
 import { AppState, AppConfig } from '@/types/app'
-import { getDockApps, getAppByKey } from '@/config/apps'
+import { getDockApps, getAppByKey } from '@core/app-registry'
 
 // 定义应用状态接口
 interface AppState {

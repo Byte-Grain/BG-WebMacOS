@@ -28,27 +28,28 @@ BG-WebMacOS 是一个基于 Vue 3 的 Web 版 macOS 界面框架，旨在为开�
 ### 核心模块
 
 1. **应用注册系统** (`src/config/apps/`)
+
    - 增强的应用注册表 (EnhancedAppRegistry)
    - 静态应用配置 (system-apps.ts, custom-apps.ts)
    - 动态应用发现 (AppDiscovery)
-
 2. **组件系统** (`src/components/`)
+
    - 布局组件 (Desktop, Launchpad, Dock)
    - 通用组件 (Background, Loading, Notification)
    - 应用组件 (各类应用的具体实现)
-
 3. **状态管理** (`src/store/`)
+
    - 应用状态管理
    - 用户登录状态
    - 系统设置
-
 4. **组合式函数** (`src/composables/`)
+
    - 应用管理 (useAppManager)
    - 事件系统 (useEventBus)
    - 主题管理 (useTheme)
    - 系统功能 (useSystem)
-
 5. **服务层** (`src/services/`)
+
    - 应用服务 (AppService)
    - 应用包管理 (AppPackageManager)
    - 应用商店服务 (AppStoreService)
@@ -112,11 +113,6 @@ src/
 src/
 ├── main.ts                   # 应用入口
 ├── MacOS.vue                 # 主组件
-├── app/                      # 应用核心
-│   ├── config/              # 应用配置
-│   ├── plugins/             # 应用插件
-│   ├── router/              # 路由配置
-│   └── store/               # 全局状态
 ├── core/                     # 核心系统 (新增)
 │   ├── app-registry/        # 应用注册系统
 │   ├── component-loader/    # 组件加载器
@@ -166,16 +162,17 @@ src/
 ### 第一阶段：核心系统重构
 
 1. **应用注册系统迁移**
+
    - 将 `src/config/apps/` 迁移到 `src/core/app-registry/`
    - 优化应用配置结构
    - 增强类型定义
-
 2. **组件加载器优化**
+
    - 将 `src/utils/dynamicComponentLoader.ts` 迁移到 `src/core/component-loader/`
    - 增加缓存机制
    - 支持懒加载
-
 3. **事件系统重构**
+
    - 将事件相关的组合式函数迁移到 `src/core/event-system/`
    - 统一事件管理
    - 增加事件调试功能
@@ -183,31 +180,33 @@ src/
 ### 第二阶段：平台层重构
 
 1. **桌面环境模块化**
+
    - 将桌面相关组件迁移到 `src/platform/desktop/`
    - 分离桌面逻辑和UI
-
 2. **窗口管理系统**
+
    - 创建 `src/platform/window-manager/`
    - 实现窗口生命周期管理
    - 支持多窗口操作
-
 3. **Dock 和 Launchpad 重构**
+
    - 独立模块化 Dock 和 Launchpad
    - 支持自定义配置
 
 ### 第三阶段：应用生态扩展
 
 1. **应用分类管理**
+
    - 重新组织 `src/applications/` 目录
    - 按应用类型分类
    - 支持应用市场
-
 2. **插件系统**
+
    - 创建 `src/core/plugin-system/`
    - 支持第三方插件
    - 插件生命周期管理
-
 3. **API 层建设**
+
    - 创建 `src/api/` 目录
    - 统一 API 管理
    - 支持后端集成
@@ -225,16 +224,17 @@ src/
 ### 开发规范
 
 1. **命名规范**
+
    - 文件名使用 kebab-case
    - 组件名使用 PascalCase
    - 函数名使用 camelCase
-
 2. **代码组织**
+
    - 每个模块包含 index.ts 作为入口
    - 类型定义统一放在 types 目录
    - 工具函数放在 utils 目录
-
 3. **文档要求**
+
    - 每个模块需要 README.md
    - 重要函数需要 JSDoc 注释
    - API 变更需要更新文档

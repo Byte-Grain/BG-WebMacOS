@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { enhancedAppRegistry } from '@/config/apps/enhanced-app-registry'
-import { getAllApps, getDesktopApps, getDockApps } from '@/config/apps'
+import { enhancedAppRegistry } from '@core/app-registry/enhanced-app-registry'
+import { getAllApps, getDesktopApps, getDockApps } from '@core/app-registry'
 
 const testResults = ref('')
 

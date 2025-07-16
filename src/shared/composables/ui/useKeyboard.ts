@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useEventBus, EVENTS } from '../core/useEventBus'
+import { useEventBus, EVENTS } from "../../../core/event-system/useEventBus";
 
 // 键盘修饰键
 export interface ModifierKeys {
@@ -317,3 +317,4 @@ class GlobalKeyboardManager {
 
 // 导出全局键盘管理器
 export const globalKeyboard = GlobalKeyboardManager.getInstance()
+

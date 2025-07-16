@@ -74,8 +74,8 @@ import {
 import Background from './shared/components/base/Bg.vue'
 import Loading from './shared/components/feedback/Loading.vue'
 import Login from './views/login/Login.vue'
-import Desktop from './components/layout/DeskTop.vue'
-import Launchpad from './components/layout/LaunchPad.vue'
+import Desktop from '@platform/desktop/DeskTop.vue'
+import Launchpad from '@platform/launchpad/LaunchPad.vue'
 import Notification from './shared/components/feedback/Notification.vue'
 import RegistryTest from './views/test/RegistryTest.vue'
 // AppWindow 组件暂时移除，等待后续实现

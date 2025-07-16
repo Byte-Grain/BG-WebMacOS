@@ -1,5 +1,5 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { useEventBus, EVENTS } from '../core/useEventBus'
+import { useEventBus, EVENTS } from "../../../core/event-system/useEventBus";
 import { useUtils } from './useUtils'
 
 // 错误类型
@@ -469,3 +469,4 @@ export const captureException = (exception: Error, options?: Partial<ErrorInfo>)
 
 // 导出类型
 export type { ErrorInfo, PerformanceMetric, ErrorMonitorConfig }
+

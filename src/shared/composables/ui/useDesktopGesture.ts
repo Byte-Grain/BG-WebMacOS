@@ -1,5 +1,5 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useEventBus, EVENTS } from '../core/useEventBus'
+import { useEventBus, EVENTS } from '../../../core/event-system/useEventBus'
 
 // 手势配置接口
 export interface GestureConfig {
@@ -686,3 +686,4 @@ export const DEFAULT_GESTURE_CONFIG: GestureConfig = {
   threshold: 50,
   preventDefault: true
 }
+

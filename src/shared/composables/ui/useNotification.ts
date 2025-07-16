@@ -1,5 +1,5 @@
 import { ref, reactive, computed } from 'vue'
-import { useEventBus, EVENTS } from '../core/useEventBus'
+import { useEventBus, EVENTS } from '../../../core/event-system/useEventBus'
 import { useUtils } from '../utils/useUtils'
 import { 
   notificationManager, 
@@ -425,3 +425,4 @@ export const notify = {
   close: (id: string) => globalNotification.initialize().close(id),
   closeAll: () => globalNotification.initialize().closeAll(),
 }
+
