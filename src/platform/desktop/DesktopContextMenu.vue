@@ -6,10 +6,10 @@
       class="desktop-context-menu"
     >
       <div @click="$emit('lockScreen')">{{ $t('system.lockScreen') }}...</div>
-      <hr />
+      <div class="separator"></div>
       <div @click="$emit('openSettings')">{{ $t('system.settings') }}...</div>
       <div @click="$emit('openTaskManager')">{{ $t('system.forceQuit') }}...</div>
-      <hr />
+      <div class="separator"></div>
       <div @click="$emit('setWallpaper')">{{ $t('system.setWallpaper') }}...</div>
       <div @click="$emit('openAbout')">{{ $t('system.aboutUs') }}</div>
     </div>
@@ -56,9 +56,15 @@ defineEmits([
   text-shadow: none;
   z-index: 100;
 
-  hr {
-    border: none;
-    border-top: 1px solid #ddd;
+  .separator {
+    height: 1px;
+    background: #ddd;
+    margin: 5px 15px;
+    cursor: default;
+    
+    &:hover {
+      background: #ddd !important;
+    }
   }
 
   div {

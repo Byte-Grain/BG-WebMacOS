@@ -19,7 +19,7 @@ import { usePerformance } from '@/shared/composables'
   import VolumeControl from './widgets/VolumeControl.vue'
   import DateTimeWidget from './widgets/DateTimeWidget.vue'
   import NotificationWidget from './widgets/NotificationWidget.vue'
-  import TopBar from '@platform/menubar/TopBar.vue';
+  import TopBar from './TopBar.vue';
 
   const props = defineProps({
     hideAllController: {

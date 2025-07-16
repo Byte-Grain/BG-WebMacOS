@@ -1,3 +1,6 @@
+/* 导入 Element Plus 样式 */
+@import './element-plus.css';
+
 /* macOS Web 主样式文件 */
 
 /* 导入变量 */
@@ -12,8 +15,6 @@
 @import './base/animation.css';
 @import './base/app.css';
 
-/* 导入 Element Plus 样式 */
-@import './element-plus.css';
 
 /* 全局重置样式 */
 * {

@@ -1,8 +1,7 @@
 import { dynamicComponentLoader } from '@core/component-loader/dynamicComponentLoader'
 import type { AppConfig } from '@/types/app.d'
 
-import { systemApps } from '@apps/default-apps'
-import { customApps } from '@apps/custom-apps'
+import { Apps } from '@/apps'
 
 /**
  * 增强的应用注册表
@@ -49,7 +48,7 @@ class EnhancedAppRegistry {
    * 注册静态配置的应用
    */
   private registerStaticApps(): void {
-    const allStaticApps = [...customApps,...systemApps]
+    const allStaticApps = [...Apps]
     
     for (const app of allStaticApps) {
       // 为静态应用添加分类信息

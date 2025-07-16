@@ -1,4 +1,4 @@
-import { THEMES } from '@shared/constants'
+import { THEMES } from '@/shared/constants'
 
 // 主题配置接口
 export interface ThemeConfig {

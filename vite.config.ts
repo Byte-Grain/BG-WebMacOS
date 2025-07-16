@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import AutoImport from 'unplugin-auto-import/vite'
+import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { autoGenerateApps } from './plugins/auto-generate-apps.js'
@@ -14,11 +15,9 @@ export default defineConfig({
     // 使用多目录扫描功能
     autoGenerateApps({
       scanDirs: [
-        'src/apps/builtIn',     // 内置应用
-        'src/apps/custom',  // 用户自定义应用
-        'src/apps/3rdparty',  // 第三方应用
+        'src/apps/',
       ],
-      outputFile: 'src/apps/default-apps.ts'
+      outDir:'src/apps'
     }),
     vue(),
     AutoImport({
@@ -33,7 +32,12 @@ export default defineConfig({
           directives: true, // 自动导入指令
           version: '2.10.4', // 指定版本
 
-        })
+        }),
+        // Auto import icon components
+        // 自动导入图标组件
+        IconsResolver({
+          prefix: 'Icon',
+        }),
       ],
       dts: true, // 生成类型声明文件
       eslintrc: {
@@ -44,11 +48,15 @@ export default defineConfig({
     }),
     Components({
       resolvers: [
+        // Auto register icon components
+        // 自动注册图标组件
+        IconsResolver({
+          enabledCollections: ['ep'],
+        }),
         ElementPlusResolver({
           importStyle: 'css', // 按需导入CSS样式
           directives: true, // 自动导入指令
-          version: '2.10.4', // 指定版本
-          resolveIcons: true, // 自动导入图标
+          version: '2.10.4' // 指定版本
         })
       ],
       dts: true, // 生成类型声明文件
@@ -72,6 +80,7 @@ export default defineConfig({
     port: 8080,
     open: true
   },
+  include:["src/**/*.d.ts"],
   build: {
     outDir: 'dist',
     sourcemap: false,
