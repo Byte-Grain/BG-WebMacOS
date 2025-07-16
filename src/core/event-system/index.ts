@@ -51,6 +51,7 @@ export {
   type EventName,
   type EventData
 } from './useEventBus'
+export * from './useEventBus'
 export * from './useEventDebugger'
 export * from './useEventLifecycle'
 export * from './useEventMiddleware'
@@ -58,6 +59,15 @@ export * from './useEventRouter'
 export * from './useEnterpriseEventManager'
 export * from './useAppWindowEvents'
 export * from './useWindowEvents'
+export * from './eventConstants'
+export * from './eventTypes'
+export * from './AppEventManager'
+export * from './AppLifecycleManager'
+export * from './useAppEvent'
+export { getAppEventPermissionManager, type AppEventPermissionManager } from './AppEventPermissionManager'
+export { getAppEventMonitor, type AppEventMonitor } from './AppEventMonitor'
+export { getAppEventConfig, type AppEventConfigManager, type AppEventSystemConfig, DEFAULT_APP_EVENT_CONFIG, CONFIG_PRESETS } from './AppEventConfig'
+export { AppEventUtils, EventNameUtils, PermissionUtils, EventDataUtils, PerformanceUtils, DebugUtils, ValidationUtils } from './AppEventUtils'
 
 // 默认导出主要功能
 export { useEventBus as default } from './useEventBus'

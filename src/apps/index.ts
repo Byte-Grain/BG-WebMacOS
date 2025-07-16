@@ -101,6 +101,8 @@ export const scanApps: AppConfig[] = [
     tags: ["debug","registry","development"],
     version: '1.0.0',
     description: '用于调试应用注册表状态的工具',
+    width: 600,
+    height: 700,
     _id: '45fb1d8f12e67974a1ad991c3d3d0131',
     group: '',
     component: custom__AppRegistryDebug
