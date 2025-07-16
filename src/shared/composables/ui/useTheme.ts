@@ -1,6 +1,6 @@
 import { ref, computed, watch, onMounted, readonly } from 'vue'
-import { THEMES, STORAGE_KEYS } from '@/constants'
-import type { Theme } from '@/constants'
+import { THEMES, STORAGE_KEYS } from '@shared/constants'
+import type { Theme } from '@shared/constants'
 
 // 获取系统主题
 const getSystemTheme = (): Theme => {

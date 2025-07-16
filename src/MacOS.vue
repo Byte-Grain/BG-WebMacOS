@@ -15,10 +15,6 @@
     <transition name="fade">
       <Launchpad v-if="launchpad" />
     </transition>
-    <transition name="fade">
-      <RegistryTest v-if="showDebugTest" />
-    </transition>
-  
     <!-- AppWindow 组件暂时移除，等待后续实现 -->
     <!-- <AppWindow v-for="item in openAppList" :key="item.pid" :app="item" /> -->
     
@@ -68,16 +64,15 @@ import {
   useCore,
   captureError,
   EVENTS 
-} from '@/composables'
+} from '@/shared/composables'
 
 // 组件导入
-import Background from './shared/components/base/Bg.vue'
-import Loading from './shared/components/feedback/Loading.vue'
-import Login from './views/login/Login.vue'
+import Background from '@shared/components/base/Bg.vue'
+import Loading from '@shared/components/feedback/Loading.vue'
+import Login from '@features/auth/Login.vue'
 import Desktop from '@platform/desktop/DeskTop.vue'
 import Launchpad from '@platform/launchpad/LaunchPad.vue'
-import Notification from './shared/components/feedback/Notification.vue'
-import RegistryTest from './views/test/RegistryTest.vue'
+import Notification from '@shared/components/feedback/Notification.vue'
 // AppWindow 组件暂时移除，等待后续实现
 
 const store = useStore()

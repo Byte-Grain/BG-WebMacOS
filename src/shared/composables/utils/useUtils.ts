@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import { STORAGE_KEYS, DELAYS, HTTP_STATUS } from '@/constants'
+import { STORAGE_KEYS, DELAYS, HTTP_STATUS } from '@shared/constants'
 import { getAppByKey } from '@/config/apps'
 import type { AppConfig } from '@/types/app'
 

@@ -101,8 +101,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useNotification } from '@/composables'
-import type { NotificationInstance, NotificationAction } from '@/composables'
+import { useNotification } from '@/shared/composables'
+import type { NotificationInstance, NotificationAction } from '@/shared/composables'
 
 // 使用通知系统
 const { notifications, notificationsByPosition, close } = useNotification()

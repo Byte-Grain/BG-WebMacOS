@@ -29,13 +29,13 @@
 <script setup lang="ts">
   import { ref, watch, onMounted, onUnmounted, computed, nextTick } from 'vue'
   import { ElMessage } from 'element-plus'
-  import { useAppManager, useSystem, useUtils, useDesktopGesture } from '@/composables'
-  import { usePerformance } from "@/composables";
+  import { useAppManager, useSystem, useUtils, useDesktopGesture } from '@/shared/composables'
+import { usePerformance } from "@/shared/composables";
   import DesktopStatusBar from '@platform/desktop/DesktopStatusBar.vue'
 import DesktopAppsArea from '@platform/desktop/DesktopAppsArea.vue'
 import DesktopContextMenu from '@platform/desktop/DesktopContextMenu.vue'
 import Dock from '@platform/dock/Dock.vue'
-  import App from '@/components/App.vue'
+import App from '@/shared/components/App.vue'
 
   const $message = ElMessage
   const emit = defineEmits(['launchpad', 'lockScreen', 'shutdown', 'logout'])

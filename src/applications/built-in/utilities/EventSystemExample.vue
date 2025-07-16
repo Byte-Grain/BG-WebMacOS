@@ -287,10 +287,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useEnterpriseEventManager } from '@/composables'
-import { useAppWindowEvents } from '@/composables'
-import type { PerformanceReport, Alert } from '@/composables'
-import type { DebugRecord, DebugFilter } from '@/composables'
+import { useEnterpriseEventManager } from '@/shared/composables'
+import { useAppWindowEvents } from '@/shared/composables'
+import type { PerformanceReport, Alert } from '@/shared/composables'
+import type { DebugRecord, DebugFilter } from '@/shared/composables'
 
 // 定义props来接收app信息
 defineProps<{

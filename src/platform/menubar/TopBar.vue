@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
   import { computed, shallowRef, watchEffect } from 'vue'
-  import { useAppManager, useSystem } from '@/composables'
+  import { useAppManager, useSystem } from '@/shared/composables'
 
   // Composables
   const { openAppByKey, currentMenu } = useAppManager()

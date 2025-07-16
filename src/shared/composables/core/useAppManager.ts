@@ -2,7 +2,7 @@ import { ref, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import { AppConfig } from '@/types/app'
 import { getAppByKey, getDesktopApps, getDockApps } from '@core/app-registry'
-import { APP_KEYS } from '@/constants'
+import { APP_KEYS } from '@shared/constants'
 
 // 应用管理组合式函数
 export function useAppManager() {

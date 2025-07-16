@@ -1,6 +1,6 @@
 import { inject, provide, type InjectionKey } from 'vue'
 import { useEventBus, EVENTS, type EventData } from './useEventBus'
-import { useAppManager } from '@/composables'
+import { useAppManager } from '@/shared/composables'
 import { getAppByKey } from '@core/app-registry'
 
 // 窗口事件类型定义
