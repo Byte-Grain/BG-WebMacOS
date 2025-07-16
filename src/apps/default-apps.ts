@@ -20,7 +20,7 @@ import AppRegistryDebug from '@/apps/custom/AppRegistryDebug.vue'
 /**
  * 自定义应用配置
  * 此文件由 auto-generate-apps 插件自动生成，请勿手动修改
- * 扫描目录: src/apps/builtIn, src/apps/custom, src/apps/3thparty
+ * 扫描目录: src/apps/builtIn, src/apps/custom, src/apps/3rdparty
  * 要添加新应用，请在指定目录下创建 Vue 文件并导出 appConfig
  */
 export const systemApps: AppConfig[] = [

@@ -16,7 +16,7 @@ export default defineConfig({
       scanDirs: [
         'src/apps/builtIn',     // 内置应用
         'src/apps/custom',  // 用户自定义应用
-        'src/apps/3thparty',  // 第三方应用
+        'src/apps/3rdparty',  // 第三方应用
       ],
       outputFile: 'src/apps/default-apps.ts'
     }),
