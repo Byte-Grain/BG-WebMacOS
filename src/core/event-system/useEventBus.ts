@@ -611,6 +611,7 @@ export const EVENTS = {
   WINDOW_FOCUS: 'window:focus',
   WINDOW_BLUR: 'window:blur',
   WINDOW_FULLSCREEN: 'window:fullscreen',
+  WINDOW_TITLE_CHANGE: 'window:title-change',
   
   // 键盘相关事件
   KEYBOARD_SHORTCUT: 'keyboard:shortcut',
@@ -643,6 +644,16 @@ export const EVENTS = {
   // Launchpad相关事件
   LAUNCHPAD_SHOW: 'launchpad:show',
   LAUNCHPAD_HIDE: 'launchpad:hide',
+  
+  // 应用启动事件
+  APP_STARTUP: 'app:startup',
+  
+  // 数据同步事件
+  DATA_SYNC: 'data:sync',
+  
+  // 测试相关事件
+  TEST_ERROR: 'test:error',
+  TEST_PERFORMANCE: 'test:performance',
 } as const
 
 // 事件数据类型定义
@@ -688,6 +699,7 @@ export interface EventDataMap {
   [EVENTS.WINDOW_FOCUS]: { windowId?: string; appKey?: string; timestamp: number }
   [EVENTS.WINDOW_BLUR]: { windowId?: string; appKey?: string; timestamp: number }
   [EVENTS.WINDOW_FULLSCREEN]: { enabled: boolean; windowId?: string }
+  [EVENTS.WINDOW_TITLE_CHANGE]: { title: string; appKey?: string; pid?: number; windowId?: string }
   
   // 键盘事件数据
   [EVENTS.KEYBOARD_SHORTCUT]: { key: string; modifiers: string[]; action: string; timestamp: number }
@@ -720,6 +732,16 @@ export interface EventDataMap {
   // Launchpad事件数据
   [EVENTS.LAUNCHPAD_SHOW]: { timestamp: number; trigger?: string }
   [EVENTS.LAUNCHPAD_HIDE]: { timestamp: number; trigger?: string }
+  
+  // 应用启动事件数据
+  [EVENTS.APP_STARTUP]: { appKey?: string; timestamp: number; config?: any; bootTime?: number }
+  
+  // 数据同步事件数据
+  [EVENTS.DATA_SYNC]: { type: string; status: 'start' | 'progress' | 'complete' | 'error'; data?: any; progress?: number; error?: string }
+  
+  // 测试事件数据
+  [EVENTS.TEST_ERROR]: { message: string; error?: Error; context?: string; severity?: 'low' | 'medium' | 'high' | 'critical' }
+  [EVENTS.TEST_PERFORMANCE]: { index: number; timestamp: number }
   
   // 错误监控事件
   'error:app': { appKey: string; error: string; stack?: string; severity: 'low' | 'medium' | 'high' | 'critical' }

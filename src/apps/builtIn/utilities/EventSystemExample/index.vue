@@ -289,6 +289,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useEnterpriseEventManager } from '@/shared/composables'
 import { useAppWindowEvents } from '@/shared/composables'
+import { EVENTS } from '@/core/event-system/useEventBus'
 import type { PerformanceReport, Alert } from '@/shared/composables'
 import type { DebugRecord, DebugFilter } from '@/shared/composables'
 
@@ -454,10 +455,10 @@ function setupRoutes() {
 // 事件触发方法
 async function triggerUserLogin() {
   try {
-    const result = await eventManager.eventBus.emit('user:login', {
+    const result = await eventManager.eventBus.emit(EVENTS.USER_LOGIN, {
       username: 'john@example.com',
       timestamp: Date.now(),
-      userAgent: navigator.userAgent
+      method: 'form'
     })
     console.log('用户登录事件结果:', result)
   } catch (error) {
@@ -467,10 +468,12 @@ async function triggerUserLogin() {
 
 async function triggerAppStartup() {
   try {
-    const result = await eventManager.eventBus.emit('app:startup', {
-      version: '1.0.0',
-      environment: 'development',
-      timestamp: Date.now()
+    const result = await eventManager.eventBus.emit(EVENTS.APP_STARTUP, {
+      timestamp: Date.now(),
+      config: {
+        version: '1.0.0',
+        environment: 'development'
+      }
     })
     console.log('应用启动事件结果:', result)
   } catch (error) {
@@ -480,10 +483,12 @@ async function triggerAppStartup() {
 
 async function triggerDataSync() {
   try {
-    const result = await eventManager.eventBus.emit('data:sync', {
+    const result = await eventManager.eventBus.emit(EVENTS.DATA_SYNC, {
       type: 'user-preferences',
-      lastSync: Date.now() - 3600000,
-      timestamp: Date.now()
+      status: 'start',
+      data: {
+        lastSync: Date.now() - 3600000
+      }
     })
     console.log('数据同步事件结果:', result)
   } catch (error) {
@@ -493,9 +498,10 @@ async function triggerDataSync() {
 
 async function triggerErrorEvent() {
   try {
-    await eventManager.eventBus.emit('test:error', {
-      shouldFail: true,
-      timestamp: Date.now()
+    await eventManager.eventBus.emit(EVENTS.TEST_ERROR, {
+      message: '这是一个测试错误',
+      context: 'triggerErrorEvent',
+      severity: 'medium'
     })
   } catch (error) {
     console.log('预期的错误事件:', error)
@@ -508,7 +514,7 @@ async function triggerPerformanceTest() {
   
   for (let i = 0; i < 20; i++) {
     promises.push(
-      eventManager.eventBus.emit('test:performance', {
+      eventManager.eventBus.emit(EVENTS.TEST_PERFORMANCE, {
         index: i,
         timestamp: Date.now()
       })
@@ -618,11 +624,11 @@ onMounted(() => {
   setupRoutes()
   
   // 注册测试事件处理器
-  eventManager.eventBus.on('test:error', async () => {
+  eventManager.eventBus.on(EVENTS.TEST_ERROR, async () => {
     throw new Error('这是一个测试错误')
   })
   
-  eventManager.eventBus.on('test:performance', async (data) => {
+  eventManager.eventBus.on(EVENTS.TEST_PERFORMANCE, async (data) => {
     // 模拟一些处理时间
     await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50))
     return { processed: true, index: data.index }

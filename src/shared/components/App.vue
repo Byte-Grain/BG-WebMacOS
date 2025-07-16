@@ -141,7 +141,7 @@
   // 设置窗口事件监听器
   const setupWindowEventListeners = () => {
     // 监听窗口标题变化事件
-    const titleChangeId = eventBus.on('window:title-change', (data) => {
+    const titleChangeId = eventBus.on(EVENTS.WINDOW_TITLE_CHANGE, (data) => {
       if (data.appKey === props.app.key || data.pid === props.app.pid) {
         appData.title = data.title
       }
@@ -223,7 +223,7 @@
     
     // 保存清理函数
     eventCleanupFunctions.value.push(
-      () => eventBus.off('window:title-change', titleChangeId),
+      () => eventBus.off(EVENTS.WINDOW_TITLE_CHANGE, titleChangeId),
       () => eventBus.off(EVENTS.APP_MAXIMIZE, maximizeId),
       () => eventBus.off(EVENTS.APP_MINIMIZE, minimizeId),
       () => eventBus.off(EVENTS.WINDOW_FULLSCREEN, fullscreenId),
