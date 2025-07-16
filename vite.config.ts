@@ -27,7 +27,14 @@ export default defineConfig({
         'vue-router',
         'vuex'
       ],
-      resolvers: [ElementPlusResolver()],
+      resolvers: [
+        ElementPlusResolver({
+          importStyle: 'css', // 按需导入CSS样式
+          directives: true, // 自动导入指令
+          version: '2.10.4', // 指定版本
+
+        })
+      ],
       dts: true, // 生成类型声明文件
       eslintrc: {
         enabled: true, // 生成eslint配置
@@ -37,10 +44,11 @@ export default defineConfig({
     }),
     Components({
       resolvers: [
-        ElementPlusResolver(),
-        // 自动导入图标组件
         ElementPlusResolver({
-          importStyle: 'sass'
+          importStyle: 'css', // 按需导入CSS样式
+          directives: true, // 自动导入指令
+          version: '2.10.4', // 指定版本
+          resolveIcons: true, // 自动导入图标
         })
       ],
       dts: true, // 生成类型声明文件
@@ -70,9 +78,19 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['vue', 'vue-router', 'vuex'],
-          elementPlus: ['element-plus']
+        manualChunks: (id) => {
+          // Vue 核心库
+          if (id.includes('vue')) {
+            return 'vue-vendor'
+          }
+          // Element Plus 所有模块统一打包
+          if (id.includes('element-plus') || id.includes('@element-plus')) {
+            return 'element-plus'
+          }
+          // 第三方库
+          if (id.includes('node_modules')) {
+            return 'vendor'
+          }
         }
       }
     }

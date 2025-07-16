@@ -1,26 +1,28 @@
 <template>
-  <div class="mac-os" @contextmenu.prevent="onContextShow()">
-    <transition name="fade">
-      <Background />
-    </transition>
-    <transition name="fade">
-      <Loading v-if="loading || (!systemInitialized && showLogin)" />
-    </transition>
-    <transition name="fade">
-      <Login v-if="systemInitialized && showLogin" @logined="handleLogin" />
-    </transition>
-    <transition name="fade">
-      <Desktop v-if="!showLogin && !loading && !showDebugTest" />
-    </transition>
-    <transition name="fade">
-      <Launchpad v-if="launchpad" />
-    </transition>
-    <!-- AppWindow 组件暂时移除，等待后续实现 -->
-    <!-- <AppWindow v-for="item in openAppList" :key="item.pid" :app="item" /> -->
-    
-    <!-- 通知组件 -->
-    <Notification />
-  </div>
+  <ElConfigProvider v-bind="elementPlusConfig">
+    <div class="mac-os" @contextmenu.prevent="onContextShow()">
+      <transition name="fade">
+        <Background />
+      </transition>
+      <transition name="fade">
+        <Loading v-if="loading || (!systemInitialized && showLogin)" />
+      </transition>
+      <transition name="fade">
+        <Login v-if="systemInitialized && showLogin" @logined="handleLogin" />
+      </transition>
+      <transition name="fade">
+        <Desktop v-if="!showLogin && !loading && !showDebugTest" />
+      </transition>
+      <transition name="fade">
+        <Launchpad v-if="launchpad" />
+      </transition>
+      <!-- AppWindow 组件暂时移除，等待后续实现 -->
+      <!-- <AppWindow v-for="item in openAppList" :key="item.pid" :app="item" /> -->
+      
+      <!-- 通知组件 -->
+      <Notification />
+    </div>
+  </ElConfigProvider>
 </template>
 
 <style scoped lang="scss">
@@ -65,6 +67,9 @@ import {
   captureError,
   EVENTS 
 } from '@/shared/composables'
+
+// Element Plus 配置
+import { elementPlusConfig } from '@shared/config/element-plus'
 
 // 组件导入
 import Background from '@shared/components/base/Bg.vue'

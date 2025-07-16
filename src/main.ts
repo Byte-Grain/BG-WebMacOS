@@ -1,22 +1,10 @@
 import { createApp } from 'vue'
 import App from './MacOS.vue'
-import store from './store'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
+import store from '@shared/store'
 import '@/assets/styles/index.css'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
-import en from 'element-plus/es/locale/lang/en'
 import i18n from '@features/i18n'
 import { envConfig } from '@shared/config/env.config.ts'
 import { enhancedAppRegistry } from '@core/app-registry/enhanced-app-registry'
-// 获取语言设置
-const getLanguage = (): string => {
-  try {
-    return localStorage.getItem('language') || 'zh'
-  } catch {
-    return 'zh'
-  }
-}
 
 const app = createApp(App)
 
@@ -33,9 +21,6 @@ async function initializeApp() {
     
     // 使用插件并挂载应用
     app.use(store)
-      .use(ElementPlus, {
-        locale: getLanguage() === 'zh' ? zhCn : en,
-      })
       .use(i18n)
       .mount('#app')
       
@@ -44,9 +29,6 @@ async function initializeApp() {
     console.error('❌ Failed to initialize application:', error)
     // 即使初始化失败，也要挂载应用以避免白屏
     app.use(store)
-      .use(ElementPlus, {
-        locale: getLanguage() === 'zh' ? zhCn : en,
-      })
       .use(i18n)
       .mount('#app')
   }
