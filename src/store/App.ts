@@ -1,5 +1,5 @@
 import { AppState, AppConfig } from "@/types/app";
-import { getAllApps, getAppByKey, getDockApps } from "@/config/apps";
+import { getAllApps, getAppByKey, getDockApps } from "@core/app-registry";
 import { STORAGE_KEYS } from "@/constants";
 // createStore 现在通过自动导入，无需手动导入
 // import { createStore } from 'vuex'

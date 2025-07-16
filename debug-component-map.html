@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Map Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .debug-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .app-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+    </style>
+</head>
+<body>
+    <h1>Component Map Debug Information</h1>
+    <div class="debug-info">
+        <h2>Instructions</h2>
+        <p>1. Open the main application at <a href="http://localhost:8080" target="_blank">http://localhost:8080</a></p>
+        <p>2. Open the browser developer tools (F12)</p>
+        <p>3. Check the Console tab for debug messages starting with 🔧</p>
+        <p>4. Try opening different applications and observe the console output</p>
+        <p>5. Look for any error messages or warnings about missing components</p>
+    </div>
+    
+    <div class="debug-info">
+        <h2>Expected Debug Messages</h2>
+        <div class="app-item success">
+            <strong>🔧 Generating component map...</strong><br>
+            This should appear when the app registry initializes
+        </div>
+        <div class="app-item success">
+            <strong>✅ Using static component for [app_key]: object</strong><br>
+            This should appear for each app with a static component
+        </div>
+        <div class="app-item success">
+            <strong>🔧 Component map generated: {totalComponents: X, componentKeys: [...]}</strong><br>
+            This shows the final component map
+        </div>
+        <div class="app-item success">
+            <strong>🔧 App.vue - Component map initialized: {...}</strong><br>
+            This appears when each app window initializes
+        </div>
+    </div>
+    
+    <div class="debug-info">
+        <h2>Potential Issues to Look For</h2>
+        <div class="app-item error">
+            <strong>Component not found for app: [app_key]</strong><br>
+            This indicates a missing component mapping
+        </div>
+        <div class="app-item error">
+            <strong>🔄 Using dynamic loader for [app_key]</strong><br>
+            This might indicate the static component wasn't recognized
+        </div>
+    </div>
+    
+    <script>
+        // Auto-refresh every 5 seconds to keep this page updated
+        setTimeout(() => {
+            location.reload();
+        }, 30000);
+        
+        console.log('Debug page loaded. Check the main application console for detailed logs.');
+    </script>
+</body>
+</html>

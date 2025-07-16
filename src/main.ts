@@ -8,7 +8,7 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import en from 'element-plus/es/locale/lang/en'
 import i18n from './i18n'
 import { envConfig } from './config/env.config'
-import { enhancedAppRegistry } from '@/config/apps/enhanced-app-registry'
+import { enhancedAppRegistry } from '@core/app-registry/enhanced-app-registry'
 // 获取语言设置
 const getLanguage = (): string => {
   try {

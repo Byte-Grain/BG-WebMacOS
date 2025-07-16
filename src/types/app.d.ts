@@ -7,12 +7,12 @@ export interface AppMenu {
 
 export interface AppConfig {
   key: string;
-  component?: string;
-  componentPath?: string;        // 组件路径（用于动态加载）
   icon: string;
   title: string;
   iconColor: string;
   iconBgColor: string;
+  component?: string;
+  componentPath?: string;        // 组件路径（用于动态加载）
   width?: number;
   height?: number;
   disableResize?: boolean;

@@ -5,8 +5,8 @@
 
 import { AppManifest, InstallResult, ValidationResult, UpdateResult, InstalledAppInfo } from '@/types/app-package'
 import { AppConfig } from '@/types/app.d'
-import { registerApp, unregisterApp, updateAppConfig } from '@/config/apps'
-import { enhancedAppRegistry } from '@/config/apps/enhanced-app-registry'
+import { registerApp, unregisterApp, updateAppConfig } from '@core/app-registry'
+import { enhancedAppRegistry } from '@core/app-registry/enhanced-app-registry'
 
 export class AppPackageManager {
   private static readonly STORAGE_KEY = 'installed_apps'

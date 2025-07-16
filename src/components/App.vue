@@ -50,9 +50,9 @@
 
 <script setup>
   import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, markRaw, onUnmounted } from 'vue'
-  import { useAppManager } from '@/composables/useAppManager'
-  import { enhancedAppRegistry, getAppByKey } from '@/config/apps/enhanced-app-registry'
-  import { useEventBus, EVENTS } from '@/composables/useEventBus'
+  import { useAppManager } from '@/composables'
+  import { enhancedAppRegistry, getAppByKey } from '@core/app-registry/enhanced-app-registry'
+  import { useEventBus, EVENTS } from '@/composables'
 
   // 使用组合式函数
   const { closeApp: closeAppManager, hideApp: hideAppManager, showApp: showAppManager, openApp: openAppManager, openAppWithData, closeAppByPid, openApps } = useAppManager()
@@ -111,6 +111,15 @@
       }
       componentMap.value = markedComponentMap
       isRegistryInitialized.value = true
+      
+      // 调试信息
+      console.log('🔧 App.vue - Component map initialized:', {
+        appKey: props.app.key,
+        appTitle: props.app.title,
+        componentMapKeys: Object.keys(componentMap.value),
+        appComponent: props.app.component,
+        foundComponent: componentMap.value[props.app.key]
+      })
       
       // 设置窗口位置
       setReact()
@@ -257,11 +266,14 @@
       return null
     }
     
-    const componentKey = app.component || app.key
+    const componentKey = app.key // 使用 app.key 作为组件映射的键
     const component = componentMap.value[componentKey]
     
     if (!component) {
-      console.warn(`Component not found for app: ${app.key}`)
+      console.warn(`Component not found for app: ${app.key}`, {
+        availableComponents: Object.keys(componentMap.value),
+        requestedKey: componentKey
+      })
       return null
     }
     
