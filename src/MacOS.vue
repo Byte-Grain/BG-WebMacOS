@@ -71,12 +71,12 @@ import {
 } from '@/composables'
 
 // 组件导入
-import Background from './components/common/Bg.vue'
-import Loading from './components/common/Loading.vue'
+import Background from './shared/components/base/Bg.vue'
+import Loading from './shared/components/feedback/Loading.vue'
 import Login from './views/login/Login.vue'
 import Desktop from './components/layout/DeskTop.vue'
 import Launchpad from './components/layout/LaunchPad.vue'
-import Notification from './components/common/Notification.vue'
+import Notification from './shared/components/feedback/Notification.vue'
 import RegistryTest from './views/test/RegistryTest.vue'
 // AppWindow 组件暂时移除，等待后续实现
 

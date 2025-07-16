@@ -1,40 +1,42 @@
 // 导入组合式函数
-import { useAppManager } from './useAppManager'
-import { useTheme } from './useTheme'
-import { useSystem } from './useSystem'
-import { useUtils } from './useUtils'
-import { useKeyboard } from './useKeyboard'
-import { useNotification } from './useNotification'
-import { useEventBus, useEventBusLegacy } from './useEventBus'
-import { useErrorMonitor } from './useErrorMonitor'
-import { usePerformanceMonitor } from './usePerformanceMonitor'
-import { usePerformance } from './usePerformance'
-import { useEnterpriseEventManager } from './useEnterpriseEventManager'
-import { useDesktopGesture, GESTURE_DIRECTIONS, DEFAULT_GESTURE_CONFIG } from './useDesktopGesture'
+import { useAppManager } from '../shared/composables/core/useAppManager'
+import { useTheme } from '../shared/composables/ui/useTheme'
+import { useSystem } from '../shared/composables/core/useSystem'
+import { useUtils } from '../shared/composables/utils/useUtils'
+import { useKeyboard } from '../shared/composables/ui/useKeyboard'
+import { useNotification } from '../shared/composables/ui/useNotification'
+import { useEventBus, useEventBusLegacy } from '../shared/composables/core/useEventBus'
+import { useErrorMonitor } from '../shared/composables/utils/useErrorMonitor'
+import { usePerformanceMonitor } from '../shared/composables/utils/usePerformanceMonitor'
+import { usePerformance } from '../shared/composables/utils/usePerformance'
+import { useEnterpriseEventManager } from '../shared/composables/core/useEnterpriseEventManager'
+import { useDesktopGesture, GESTURE_DIRECTIONS, DEFAULT_GESTURE_CONFIG } from '../shared/composables/ui/useDesktopGesture'
+import { useAppWindowEvents } from '../shared/composables/core/useAppWindowEvents'
 
 // 组合式函数统一导出
-export { useAppManager } from './useAppManager'
-export { useTheme } from './useTheme'
-export { useSystem } from './useSystem'
-export { useUtils } from './useUtils'
+export { useAppManager } from '../shared/composables/core/useAppManager'
+export { useTheme } from '../shared/composables/ui/useTheme'
+export { useSystem } from '../shared/composables/core/useSystem'
+export { useUtils } from '../shared/composables/utils/useUtils'
 export { 
   useEventBus, 
   useEventBusLegacy, 
   eventBus, 
   EVENTS, 
   EVENT_NAMESPACES 
-} from './useEventBus'
-export { useKeyboard, globalKeyboard } from './useKeyboard'
-export { useNotification, globalNotification, notify } from './useNotification'
-export { useDesktopGesture, GESTURE_DIRECTIONS, DEFAULT_GESTURE_CONFIG } from './useDesktopGesture'
+} from '../shared/composables/core/useEventBus'
+export { useKeyboard, globalKeyboard } from '../shared/composables/ui/useKeyboard'
+export { useNotification, globalNotification, notify } from '../shared/composables/ui/useNotification'
+export { useDesktopGesture, GESTURE_DIRECTIONS, DEFAULT_GESTURE_CONFIG } from '../shared/composables/ui/useDesktopGesture'
 
 // 事件系统中期优化组件
-export { useEventMiddleware } from './useEventMiddleware'
-export { useBuiltInMiddlewares } from './useBuiltInMiddlewares'
-export { useEventRouter } from './useEventRouter'
-export { useEventLifecycle } from './useEventLifecycle'
-export { useEventDebugger } from './useEventDebugger'
-export { useEnterpriseEventManager } from './useEnterpriseEventManager'
+export { useEventMiddleware } from '../shared/composables/core/useEventMiddleware'
+export { useBuiltInMiddlewares } from '../shared/composables/core/useBuiltInMiddlewares'
+export { useEventRouter } from '../shared/composables/core/useEventRouter'
+export { useEventLifecycle } from '../shared/composables/core/useEventLifecycle'
+export { useEventDebugger } from '../shared/composables/core/useEventDebugger'
+export { useEnterpriseEventManager } from '../shared/composables/core/useEnterpriseEventManager'
+export { useAppWindowEvents } from '../shared/composables/core/useAppWindowEvents'
 
 // 错误监控导出
 export {
@@ -42,7 +44,7 @@ export {
   getGlobalErrorMonitor,
   captureError,
   captureException,
-} from './useErrorMonitor'
+} from '../shared/composables/utils/useErrorMonitor'
 
 // 性能监控导出
 export {
@@ -50,13 +52,13 @@ export {
   getGlobalPerformanceMonitor,
   getCurrentPerformanceMetrics,
   checkPerformanceHealth,
-} from './usePerformanceMonitor'
+} from '../shared/composables/utils/usePerformanceMonitor'
 
 // 性能优化工具导出
 export {
   usePerformance,
   useVirtualScroll
-} from './usePerformance'
+} from '../shared/composables/utils/usePerformance'
 
 // 事件系统类型导出
 export type { 
@@ -67,7 +69,7 @@ export type {
   EventDataMap,
   EventStats,
   EventFilter
-} from './useEventBus'
+} from '../shared/composables/core/useEventBus'
 
 // 错误监控类型导出
 export type {
@@ -76,19 +78,19 @@ export type {
   ErrorMonitorConfig,
   ErrorType,
   ErrorSeverity,
-} from './useErrorMonitor'
+} from '../shared/composables/utils/useErrorMonitor'
 
 // 性能监控类型导出
 export type {
   PerformanceMetrics,
   PerformanceThresholds,
   PerformanceMonitorConfig,
-} from './usePerformanceMonitor'
+} from '../shared/composables/utils/usePerformanceMonitor'
 
 // 其他类型导出
-export type { ModifierKeys, ShortcutConfig, ShortcutHandler } from './useKeyboard'
-export type { NotificationType, NotificationPosition, NotificationConfig, NotificationAction, NotificationInstance } from './useNotification'
-export type { GestureConfig, GestureEventData, GestureDirection } from './useDesktopGesture'
+export type { ModifierKeys, ShortcutConfig, ShortcutHandler } from '../shared/composables/ui/useKeyboard'
+export type { NotificationType, NotificationPosition, NotificationConfig, NotificationAction, NotificationInstance } from '../shared/composables/ui/useNotification'
+export type { GestureConfig, GestureEventData, GestureDirection } from '../shared/composables/ui/useDesktopGesture'
 
 // 类型导出
 export type {

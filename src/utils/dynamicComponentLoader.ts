@@ -27,8 +27,8 @@ export class DynamicComponentLoader {
     // 创建异步组件加载器
     return defineAsyncComponent({
       loader: () => this.createComponentLoader(app),
-      loadingComponent: () => import('@/components/common/Loading.vue'),
-      errorComponent: () => import('@/components/common/AppError.vue'),
+      loadingComponent: () => import('@/shared/components/feedback/Loading.vue'),
+      errorComponent: () => import('@/shared/components/feedback/AppError.vue'),
       delay: 200,
       timeout: 10000
     })

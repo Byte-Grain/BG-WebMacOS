@@ -1,47 +1,45 @@
 import { ref, reactive, computed } from 'vue'
-import { useEventBus, EVENTS } from './useEventBus'
-import { useUtils } from './useUtils'
+import { useEventBus, EVENTS } from '../core/useEventBus'
+import { useUtils } from '../utils/useUtils'
+import { 
+  notificationManager, 
+  notificationCenter,
+  type NotificationType,
+  type NotificationPosition,
+  type NotificationConfig as PlatformNotificationConfig,
+  type Notification as PlatformNotification,
+  type NotificationAction as PlatformNotificationAction
+} from '@/platform/notifications'
 
-// 通知类型
-export type NotificationType = 'info' | 'success' | 'warning' | 'error'
+// 为了保持向后兼容，重新导出类型
+export type { NotificationType, NotificationPosition }
 
-// 通知位置
-export type NotificationPosition = 
-  | 'top-right' 
-  | 'top-left' 
-  | 'top-center'
-  | 'bottom-right' 
-  | 'bottom-left' 
-  | 'bottom-center'
-  | 'center'
-
-// 通知配置
+// 兼容性类型映射
 export interface NotificationConfig {
   id?: string
   title?: string
   message: string
   type?: NotificationType
-  duration?: number // 显示时长，0 表示不自动关闭
+  duration?: number
   position?: NotificationPosition
   showClose?: boolean
-  persistent?: boolean // 是否持久化（页面刷新后仍显示）
+  persistent?: boolean
   icon?: string
   avatar?: string
   actions?: NotificationAction[]
   onClick?: () => void
   onClose?: () => void
   customClass?: string
-  html?: boolean // 是否允许 HTML 内容
+  html?: boolean
+  data?: any
 }
 
-// 通知操作按钮
 export interface NotificationAction {
   text: string
   action: () => void
   type?: 'primary' | 'secondary' | 'danger'
 }
 
-// 通知实例
 export interface NotificationInstance extends Required<Omit<NotificationConfig, 'actions' | 'onClick' | 'onClose'>> {
   id: string
   createdAt: number
@@ -66,11 +64,68 @@ export function useNotification() {
   const { emit } = useEventBus()
   const { generateId } = useUtils()
   
-  // 通知列表
-  const notifications = ref<NotificationInstance[]>([])
+  // 通知列表 - 现在从平台模块获取
+  const notifications = computed(() => {
+    return notificationManager.getAll().map(platformNotification => {
+      return convertPlatformToLegacy(platformNotification)
+    })
+  })
   
   // 全局配置
   const globalConfig = reactive<Partial<NotificationConfig>>({ ...DEFAULT_CONFIG })
+  
+  // 转换平台通知到旧版格式
+  const convertPlatformToLegacy = (platformNotification: PlatformNotification): NotificationInstance => {
+    return {
+      id: platformNotification.id,
+      title: platformNotification.title || '',
+      message: platformNotification.message,
+      type: platformNotification.type,
+      duration: platformNotification.duration || 4000,
+      position: platformNotification.position || 'top-right',
+      showClose: platformNotification.showClose ?? true,
+      persistent: platformNotification.persistent ?? false,
+      icon: platformNotification.icon || '',
+      avatar: platformNotification.avatar || '',
+      customClass: platformNotification.customClass || '',
+      html: platformNotification.html ?? false,
+      data: platformNotification.data,
+      createdAt: platformNotification.createdAt,
+      actions: platformNotification.actions?.map(action => ({
+        text: action.text,
+        action: action.handler,
+        type: action.type as 'primary' | 'secondary' | 'danger'
+      })),
+      onClick: platformNotification.onClick,
+      onClose: platformNotification.onClose
+    }
+  }
+  
+  // 转换旧版配置到平台格式
+  const convertLegacyToPlatform = (config: NotificationConfig): PlatformNotificationConfig => {
+    return {
+      id: config.id,
+      title: config.title,
+      message: config.message,
+      type: config.type || 'info',
+      duration: config.duration,
+      position: config.position,
+      showClose: config.showClose,
+      persistent: config.persistent,
+      icon: config.icon,
+      avatar: config.avatar,
+      customClass: config.customClass,
+      html: config.html,
+      data: config.data,
+      actions: config.actions?.map(action => ({
+        text: action.text,
+        handler: action.action,
+        type: action.type || 'secondary'
+      })),
+      onClick: config.onClick,
+      onClose: config.onClose
+    }
+  }
   
   // 按位置分组的通知
   const notificationsByPosition = computed(() => {
@@ -124,91 +179,54 @@ export function useNotification() {
 
   // 显示通知
   const show = (config: NotificationConfig): string => {
-    const notification = createNotification(config)
+    const mergedConfig = { ...globalConfig, ...config }
+    const platformConfig = convertLegacyToPlatform(mergedConfig)
     
-    // 检查是否已存在相同 ID 的通知
-    const existingIndex = notifications.value.findIndex(n => n.id === notification.id)
-    if (existingIndex > -1) {
-      // 更新现有通知
-      clearTimeout(notifications.value[existingIndex].timer)
-      notifications.value[existingIndex] = notification
-    } else {
-      // 添加新通知
-      notifications.value.push(notification)
-    }
-    
-    // 设置自动关闭定时器
-    if (notification.duration > 0) {
-      notification.timer = setTimeout(() => {
-        close(notification.id)
-      }, notification.duration)
-    }
+    // 使用平台模块创建通知
+    const id = notificationManager.create(platformConfig)
     
     // 触发显示事件
     emit(EVENTS.NOTIFICATION_SHOW, {
-      id: notification.id,
-      title: notification.title || '',
-      message: notification.message,
-      type: notification.type,
-      duration: notification.duration
+      id: id,
+      title: mergedConfig.title || '',
+      message: mergedConfig.message,
+      type: mergedConfig.type || 'info',
+      duration: mergedConfig.duration || 4000
     })
     
-    return notification.id
+    return id
   }
 
   // 关闭通知
   const close = (id: string): boolean => {
-    const index = notifications.value.findIndex(n => n.id === id)
-    if (index === -1) return false
+    const success = notificationManager.remove(id)
     
-    const notification = notifications.value[index]
-    
-    // 清除定时器
-    if (notification.timer) {
-      clearTimeout(notification.timer)
+    if (success) {
+      // 触发隐藏事件
+      emit(EVENTS.NOTIFICATION_HIDE, {
+        id: id,
+        reason: 'user'
+      })
     }
     
-    // 执行关闭回调
-    if (notification.onClose) {
-      try {
-        notification.onClose()
-      } catch (error) {
-        console.error('Error in notification onClose callback:', error)
-      }
-    }
-    
-    // 移除通知
-    notifications.value.splice(index, 1)
-    
-    // 触发隐藏事件
-    emit(EVENTS.NOTIFICATION_HIDE, {
-      id: notification.id,
-      reason: 'user'
-    })
-    
-    return true
+    return success
   }
 
   // 关闭所有通知
   const closeAll = (): void => {
-    const notificationIds = notifications.value.map(n => n.id)
-    notificationIds.forEach(id => close(id))
+    notificationManager.clear()
   }
 
   // 关闭指定类型的通知
   const closeByType = (type: NotificationType): void => {
-    const notificationIds = notifications.value
-      .filter(n => n.type === type)
-      .map(n => n.id)
-    notificationIds.forEach(id => close(id))
+    const typeNotifications = notificationManager.filter({ type })
+    typeNotifications.forEach(notification => notificationManager.remove(notification.id))
   }
 
   // 关闭指定位置的通知
   const closeByPosition = (position: NotificationPosition): void => {
-    const notificationIds = notifications.value
-      .filter(n => n.position === position)
-      .map(n => n.id)
-    notificationIds.forEach(id => close(id))
+    const positionNotifications = notificationManager.filter({ position })
+    positionNotifications.forEach(notification => notificationManager.remove(notification.id))
   }
 
   // 更新全局配置
@@ -218,29 +236,30 @@ export function useNotification() {
 
   // 获取通知实例
   const getNotification = (id: string): NotificationInstance | undefined => {
-    return notifications.value.find(n => n.id === id)
+    const platformNotification = notificationManager.get(id)
+    return platformNotification ? convertPlatformToLegacy(platformNotification) : undefined
   }
 
   // 检查通知是否存在
   const hasNotification = (id: string): boolean => {
-    return notifications.value.some(n => n.id === id)
+    return notificationManager.has(id)
   }
 
   // 便捷方法
-  const info = (message: string, config?: Omit<NotificationConfig, 'message' | 'type'>): string => {
-    return show({ ...config, message, type: 'info' })
+  const info = (message: string, config?: Partial<NotificationConfig>): string => {
+    return show({ ...config, title: message, message: config?.message || message, type: 'info' })
   }
 
-  const success = (message: string, config?: Omit<NotificationConfig, 'message' | 'type'>): string => {
-    return show({ ...config, message, type: 'success' })
+  const success = (message: string, config?: Partial<NotificationConfig>): string => {
+    return show({ ...config, title: message, message: config?.message || message, type: 'success' })
   }
 
-  const warning = (message: string, config?: Omit<NotificationConfig, 'message' | 'type'>): string => {
-    return show({ ...config, message, type: 'warning' })
+  const warning = (message: string, config?: Partial<NotificationConfig>): string => {
+    return show({ ...config, title: message, message: config?.message || message, type: 'warning' })
   }
 
-  const error = (message: string, config?: Omit<NotificationConfig, 'message' | 'type'>): string => {
-    return show({ ...config, message, type: 'error' })
+  const error = (message: string, config?: Partial<NotificationConfig>): string => {
+    return show({ ...config, title: message, message: config?.message || message, type: 'error' })
   }
 
   // 系统通知（使用浏览器原生通知 API）
@@ -291,7 +310,11 @@ export function useNotification() {
   const savePersistentNotifications = (): void => {
     const persistentNotifications = notifications.value.filter(n => n.persistent)
     try {
-      localStorage.setItem('persistent_notifications', JSON.stringify(persistentNotifications))
+      const serializedNotifications = persistentNotifications.map(notification => ({
+        ...notification,
+        timer: undefined // 不序列化定时器
+      }))
+      localStorage.setItem('persistent_notifications', JSON.stringify(serializedNotifications))
     } catch (error) {
       console.warn('Failed to save persistent notifications:', error)
     }
@@ -303,8 +326,9 @@ export function useNotification() {
       if (saved) {
         const persistentNotifications: NotificationInstance[] = JSON.parse(saved)
         persistentNotifications.forEach(notification => {
-          // 重新添加持久化通知，但不设置自动关闭定时器
-          notifications.value.push({ ...notification, timer: undefined })
+          // 使用平台模块重新创建持久化通知
+          const platformConfig = convertLegacyToPlatform(notification)
+          notificationManager.create({ ...platformConfig, id: notification.id })
         })
       }
     } catch (error) {
@@ -390,13 +414,13 @@ export const globalNotification = GlobalNotificationManager.getInstance()
 // 导出便捷的全局通知方法
 export const notify = {
   show: (config: NotificationConfig) => globalNotification.initialize().show(config),
-  info: (message: string, config?: Omit<NotificationConfig, 'message' | 'type'>) => 
+  info: (message: string, config?: Partial<NotificationConfig>) => 
     globalNotification.initialize().info(message, config),
-  success: (message: string, config?: Omit<NotificationConfig, 'message' | 'type'>) => 
+  success: (message: string, config?: Partial<NotificationConfig>) => 
     globalNotification.initialize().success(message, config),
-  warning: (message: string, config?: Omit<NotificationConfig, 'message' | 'type'>) => 
+  warning: (message: string, config?: Partial<NotificationConfig>) => 
     globalNotification.initialize().warning(message, config),
-  error: (message: string, config?: Omit<NotificationConfig, 'message' | 'type'>) => 
+  error: (message: string, config?: Partial<NotificationConfig>) => 
     globalNotification.initialize().error(message, config),
   close: (id: string) => globalNotification.initialize().close(id),
   closeAll: () => globalNotification.initialize().closeAll(),

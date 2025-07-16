@@ -1,5 +1,5 @@
 import { ref, computed, readonly, onMounted, onUnmounted } from 'vue'
-import { useEventBus } from './useEventBus'
+import { useEventBus } from '../core/useEventBus'
 
 // 性能指标类型
 export interface PerformanceMetrics {

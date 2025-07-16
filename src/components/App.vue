@@ -50,9 +50,9 @@
 
 <script setup>
   import { defineAsyncComponent, reactive, watch, onMounted, computed, ref, markRaw, onUnmounted } from 'vue'
-  import { useAppManager } from '@/composables/useAppManager'
+  import { useAppManager } from '@/composables'
   import { enhancedAppRegistry, getAppByKey } from '@/config/apps/enhanced-app-registry'
-  import { useEventBus, EVENTS } from '@/composables/useEventBus'
+  import { useEventBus, EVENTS } from '@/composables'
 
   // 使用组合式函数
   const { closeApp: closeAppManager, hideApp: hideAppManager, showApp: showAppManager, openApp: openAppManager, openAppWithData, closeAppByPid, openApps } = useAppManager()

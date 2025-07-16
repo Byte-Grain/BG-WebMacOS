@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useEventBus, EVENTS } from './useEventBus'
+import { useEventBus, EVENTS } from '../core/useEventBus'
 
 // 键盘修饰键
 export interface ModifierKeys {

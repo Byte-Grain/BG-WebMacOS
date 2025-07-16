@@ -1,5 +1,5 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { useEventBus, EVENTS } from './useEventBus'
+import { useEventBus, EVENTS } from '../core/useEventBus'
 import { useUtils } from './useUtils'
 
 // 错误类型

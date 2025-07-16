@@ -15,7 +15,7 @@
 <script setup>
   import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
   import { useSystem, useUtils } from '@/composables'
-  import { usePerformance } from '@/composables/usePerformance'
+  import { usePerformance } from '@/composables'
   import VolumeControl from './widgets/VolumeControl.vue'
   import DateTimeWidget from './widgets/DateTimeWidget.vue'
   import NotificationWidget from './widgets/NotificationWidget.vue'

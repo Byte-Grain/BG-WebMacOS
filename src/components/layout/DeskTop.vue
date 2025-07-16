@@ -30,7 +30,7 @@
   import { ref, watch, onMounted, onUnmounted, computed, nextTick } from 'vue'
   import { ElMessage } from 'element-plus'
   import { useAppManager, useSystem, useUtils, useDesktopGesture } from '@/composables'
-  import { usePerformance } from '@/composables/usePerformance'
+  import { usePerformance } from "@/composables";
   import DesktopStatusBar from '@/components/layout/DesktopStatusBar.vue'
   import DesktopAppsArea from '@/components/layout/DesktopAppsArea.vue'
   import DesktopContextMenu from '@/components/layout/DesktopContextMenu.vue'
