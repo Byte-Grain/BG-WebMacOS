@@ -119,10 +119,10 @@ function generateCustomApps(scanDirs, outputFilePath) {
           let category, group, appName;
 
           if (appPathParts.length === 3) {
-            // 三层：分类/分组/应用
-            category = appPathParts[0]  // 分类名称
-            group = appPathParts[1]     // 分组名称
-            appName = appPathParts[2]       // 应用名称
+            // 三层：分类/子分类/应用 (如: builtIn/system/about)
+            category = appPathParts[0]  // 分类名称 (builtIn)
+            group = appPathParts[1]     // 分组名称 (system)
+            appName = appPathParts[2]   // 应用名称 (about)
           } else if (appPathParts.length === 2) {
             // 两层：分类/应用
             category = appPathParts[0]  // 分类名称
@@ -130,6 +130,7 @@ function generateCustomApps(scanDirs, outputFilePath) {
             appName = appPathParts[1]       // 应用名称
           } else {
             console.log("找不到分类和分组信息，请检查路径是否正确", pathParts)
+            return // 跳过无法解析的路径
           }
 
           const component = `${category}_${group}_${appName}`
@@ -174,48 +175,61 @@ function generateCustomApps(scanDirs, outputFilePath) {
  */
 function extractAppConfig(content, filename) {
   try {
-    // 提取script标签内容
-    const scriptMatch = content.match(/<script[^>]*>([\s\S]*?)<\/script>/)
-    if (!scriptMatch) {
+    // 提取所有script标签内容
+    const scriptMatches = content.match(/<script[^>]*>([\s\S]*?)<\/script>/g)
+    if (!scriptMatches) {
       return null
     }
 
-    const scriptContent = scriptMatch[1]
-
-    // 使用Babel解析TypeScript/JavaScript代码
-    const ast = parse(scriptContent, {
-      sourceType: 'module',
-      plugins: [
-        'typescript',
-        'decorators-legacy',
-        'classProperties',
-        'objectRestSpread'
-      ]
-    })
-
     let appConfig = null
 
-    // 遍历AST查找appConfig导出
-    traverse.default(ast, {
-      ExportNamedDeclaration(path) {
-        const declaration = path.node.declaration
-        if (
-          declaration &&
-          declaration.type === 'VariableDeclaration' &&
-          declaration.declarations.length > 0
-        ) {
-          const declarator = declaration.declarations[0]
-          if (
-            declarator.id &&
-            declarator.id.name === 'appConfig' &&
-            declarator.init &&
-            declarator.init.type === 'ObjectExpression'
-          ) {
-            appConfig = parseObjectExpression(declarator.init)
-          }
-        }
-      }
-    })
+    // 遍历所有script标签
+     for (const scriptTag of scriptMatches) {
+       const scriptContent = scriptTag.replace(/<script[^>]*>([\s\S]*?)<\/script>/, '$1')
+
+       try {
+         // 使用Babel解析TypeScript/JavaScript代码
+         const ast = parse(scriptContent, {
+           sourceType: 'module',
+           plugins: [
+             'typescript',
+             'decorators-legacy',
+             'classProperties',
+             'objectRestSpread'
+           ]
+         })
+
+         // 遍历AST查找appConfig导出
+         traverse.default(ast, {
+           ExportNamedDeclaration(path) {
+             const declaration = path.node.declaration
+             if (
+               declaration &&
+               declaration.type === 'VariableDeclaration' &&
+               declaration.declarations.length > 0
+             ) {
+               const declarator = declaration.declarations[0]
+               if (
+                 declarator.id &&
+                 declarator.id.name === 'appConfig' &&
+                 declarator.init &&
+                 declarator.init.type === 'ObjectExpression'
+               ) {
+                 appConfig = parseObjectExpression(declarator.init)
+               }
+             }
+           }
+         })
+
+         // 如果找到了appConfig，跳出循环
+         if (appConfig) {
+           break
+         }
+       } catch (parseError) {
+         // 忽略解析错误，继续下一个script标签
+         continue
+       }
+     }
 
     if (!appConfig) {
       return null
