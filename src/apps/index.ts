@@ -24,23 +24,23 @@ import builtIn_system_about from '@/apps/builtIn/system/about/index.vue'
  * 扫描目录: src/apps/
  */
 export const APP_KEYS = {
-  CUSTOM__MYTESTAPP: 'custom__mytestapp',
-  CUSTOM__APPREGISTRYDEBUG: 'custom__appregistrydebug',
-  BUILTIN_UTILITIES_WEB: 'builtin_utilities_web',
-  BUILTIN_UTILITIES_UNRESIZE: 'builtin_utilities_unresize',
-  BUILTIN_UTILITIES_UNCLOSE: 'builtin_utilities_unclose',
-  BUILTIN_UTILITIES_MULTITASK: 'builtin_utilities_multitask',
-  BUILTIN_UTILITIES_HIDEDESKTOP: 'builtin_utilities_hidedesktop',
-  BUILTIN_UTILITIES_EVENTSYSTEMEXAMPLE: 'builtin_utilities_eventsystemexample',
-  BUILTIN_UTILITIES_DOCK: 'builtin_utilities_dock',
-  BUILTIN_UTILITIES_COLORFULL: 'builtin_utilities_colorfull',
-  BUILTIN_UTILITIES_CAMERA: 'builtin_utilities_camera',
-  BUILTIN_SYSTEM_TASK: 'builtin_system_task',
-  BUILTIN_SYSTEM_STORE: 'builtin_system_store',
-  BUILTIN_SYSTEM_SETTING: 'builtin_system_setting',
-  BUILTIN_SYSTEM_FINDER: 'builtin_system_finder',
-  BUILTIN_SYSTEM_COMPOSABLESTEST: 'builtin_system_composablestest',
-  BUILTIN_SYSTEM_ABOUT: 'builtin_system_about'
+  APPKEY_CUSTOM__MYTESTAPP: 'custom__mytestapp',
+  APPKEY_CUSTOM__APPREGISTRYDEBUG: 'custom__appregistrydebug',
+  APPKEY_BUILTIN_UTILITIES_WEB: 'builtin_utilities_web',
+  APPKEY_BUILTIN_UTILITIES_UNRESIZE: 'builtin_utilities_unresize',
+  APPKEY_BUILTIN_UTILITIES_UNCLOSE: 'builtin_utilities_unclose',
+  APPKEY_BUILTIN_UTILITIES_MULTITASK: 'builtin_utilities_multitask',
+  APPKEY_BUILTIN_UTILITIES_HIDEDESKTOP: 'builtin_utilities_hidedesktop',
+  APPKEY_BUILTIN_UTILITIES_EVENTSYSTEMEXAMPLE: 'builtin_utilities_eventsystemexample',
+  APPKEY_BUILTIN_UTILITIES_DOCK: 'builtin_utilities_dock',
+  APPKEY_BUILTIN_UTILITIES_COLORFULL: 'builtin_utilities_colorfull',
+  APPKEY_BUILTIN_UTILITIES_CAMERA: 'builtin_utilities_camera',
+  APPKEY_BUILTIN_SYSTEM_TASK: 'builtin_system_task',
+  APPKEY_BUILTIN_SYSTEM_STORE: 'builtin_system_store',
+  APPKEY_BUILTIN_SYSTEM_SETTING: 'builtin_system_setting',
+  APPKEY_BUILTIN_SYSTEM_FINDER: 'builtin_system_finder',
+  APPKEY_BUILTIN_SYSTEM_COMPOSABLESTEST: 'builtin_system_composablestest',
+  APPKEY_BUILTIN_SYSTEM_ABOUT: 'builtin_system_about'
 } as const
 
 export type AppKey = typeof APP_KEYS[keyof typeof APP_KEYS]

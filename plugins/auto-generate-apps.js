@@ -184,52 +184,52 @@ function extractAppConfig(content, filename) {
     let appConfig = null
 
     // 遍历所有script标签
-     for (const scriptTag of scriptMatches) {
-       const scriptContent = scriptTag.replace(/<script[^>]*>([\s\S]*?)<\/script>/, '$1')
+    for (const scriptTag of scriptMatches) {
+      const scriptContent = scriptTag.replace(/<script[^>]*>([\s\S]*?)<\/script>/, '$1')
 
-       try {
-         // 使用Babel解析TypeScript/JavaScript代码
-         const ast = parse(scriptContent, {
-           sourceType: 'module',
-           plugins: [
-             'typescript',
-             'decorators-legacy',
-             'classProperties',
-             'objectRestSpread'
-           ]
-         })
+      try {
+        // 使用Babel解析TypeScript/JavaScript代码
+        const ast = parse(scriptContent, {
+          sourceType: 'module',
+          plugins: [
+            'typescript',
+            'decorators-legacy',
+            'classProperties',
+            'objectRestSpread'
+          ]
+        })
 
-         // 遍历AST查找appConfig导出
-         traverse.default(ast, {
-           ExportNamedDeclaration(path) {
-             const declaration = path.node.declaration
-             if (
-               declaration &&
-               declaration.type === 'VariableDeclaration' &&
-               declaration.declarations.length > 0
-             ) {
-               const declarator = declaration.declarations[0]
-               if (
-                 declarator.id &&
-                 declarator.id.name === 'appConfig' &&
-                 declarator.init &&
-                 declarator.init.type === 'ObjectExpression'
-               ) {
-                 appConfig = parseObjectExpression(declarator.init)
-               }
-             }
-           }
-         })
+        // 遍历AST查找appConfig导出
+        traverse.default(ast, {
+          ExportNamedDeclaration(path) {
+            const declaration = path.node.declaration
+            if (
+              declaration &&
+              declaration.type === 'VariableDeclaration' &&
+              declaration.declarations.length > 0
+            ) {
+              const declarator = declaration.declarations[0]
+              if (
+                declarator.id &&
+                declarator.id.name === 'appConfig' &&
+                declarator.init &&
+                declarator.init.type === 'ObjectExpression'
+              ) {
+                appConfig = parseObjectExpression(declarator.init)
+              }
+            }
+          }
+        })
 
-         // 如果找到了appConfig，跳出循环
-         if (appConfig) {
-           break
-         }
-       } catch (parseError) {
-         // 忽略解析错误，继续下一个script标签
-         continue
-       }
-     }
+        // 如果找到了appConfig，跳出循环
+        if (appConfig) {
+          break
+        }
+      } catch (parseError) {
+        // 忽略解析错误，继续下一个script标签
+        continue
+      }
+    }
 
     if (!appConfig) {
       return null
@@ -346,7 +346,7 @@ function generateIndexContent(imports, appConfigs, scanDirs, outputDir) {
   // 生成应用键值常量
   const appKeys = appConfigs.map(config => {
     const upperKey = config.key.toUpperCase()
-    return `  ${upperKey}: '${config.key}'`
+    return `  APPKEY_${upperKey}: '${config.key}'`
   }).join(',\n')
 
   // 生成应用配置数组
