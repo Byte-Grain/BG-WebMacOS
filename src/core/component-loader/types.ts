@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import type { AppConfig } from '../app-registry/types'
+import type { AppConfig } from '@core/app-registry/types'
 
 /**
  * 组件加载器配置

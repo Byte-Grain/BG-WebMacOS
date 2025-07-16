@@ -6,7 +6,7 @@ export interface AppMenu {
 }
 
 export interface AppConfig {
-  key: string;
+  key: string; // 生成机制会根据目录结构重组形成key,保证应用id的唯一性
   icon: string;
   title: string;
   iconColor: string;
@@ -28,7 +28,8 @@ export interface AppConfig {
   titleBgColor?: string;
   titleColor?: string;
   // 新增字段
-  category?: 'system' | 'demo' | 'custom';  // 应用分类
+  enabled?:false; // 应用是否启用，不启用的应用不会被引入
+  category?: 'build-in' | '3thparty' | 'custom';  // 应用分类,自动根据目录区分
   version?: string;              // 应用版本
   author?: string;               // 应用作者
   description?: string;          // 应用描述
