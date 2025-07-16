@@ -1,31 +1,31 @@
 import type { AppConfig } from '@/types/app'
-import demo_web from '@/applications/built-in/utilities/web.vue'
-import demo_unresize from '@/applications/built-in/utilities/unresize.vue'
-import demo_unclose from '@/applications/built-in/utilities/unclose.vue'
-import demo_multitask from '@/applications/built-in/utilities/multitask.vue'
-import demo_hidedesktop from '@/applications/built-in/utilities/hidedesktop.vue'
-import demo_es from '@/applications/built-in/utilities/EventSystemExample.vue'
-import demo_dock from '@/applications/built-in/utilities/dock.vue'
-import demo_colorfull from '@/applications/built-in/utilities/colorfull.vue'
-import demo_camera from '@/applications/built-in/utilities/camera.vue'
-import system_task from '@/applications/built-in/system/task.vue'
-import system_store from '@/applications/built-in/system/store.vue'
-import system_setting from '@/applications/built-in/system/setting.vue'
-import system_finder from '@/applications/built-in/system/finder.vue'
-import composables_test from '@/applications/built-in/system/ComposablesTest.vue'
-import system_about from '@/applications/built-in/system/about.vue'
-import MyTestApp from '@/applications/user-custom/MyTestApp.vue'
-import app_registry_debug from '@/applications/user-custom/AppRegistryDebug.vue'
+import web from '@/apps/builtIn/utilities/web.vue'
+import unresize from '@/apps/builtIn/utilities/unresize.vue'
+import unclose from '@/apps/builtIn/utilities/unclose.vue'
+import multitask from '@/apps/builtIn/utilities/multitask.vue'
+import hidedesktop from '@/apps/builtIn/utilities/hidedesktop.vue'
+import EventSystemExample from '@/apps/builtIn/utilities/EventSystemExample.vue'
+import dock from '@/apps/builtIn/utilities/dock.vue'
+import colorfull from '@/apps/builtIn/utilities/colorfull.vue'
+import camera from '@/apps/builtIn/utilities/camera.vue'
+import task from '@/apps/builtIn/system/task.vue'
+import store from '@/apps/builtIn/system/store.vue'
+import setting from '@/apps/builtIn/system/setting.vue'
+import finder from '@/apps/builtIn/system/finder.vue'
+import ComposablesTest from '@/apps/builtIn/system/ComposablesTest.vue'
+import about from '@/apps/builtIn/system/about.vue'
+import MyTestApp from '@/apps/custom/MyTestApp.vue'
+import AppRegistryDebug from '@/apps/custom/AppRegistryDebug.vue'
 
 /**
  * 自定义应用配置
  * 此文件由 auto-generate-apps 插件自动生成，请勿手动修改
- * 扫描目录: src/applications/built-in, src/applications/user-custom, src/applications/third-party
+ * 扫描目录: src/apps/builtIn, src/apps/custom, src/apps/3thparty
  * 要添加新应用，请在指定目录下创建 Vue 文件并导出 appConfig
  */
 export const systemApps: AppConfig[] = [
   {
-    key: 'demo_web',
+    key: 'e300626af7706bca9a3ca355908ecdc7',
     title: 'Web应用',
     icon: 'icon-chrome',
     iconColor: '#fff',
@@ -45,10 +45,10 @@ export const systemApps: AppConfig[] = [
     demo: true,
     featured: false,
     permissions: [],
-    component: demo_web
+    component: web
   },
   {
-    key: 'demo_unresize',
+    key: 'c3adfc81dbc5cf262666bdddc091d525',
     title: '固定尺寸应用',
     icon: 'icon-smallscreen_fill',
     iconColor: '#fff',
@@ -67,10 +67,10 @@ export const systemApps: AppConfig[] = [
     tags: [],
     demo: true,
     featured: false,
-    component: demo_unresize
+    component: unresize
   },
   {
-    key: 'demo_unclose',
+    key: 'c5589533cfcd02af4b1ac6a92a1efdad',
     title: '无法彻底关闭',
     icon: 'icon-wechat-fill',
     iconColor: '#fff',
@@ -90,10 +90,10 @@ export const systemApps: AppConfig[] = [
     tags: [],
     demo: true,
     featured: false,
-    component: demo_unclose
+    component: unclose
   },
   {
-    key: 'demo_multitask',
+    key: 'e0609d06eac32e9e6014595d0814cb48',
     title: '多任务应用',
     icon: 'icon-multitask',
     iconColor: '#fff',
@@ -114,10 +114,10 @@ export const systemApps: AppConfig[] = [
     tags: [],
     demo: true,
     featured: false,
-    component: demo_multitask
+    component: multitask
   },
   {
-    key: 'demo_hidedesktop',
+    key: '3e4431cb51f37d4a195f4a68aae2916d',
     title: '不在桌面显示',
     icon: 'icon-shezhi',
     iconColor: '#333',
@@ -138,10 +138,10 @@ export const systemApps: AppConfig[] = [
     tags: [],
     demo: true,
     featured: false,
-    component: demo_hidedesktop
+    component: hidedesktop
   },
   {
-    key: 'demo_es',
+    key: '058e255307e1bf6789a79b25a3436af0',
     title: 'ES',
     icon: 'icon-MIS_bangongOA',
     iconColor: '#fff',
@@ -161,10 +161,10 @@ export const systemApps: AppConfig[] = [
     tags: [],
     demo: true,
     featured: false,
-    component: demo_es
+    component: EventSystemExample
   },
   {
-    key: 'demo_dock',
+    key: 'c9f53f1c94bb95e1a14ca86c58a39be9',
     title: '常驻 Dock 应用',
     icon: 'icon-MIS_bangongOA',
     iconColor: '#fff',
@@ -184,10 +184,10 @@ export const systemApps: AppConfig[] = [
     tags: [],
     demo: true,
     featured: false,
-    component: demo_dock
+    component: dock
   },
   {
-    key: 'demo_colorfull',
+    key: 'f74d2210e6bdb5847676e04933c34290',
     title: '花里胡哨',
     icon: 'icon-loading',
     iconColor: '#fff',
@@ -206,10 +206,10 @@ export const systemApps: AppConfig[] = [
     tags: [],
     demo: true,
     featured: false,
-    component: demo_colorfull
+    component: colorfull
   },
   {
-    key: 'demo_camera',
+    key: 'fc647623586b47ea92f7cfc2ac779d70',
     title: 'Photo Booth',
     icon: 'icon-camera1',
     iconColor: '#fff',
@@ -227,10 +227,10 @@ export const systemApps: AppConfig[] = [
     author: 'Demo Team',
     demo: true,
     featured: false,
-    component: demo_camera
+    component: camera
   },
   {
-    key: 'system_task',
+    key: 'd0d240d5e08c3b10d4f91eae8defd75e',
     title: 'Activity Monitor',
     icon: '📊',
     iconColor: '#fff',
@@ -251,10 +251,10 @@ export const systemApps: AppConfig[] = [
     system: true,
     essential: false,
     singleton: true,
-    component: system_task
+    component: task
   },
   {
-    key: 'system_store',
+    key: '90d8b684cc376d4175adde070c6096d3',
     title: 'App Store',
     icon: '🛍️',
     iconColor: '#fff',
@@ -276,10 +276,10 @@ export const systemApps: AppConfig[] = [
     system: true,
     essential: false,
     singleton: true,
-    component: system_store
+    component: store
   },
   {
-    key: 'system_setting',
+    key: 'cc02cf00ad37023d5eda3b05bbdb113e',
     title: 'System Preferences',
     icon: '⚙️',
     iconColor: '#fff',
@@ -301,10 +301,10 @@ export const systemApps: AppConfig[] = [
     system: true,
     essential: true,
     singleton: true,
-    component: system_setting
+    component: setting
   },
   {
-    key: 'system_finder',
+    key: '52849bcf065bb72646127e5a1e22a018',
     title: 'Finder',
     icon: '📁',
     iconColor: '#fff',
@@ -326,10 +326,10 @@ export const systemApps: AppConfig[] = [
     system: true,
     essential: true,
     singleton: true,
-    component: system_finder
+    component: finder
   },
   {
-    key: 'composables_test',
+    key: 'b8c0666ed3be27c90b4e9aa7590152d7',
     title: 'Composables Test',
     icon: '🧪',
     iconColor: '#fff',
@@ -350,10 +350,10 @@ export const systemApps: AppConfig[] = [
     system: true,
     essential: false,
     singleton: false,
-    component: composables_test
+    component: ComposablesTest
   },
   {
-    key: 'system_about',
+    key: '29cab3126f21472bf8f990d57ff54ab0',
     title: '关于本机',
     icon: 'icon-about',
     iconColor: '#fff',
@@ -373,10 +373,10 @@ export const systemApps: AppConfig[] = [
     system: true,
     essential: false,
     singleton: true,
-    component: system_about
+    component: about
   },
   {
-    key: 'MyTestApp',
+    key: 'ff6a6a3d0160268a50b9abc347ba2145',
     title: '我的测试应用',
     icon: 'icon-loading',
     iconColor: '#667eea',
@@ -413,7 +413,7 @@ export const systemApps: AppConfig[] = [
     component: MyTestApp
   },
   {
-    key: 'app_registry_debug',
+    key: '45fb1d8f12e67974a1ad991c3d3d0131',
     title: '应用注册表调试',
     icon: 'icon-bug',
     iconBgColor: '#FF6B6B',
@@ -422,6 +422,6 @@ export const systemApps: AppConfig[] = [
     tags: [],
     version: '1.0.0',
     description: '用于调试应用注册表状态的工具',
-    component: app_registry_debug
+    component: AppRegistryDebug
   }
 ]
