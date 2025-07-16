@@ -371,12 +371,15 @@
     if (props.app.disableResize) {
       return
     }
-    isFullScreen.value = !isFullScreen.value
-    if (isFullScreen.value) {
-      isMaxShowing.value = false
-    } else {
-      isMaxShowing.value = false
-    }
+    const newFullScreenState = !isFullScreen.value
+    
+    // 触发全屏事件
+    eventBus.emit(EVENTS.WINDOW_FULLSCREEN, {
+      enabled: newFullScreenState,
+      windowId: props.app.key
+    })
+    
+    // 本地状态会通过事件监听器更新
   }
 
   const switchMaximize = () => {
@@ -527,7 +530,9 @@
 
     .isFullScreen {
       position: fixed !important;
-      z-index: 999 !important;
+      z-index: 100000 !important;
+      left: -5px !important;
+      right: -5px !important;
       bottom: -5px !important;
       top: -5px !important;
     }

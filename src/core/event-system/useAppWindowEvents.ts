@@ -242,38 +242,7 @@ export function useAppWindowEvents() {
     }
   }
   
-  // 兼容性方法 - 支持原有的emit方式
-  const legacyEmit = (eventName: string, data: any) => {
-    // 将原有的事件格式转换为新的窗口事件
-    switch (eventName) {
-      case 'windowMaxSize':
-        windowOperations.maximize()
-        break
-      case 'windowNormalSize':
-        windowOperations.normalize()
-        break
-      case 'windowMinSize':
-        windowOperations.minimize()
-        break
-      case 'windowFullSize':
-        windowOperations.fullscreen()
-        break
-      case 'windowClose':
-        windowOperations.close()
-        break
-      case 'openApp':
-        appOperations.openApp(data.app, data.data)
-        break
-      case 'closeApp':
-        appOperations.closeApp(data.app, data.pid)
-        break
-      case 'setWindowTitle':
-        windowOperations.setTitle(data.title)
-        break
-      default:
-        console.warn(`Unknown legacy event: ${eventName}`)
-    }
-  }
+
   
   // 清理所有事件监听器
   const cleanup = () => {
@@ -296,8 +265,7 @@ export function useAppWindowEvents() {
     // 事件监听
     on: eventListeners,
     
-    // 兼容性支持
-    legacyEmit,
+
     
     // 手动清理
     cleanup,

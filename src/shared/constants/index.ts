@@ -90,21 +90,8 @@ export const LANGUAGES = {
   EN: 'en',
 } as const
 
-// 事件名称常量（从useEventBus导入，保持统一）
-// 注意：主要事件常量已移至 composables/useEventBus.ts 中统一管理
-// 这里保留一些基础事件常量以保持向后兼容
-export const BASIC_EVENTS = {
-  APP_OPEN: 'app:open',
-  APP_CLOSE: 'app:close',
-  APP_MINIMIZE: 'app:minimize',
-  APP_MAXIMIZE: 'app:maximize',
-  THEME_CHANGE: 'theme:change',
-  LANGUAGE_CHANGE: 'language:change',
-  VOLUME_CHANGE: 'volume:change',
-} as const
-
-// 为了向后兼容，保留EVENTS导出
-export const EVENTS = BASIC_EVENTS
+// 注意：事件常量已移至 @/core/event-system/useEventBus.ts 中统一管理
+// 如需使用事件常量，请从 useEventBus 导入 EVENTS
 
 // 默认配置常量
 export const DEFAULTS = {
@@ -119,4 +106,4 @@ export type AppKey = typeof APP_KEYS[keyof typeof APP_KEYS]
 export type SystemState = typeof SYSTEM_STATES[keyof typeof SYSTEM_STATES]
 export type Theme = typeof THEMES[keyof typeof THEMES]
 export type Language = typeof LANGUAGES[keyof typeof LANGUAGES]
-export type EventName = typeof EVENTS[keyof typeof EVENTS]
+// 注意：EventName 类型已移至 @/core/event-system/useEventBus.ts 中

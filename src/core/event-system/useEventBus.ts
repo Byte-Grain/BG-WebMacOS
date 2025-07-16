@@ -135,10 +135,7 @@ class EventBus {
     return id
   }
 
-  // 兼容旧版本的on方法
-  onLegacy<T = any>(event: string, callback: EventCallback<T>, once = false): string {
-    return this.on(event as EventName, callback, { once })
-  }
+
 
   // 添加一次性事件监听器
   once<T extends EventName>(
@@ -253,10 +250,7 @@ class EventBus {
     })
   }
 
-  // 兼容旧版本的emit方法
-  emitLegacy<T = any>(event: string, data?: T): void {
-    this.emit(event as EventName, data as any)
-  }
+
 
   // 异步触发事件
   async emitAsync<T extends EventName>(event: T, data: EventData<T>): Promise<void> {
@@ -406,14 +400,7 @@ export function useEventBus(options: {
     return id
   }
 
-  // 兼容旧版本的on方法
-  const onLegacy = <T = any>(event: string, callback: EventCallback<T>, once = false): string => {
-    const id = globalEventBus.onLegacy(event, callback, once)
-    if (autoCleanup) {
-      listenerIds.value.push(id)
-    }
-    return id
-  }
+
 
   // 添加一次性事件监听器
   const once = <T extends EventName>(
@@ -461,10 +448,7 @@ export function useEventBus(options: {
     globalEventBus.emit(event, data)
   }
 
-  // 兼容旧版本的emit方法
-  const emitLegacy = <T = any>(event: string, data?: T): void => {
-    globalEventBus.emitLegacy(event, data)
-  }
+
 
   // 异步触发事件
   const emitAsync = async <T extends EventName>(event: T, data: EventData<T>): Promise<void> => {
@@ -538,9 +522,7 @@ export function useEventBus(options: {
     emitAsync,
     waitFor,
     
-    // 兼容旧版本的方法
-    onLegacy,
-    emitLegacy,
+
     
     // 监听器管理
     off,
@@ -566,10 +548,7 @@ export function useEventBus(options: {
   }
 }
 
-// 简化版本的useEventBus（向后兼容）
-export function useEventBusLegacy() {
-  return useEventBus({ autoCleanup: true })
-}
+
 
 // 导出全局事件总线实例（用于非组合式函数中使用）
 export { globalEventBus as eventBus }

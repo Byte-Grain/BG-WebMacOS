@@ -5,7 +5,7 @@ import { useSystem } from './core/useSystem'
 import { useUtils } from './utils/useUtils'
 import { useKeyboard } from './ui/useKeyboard'
 import { useNotification } from './ui/useNotification'
-import { useEventBus, useEventBusLegacy } from '@core/event-system/useEventBus'
+import { useEventBus } from '@core/event-system/useEventBus'
 import { useErrorMonitor } from './utils/useErrorMonitor'
 import { usePerformanceMonitor } from './utils/usePerformanceMonitor'
 import { usePerformance } from './utils/usePerformance'
@@ -20,7 +20,6 @@ export { useSystem } from './core/useSystem'
 export { useUtils } from './utils/useUtils'
 export { 
   useEventBus, 
-  useEventBusLegacy, 
   eventBus, 
   EVENTS, 
   EVENT_NAMESPACES 
@@ -156,18 +155,5 @@ export function useCore(options: {
     ...notification,
     ...(errorMonitor && { errorMonitor }),
     ...(performanceMonitor && { performanceMonitor })
-  }
-}
-
-// 向后兼容的核心函数
-export function useCoreLegacy() {
-  return {
-    ...useAppManager(),
-    ...useTheme(),
-    ...useSystem(),
-    ...useUtils(),
-    ...useEventBusLegacy(),
-    ...useKeyboard(),
-    ...useNotification(),
   }
 }

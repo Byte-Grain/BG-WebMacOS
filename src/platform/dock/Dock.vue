@@ -1,5 +1,5 @@
 <template>
-  <div class="footer">
+  <div class="footer" v-show="!isHidden">
     <div class="dock">
       <template v-for="item in dockApps" :key="item.key">
         <div class="item" @click="handleAppClick(item)" :class="currentApp?.key === item.key ? 'jump' : ''"
@@ -16,7 +16,9 @@
   </div>
 </template>
 <script setup>
+  import { ref, onMounted, onUnmounted } from 'vue'
   import { useAppManager } from '@/shared/composables'
+  import { EVENTS, useEventBus } from '@/core/event-system/useEventBus'
 
   // 使用组合式函数
   const { 
@@ -28,9 +30,29 @@
     openApp 
   } = useAppManager()
 
+  const eventBus = useEventBus()
+  const isHidden = ref(false)
+
   const handleAppClick = (item) => {
     handleSpecialApp(item)
   }
+
+  // 监听全屏事件
+  let fullscreenListenerId = null
+
+  onMounted(() => {
+    // 监听全屏事件
+    fullscreenListenerId = eventBus.on(EVENTS.WINDOW_FULLSCREEN, (data) => {
+      console.log('Dock received fullscreen event:', data)
+      isHidden.value = data.enabled
+    })
+  })
+
+  onUnmounted(() => {
+    if (fullscreenListenerId) {
+      eventBus.off(EVENTS.WINDOW_FULLSCREEN, fullscreenListenerId)
+    }
+  })
 </script>
 
 <style scoped lang="scss">
