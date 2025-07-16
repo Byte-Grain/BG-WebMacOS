@@ -1,23 +1,25 @@
 import { createStore } from 'vuex'
 import { AppState, AppConfig } from '@/types/app'
 import { getDockApps, getAppByKey } from '@core/app-registry'
+import { STORAGE_KEYS } from '@shared/constants'
 
-// 定义应用状态接口
-interface AppState {
-  showLogin: boolean
-  nowApp: AppConfig | false
-  openAppList: AppConfig[]
-  dockAppList: AppConfig[]
-  volumn: number
-  launchpad: boolean
+// 检查是否有有效的AccessToken
+const hasValidToken = (): boolean => {
+  try {
+    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
+    return !!token
+  } catch (error) {
+    return false
+  }
 }
 
 // 初始状态
 const state: AppState = {
-  showLogin: true,
+  showLogin: !hasValidToken(), // 如果有token则不显示登录页
   nowApp: false,
   openAppList: [],
   dockAppList: [],
+  openWidgetList: [],
   volumn: 80,
   launchpad: false,
 }
@@ -215,8 +217,6 @@ const mutations = {
 
   openMenu(state: AppState, menuKey: string): void {
     // Handle menu operations - this could be extended based on specific menu actions
-    // For now, we'll just log the menu key or handle basic menu operations
-    console.log('Menu opened:', menuKey)
     // Add specific menu handling logic here if needed
   },
 

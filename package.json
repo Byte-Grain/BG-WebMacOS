@@ -13,8 +13,10 @@
     "dev": "vite",
     "serve": "vite",
     "build": "vite build",
+    "build:analyze": "vite build && node scripts/analyze-bundle.cjs",
     "preview": "vite preview",
-    "lint": "eslint src --ext .vue,.js,.ts --fix"
+    "lint": "eslint src --ext .vue,.js,.ts --fix",
+    "analyze": "node scripts/analyze-bundle.cjs"
   },
   "dependencies": {
     "axios": "^1.10.0",

@@ -12,6 +12,9 @@
 @import './base/animation.css';
 @import './base/app.css';
 
+/* 导入 Element Plus 样式 */
+@import './element-plus.css';
+
 /* 全局重置样式 */
 * {
   box-sizing: border-box;
