@@ -1,8 +1,8 @@
 import { dynamicComponentLoader } from '@core/component-loader/dynamicComponentLoader'
 import type { AppConfig } from '@/types/app.d'
 
-import { systemApps } from './system-apps'
-import { customApps } from './custom-apps'
+import { systemApps } from '@apps/default-apps'
+import { customApps } from '@apps/custom-apps'
 
 /**
  * 增强的应用注册表
