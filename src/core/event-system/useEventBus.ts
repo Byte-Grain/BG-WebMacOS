@@ -31,7 +31,7 @@ export interface EventFilter {
 }
 
 // 增强的事件总线类
-class EventBus {
+class EventBus implements TypeSafeEventBus {
   private events: Map<string, EventListener[]> = new Map()
   private eventId = 0
   private maxListeners = 100 // 单个事件最大监听器数量
@@ -363,10 +363,598 @@ class EventBus {
       }
     })
   }
+
+  // 按命名空间清理监听器
+  clearNamespace(namespace: string): number {
+    let removedCount = 0
+    
+    this.events.forEach((listeners, event) => {
+      const originalLength = listeners.length
+      const filteredListeners = listeners.filter(listener => 
+        listener.namespace !== namespace
+      )
+      
+      if (filteredListeners.length !== originalLength) {
+        this.events.set(event, filteredListeners)
+        removedCount += originalLength - filteredListeners.length
+        
+        // 如果没有监听器了，删除事件
+        if (filteredListeners.length === 0) {
+          this.events.delete(event)
+        }
+      }
+    })
+    
+    this.updateStats()
+    this.debug(`Cleared ${removedCount} listeners from namespace '${namespace}'`)
+    
+    return removedCount
+  }
+
+  // 获取指定命名空间的监听器数量
+  getNamespaceListenerCount(namespace: string): number {
+    let count = 0
+    
+    this.events.forEach(listeners => {
+      count += listeners.filter(listener => 
+        listener.namespace === namespace
+      ).length
+    })
+    
+    return count
+  }
+
+  // 获取所有命名空间
+  getNamespaces(): string[] {
+    const namespaces = new Set<string>()
+    
+    this.events.forEach(listeners => {
+      listeners.forEach(listener => {
+        if (listener.namespace) {
+          namespaces.add(listener.namespace)
+        }
+      })
+    })
+    
+    return Array.from(namespaces)
+  }
 }
 
-// 全局事件总线实例
-const globalEventBus = new EventBus()
+// ============ 实用中间件和验证器 ============
+
+/**
+ * 日志中间件 - 记录所有事件的发送和接收
+ */
+export class LoggingMiddleware implements EventMiddleware {
+  constructor(private prefix = '[EventBus]') {}
+  
+  beforeEmit<T extends EventName>(eventName: T, data: EventDataMap[T]): EventDataMap[T] {
+    console.log(`${this.prefix} Emitting event: ${eventName}`, data)
+    return data
+  }
+  
+  afterEmit<T extends EventName>(eventName: T, data: EventDataMap[T], results: any[]): void {
+    console.log(`${this.prefix} Event ${eventName} processed by ${results.length} listeners`)
+  }
+}
+
+/**
+ * 性能监控中间件 - 监控事件处理性能
+ */
+export class PerformanceMiddleware implements EventMiddleware {
+  private timers = new Map<string, number>()
+  
+  beforeEmit<T extends EventName>(eventName: T, data: EventDataMap[T]): EventDataMap[T] {
+    const timerId = `${eventName}-${Date.now()}`
+    this.timers.set(timerId, performance.now())
+    return data
+  }
+  
+  afterEmit<T extends EventName>(eventName: T, data: EventDataMap[T], results: any[]): void {
+    const timerId = Array.from(this.timers.keys()).find(key => key.startsWith(eventName))
+    if (timerId) {
+      const startTime = this.timers.get(timerId)!
+      const duration = performance.now() - startTime
+      console.log(`[Performance] Event ${eventName} took ${duration.toFixed(2)}ms`)
+      this.timers.delete(timerId)
+    }
+  }
+}
+
+/**
+ * 错误处理中间件 - 统一处理事件错误
+ */
+export class ErrorHandlingMiddleware implements EventMiddleware {
+  constructor(private onError?: (error: Error, eventName: EventName) => void) {}
+  
+  afterCallback<T extends EventName>(
+    eventName: T,
+    data: EventDataMap[T],
+    result: any,
+    callback: EventCallback<EventDataMap[T]>
+  ): any {
+    if (result instanceof Error) {
+      console.error(`[ErrorHandling] Error in event ${eventName}:`, result)
+      this.onError?.(result, eventName)
+    }
+    return result
+  }
+}
+
+/**
+ * 基础数据验证器 - 验证数据是否为对象且非空
+ */
+export class BaseDataValidator<T extends EventName> implements EventValidator<T> {
+  validate(data: EventDataMap[T]): boolean {
+    return data !== null && data !== undefined && typeof data === 'object'
+  }
+  
+  sanitize(data: EventDataMap[T]): EventDataMap[T] {
+    return data
+  }
+  
+  getErrors(data: EventDataMap[T]): string[] {
+    const errors: string[] = []
+    if (data === null || data === undefined) {
+      errors.push('Data cannot be null or undefined')
+    }
+    if (typeof data !== 'object') {
+      errors.push('Data must be an object')
+    }
+    return errors
+  }
+}
+
+/**
+ * 窗口事件验证器 - 验证窗口相关事件数据
+ */
+export class WindowEventValidator implements EventValidator<'WINDOW_RESIZE' | 'WINDOW_FOCUS' | 'WINDOW_BLUR'> {
+  validate(data: any): boolean {
+    return data && typeof data === 'object' && 
+           typeof data.width === 'number' && 
+           typeof data.height === 'number'
+  }
+  
+  sanitize(data: any): any {
+    return {
+      width: Math.max(0, Math.floor(data.width || 0)),
+      height: Math.max(0, Math.floor(data.height || 0)),
+      timestamp: data.timestamp || Date.now()
+    }
+  }
+  
+  getErrors(data: any): string[] {
+    const errors: string[] = []
+    if (!data || typeof data !== 'object') {
+      errors.push('Window event data must be an object')
+    } else {
+      if (typeof data.width !== 'number') {
+        errors.push('Width must be a number')
+      }
+      if (typeof data.height !== 'number') {
+        errors.push('Height must be a number')
+      }
+    }
+    return errors
+  }
+}
+
+// ============ 增强的事件总线实现 ============
+
+/**
+ * 命名空间事件总线
+ */
+export class NamespaceEventBus {
+  constructor(
+    private eventBus: TypeSafeEventBus,
+    private namespace: string
+  ) {}
+  
+  /**
+   * 命名空间内的事件监听
+   */
+  on<T extends EventName>(
+    event: T,
+    callback: EventCallback<EventDataMap[T]>,
+    options?: Omit<EventListenerOptions, 'once'>
+  ): string {
+    return (this.eventBus as any).on(event, callback, {
+      ...options,
+      namespace: this.namespace
+    })
+  }
+  
+  /**
+   * 命名空间内的一次性事件监听
+   */
+  once<T extends EventName>(
+    event: T,
+    callback: EventCallback<EventDataMap[T]>,
+    options?: Omit<EventListenerOptions, 'once'>
+  ): string {
+    return (this.eventBus as any).once(event, callback, {
+      ...options,
+      namespace: this.namespace
+    })
+  }
+  
+  /**
+   * 命名空间内的事件触发
+   */
+  emit<T extends EventName>(event: T, data: EventDataMap[T]): Promise<any[]> {
+    return this.eventBus.emit(event, data)
+  }
+  
+  /**
+   * 移除命名空间内的事件监听器
+   */
+  off(event: EventName, listenerId?: string): boolean {
+    return (this.eventBus as any).off(event, listenerId)
+  }
+  
+  /**
+   * 清理命名空间内的所有监听器
+   */
+  cleanup(): number {
+    return (this.eventBus as any).clearNamespace?.(this.namespace) || 0
+  }
+  
+  /**
+   * 获取命名空间内的监听器数量
+   */
+  listenerCount(event: EventName): number {
+    return this.eventBus.listenerCount(event)
+  }
+  
+  /**
+   * 检查命名空间内是否有监听器
+   */
+  hasListeners(event: EventName): boolean {
+    return this.eventBus.hasListeners(event)
+  }
+}
+
+/**
+ * 命名空间事件管理器
+ */
+export class NamespacedEventManager {
+  private namespaceEventBuses = new Map<string, NamespaceEventBus>()
+  
+  constructor(private eventBus: TypeSafeEventBus) {}
+  
+  /**
+   * 获取命名空间事件总线
+   */
+  getNamespaceEventBus(namespace: string): NamespaceEventBus {
+    if (!this.namespaceEventBuses.has(namespace)) {
+      this.namespaceEventBuses.set(
+        namespace,
+        new NamespaceEventBus(this.eventBus, namespace)
+      )
+    }
+    return this.namespaceEventBuses.get(namespace)!
+  }
+  
+  /**
+   * 获取命名空间管理器（别名方法）
+   */
+  namespace(ns: string): NamespaceEventBus {
+    return this.getNamespaceEventBus(ns)
+  }
+  
+  /**
+   * 清理指定命名空间
+   */
+  clearNamespace(namespace: string): number {
+    const namespaceEventBus = this.namespaceEventBuses.get(namespace)
+    if (namespaceEventBus) {
+      const count = namespaceEventBus.cleanup()
+      this.namespaceEventBuses.delete(namespace)
+      return count
+    }
+    return 0
+  }
+  
+  /**
+   * 清理所有命名空间
+   */
+  clearAllNamespaces(): number {
+    let totalCount = 0
+    for (const [namespace] of this.namespaceEventBuses) {
+      totalCount += this.clearNamespace(namespace)
+    }
+    return totalCount
+  }
+  
+  /**
+   * 获取所有命名空间列表
+   */
+  getNamespaces(): string[] {
+    return Array.from(this.namespaceEventBuses.keys())
+  }
+  
+  /**
+   * 获取命名空间数量
+   */
+  getNamespaceCount(): number {
+    return this.namespaceEventBuses.size
+  }
+}
+
+/**
+ * 带验证和中间件的事件总线实现
+ */
+
+// ============ 增强的事件总线实现 ============
+
+/**
+ * 带验证和中间件的事件总线实现
+ */
+export class EnhancedEventBus extends EventBus implements ValidatedEventBus {
+  private validators = new Map<EventName, EventValidator<any>>()
+  private middlewares: EventMiddleware[] = []
+  
+  /**
+   * 注册事件验证器
+   */
+  registerValidator<T extends EventName>(
+    event: T,
+    validator: EventValidator<T>
+  ): void {
+    this.validators.set(event, validator)
+    this.debug(`Registered validator for event: ${event}`)
+  }
+  
+  /**
+   * 移除事件验证器
+   */
+  removeValidator(event: EventName): boolean {
+    const removed = this.validators.delete(event)
+    if (removed) {
+      this.debug(`Removed validator for event: ${event}`)
+    }
+    return removed
+  }
+  
+  /**
+   * 注册中间件
+   */
+  use(middleware: EventMiddleware): void {
+    this.middlewares.push(middleware)
+    this.debug(`Registered middleware: ${middleware.constructor.name || 'Anonymous'}`)
+  }
+  
+  /**
+   * 移除中间件
+   */
+  removeMiddleware(middleware: EventMiddleware): boolean {
+    const index = this.middlewares.indexOf(middleware)
+    if (index > -1) {
+      this.middlewares.splice(index, 1)
+      this.debug(`Removed middleware: ${middleware.constructor.name || 'Anonymous'}`)
+      return true
+    }
+    return false
+  }
+  
+  /**
+   * 清理所有验证器和中间件
+   */
+  clearValidatorsAndMiddlewares(): void {
+    this.validators.clear()
+    this.middlewares.length = 0
+    this.debug('Cleared all validators and middlewares')
+  }
+  
+  /**
+   * 重写 emit 方法，添加验证和中间件支持
+   */
+  async emit<T extends EventName>(eventName: T, data: EventDataMap[T]): Promise<any[]> {
+    try {
+      // 1. 验证事件数据
+      let validatedData = await this.validateEventData(eventName, data)
+      
+      // 2. 执行 beforeEmit 中间件
+      validatedData = await this.runBeforeEmitMiddlewares(eventName, validatedData)
+      
+      // 3. 执行原始的 emit 逻辑
+      const results = await super.emit(eventName, validatedData)
+      
+      // 4. 执行 afterEmit 中间件
+      await this.runAfterEmitMiddlewares(eventName, validatedData, results)
+      
+      return results
+    } catch (error) {
+      this.debug(`Error in enhanced emit for ${eventName}:`, error)
+      throw error
+    }
+  }
+  
+  /**
+   * 重写 on 方法，添加中间件支持
+   */
+  on<T extends EventName>(
+    eventName: T,
+    callback: EventCallback<EventDataMap[T]>,
+    options?: Omit<EventListenerOptions, 'once'>
+  ): string {
+    // 通过中间件处理回调函数
+    const enhancedCallback = this.enhanceCallback(eventName, callback)
+    
+    return super.on(eventName, enhancedCallback, options)
+  }
+  
+  /**
+   * 重写 once 方法，添加中间件支持
+   */
+  once<T extends EventName>(
+    eventName: T,
+    callback: EventCallback<EventDataMap[T]>,
+    options?: Omit<EventListenerOptions, 'once'>
+  ): string {
+    // 通过中间件处理回调函数
+    const enhancedCallback = this.enhanceCallback(eventName, callback)
+    
+    return super.once(eventName, enhancedCallback, options)
+  }
+  
+  /**
+   * 验证事件数据
+   */
+  private async validateEventData<T extends EventName>(
+    eventName: T,
+    data: EventDataMap[T]
+  ): Promise<EventDataMap[T]> {
+    const validator = this.validators.get(eventName)
+    
+    if (validator) {
+      if (!validator.validate(data)) {
+        const errors = validator.getErrors?.(data) || ['Validation failed']
+        throw new EventValidationError(eventName, errors, data)
+      }
+      
+      // 清理和转换数据
+      return validator.sanitize(data)
+    }
+    
+    return data
+  }
+  
+  /**
+   * 执行 beforeEmit 中间件
+   */
+  private async runBeforeEmitMiddlewares<T extends EventName>(
+    eventName: T,
+    data: EventDataMap[T]
+  ): Promise<EventDataMap[T]> {
+    let processedData = data
+    
+    for (const middleware of this.middlewares) {
+      if (middleware.beforeEmit) {
+        try {
+          processedData = await middleware.beforeEmit(eventName, processedData)
+        } catch (error) {
+          throw new EventMiddlewareError(
+            eventName,
+            middleware.constructor.name || 'Anonymous',
+            error as Error
+          )
+        }
+      }
+    }
+    
+    return processedData
+  }
+  
+  /**
+   * 执行 afterEmit 中间件
+   */
+  private async runAfterEmitMiddlewares<T extends EventName>(
+    eventName: T,
+    data: EventDataMap[T],
+    results: any[]
+  ): Promise<void> {
+    for (const middleware of this.middlewares) {
+      if (middleware.afterEmit) {
+        try {
+          await middleware.afterEmit(eventName, data, results)
+        } catch (error) {
+          // afterEmit 错误不应该阻止事件处理，只记录日志
+          this.debug(`AfterEmit middleware error:`, error)
+        }
+      }
+    }
+  }
+  
+  /**
+   * 增强回调函数，添加中间件支持
+   */
+  private enhanceCallback<T extends EventName>(
+    eventName: T,
+    originalCallback: EventCallback<EventDataMap[T]>
+  ): EventCallback<EventDataMap[T]> {
+    // 首先通过 beforeListen 中间件处理回调
+    let enhancedCallback = originalCallback
+    
+    for (const middleware of this.middlewares) {
+      if (middleware.beforeListen) {
+        enhancedCallback = middleware.beforeListen(eventName, enhancedCallback)
+      }
+    }
+    
+    // 返回包装后的回调函数
+    return async (data: EventDataMap[T]) => {
+      try {
+        // 执行 beforeCallback 中间件
+        let processedData = data
+        for (const middleware of this.middlewares) {
+          if (middleware.beforeCallback) {
+            processedData = await middleware.beforeCallback(
+              eventName,
+              processedData,
+              enhancedCallback
+            )
+          }
+        }
+        
+        // 执行原始回调
+        const result = await enhancedCallback(processedData)
+        
+        // 执行 afterCallback 中间件
+        let finalResult = result
+        for (const middleware of this.middlewares) {
+          if (middleware.afterCallback) {
+            finalResult = await middleware.afterCallback(
+              eventName,
+              processedData,
+              finalResult,
+              enhancedCallback
+            )
+          }
+        }
+        
+        return finalResult
+      } catch (error) {
+        this.debug(`Error in enhanced callback for ${eventName}:`, error)
+        throw error
+      }
+    }
+  }
+}
+
+// ============ 事件总线实例创建和导出 ============
+
+// 创建增强的事件总线实例
+const enhancedEventBus = new EnhancedEventBus()
+
+// 注册默认中间件
+enhancedEventBus.use(new ErrorHandlingMiddleware())
+
+// 在开发环境下启用日志和性能监控
+if (import.meta.env.DEV) {
+  enhancedEventBus.use(new LoggingMiddleware('[DevEventBus]'))
+  enhancedEventBus.use(new PerformanceMiddleware())
+}
+
+// 注册默认验证器
+enhancedEventBus.registerValidator('WINDOW_RESIZE', new WindowEventValidator())
+enhancedEventBus.registerValidator('WINDOW_FOCUS', new WindowEventValidator())
+enhancedEventBus.registerValidator('WINDOW_BLUR', new WindowEventValidator())
+
+// 创建命名空间管理器
+const namespaceManager = new NamespacedEventManager(enhancedEventBus)
+
+// 创建各个命名空间的事件总线
+export const systemEventBus = namespaceManager.getNamespaceEventBus('system')
+export const windowEventBus = namespaceManager.getNamespaceEventBus('window')
+export const appEventBus = namespaceManager.getNamespaceEventBus('app')
+export const userEventBus = namespaceManager.getNamespaceEventBus('user')
+export const themeEventBus = namespaceManager.getNamespaceEventBus('theme')
+export const networkEventBus = namespaceManager.getNamespaceEventBus('network')
+export const notificationEventBus = namespaceManager.getNamespaceEventBus('notification')
+
+// 全局事件总线实例（向后兼容）
+const globalEventBus = enhancedEventBus
 
 // 增强的事件总线组合式函数
 export function useEventBus(options: {
@@ -550,8 +1138,26 @@ export function useEventBus(options: {
 
 
 
-// 导出全局事件总线实例（用于非组合式函数中使用）
+// 导出主要的事件总线实例（向后兼容）
 export { globalEventBus as eventBus }
+
+// 导出增强版事件总线
+export { enhancedEventBus }
+
+// 导出命名空间管理器
+export { namespaceManager }
+
+// 导出所有相关类型和类
+export { EventBus }
+export type { 
+  TypedEvent, 
+  TypedEventListener, 
+  EventCreator, 
+  TypeSafeEventBus,
+  EventValidator,
+  EventMiddleware,
+  ValidatedEventBus
+}
 
 // 事件命名空间和分组管理
 export const EVENT_NAMESPACES = {
@@ -656,112 +1262,226 @@ export const EVENTS = {
   TEST_PERFORMANCE: 'test:performance',
 } as const
 
-// 事件数据类型定义
-export interface EventDataMap {
-  // 应用事件数据
-  [EVENTS.APP_OPEN]: { appKey: string; config?: any }
-  [EVENTS.APP_OPENED]: { appKey: string; pid: number; timestamp?: number }
-  [EVENTS.APP_CLOSE]: { appKey: string; pid?: number }
-  [EVENTS.APP_CLOSED]: { appKey: string; pid: number; reason?: string; source?: string }
-  [EVENTS.APP_FOCUS]: { appKey: string; pid: number; previousApp?: string }
-  [EVENTS.APP_FOCUSED]: { appKey: string; pid: number }
-  [EVENTS.APP_MINIMIZE]: { appKey: string; pid: number }
-  [EVENTS.APP_MINIMIZED]: { appKey: string; pid: number; position?: { x: number; y: number } }
-  [EVENTS.APP_MAXIMIZE]: { appKey: string; pid: number }
-  [EVENTS.APP_MAXIMIZED]: { appKey: string; pid: number; previousSize?: { width: number; height: number } }
-  [EVENTS.APP_RESIZE]: { appKey: string; pid: number; width: number; height: number }
-  [EVENTS.APP_MOVE]: { appKey: string; pid: number; x: number; y: number }
-  
-  // 系统事件数据
-  [EVENTS.SYSTEM_READY]: { bootTime: number; version?: string }
-  [EVENTS.SYSTEM_SHUTDOWN]: { reason?: string; forced?: boolean }
-  [EVENTS.SYSTEM_SLEEP]: { trigger?: 'user' | 'auto' | 'schedule' }
-  [EVENTS.SYSTEM_WAKE]: { trigger?: 'user' | 'timer' | 'network' }
-  [EVENTS.SYSTEM_ERROR]: { error: Error; context?: string; component?: string; recoverable?: boolean }
-  
-  // 主题事件数据
-  [EVENTS.THEME_CHANGE]: { theme: string; previous?: string }
-  [EVENTS.THEME_CHANGED]: { theme: string; previous?: string; timestamp: number }
-  [EVENTS.THEME_FOLLOW_SYSTEM]: { enabled: boolean }
-  
-  // 网络事件数据
-  [EVENTS.NETWORK_ONLINE]: { timestamp: number; connectionType?: string }
-  [EVENTS.NETWORK_OFFLINE]: { timestamp: number; reason?: string }
-  [EVENTS.NETWORK_SLOW]: { speed: number; threshold: number; timestamp: number }
-  
-  // 用户事件数据
-  [EVENTS.USER_LOGIN]: { username: string; timestamp: number; method?: string; ip?: string }
-  [EVENTS.USER_LOGOUT]: { username?: string; timestamp: number; reason?: string }
-  [EVENTS.USER_PROFILE_UPDATE]: { field: string; value: any; timestamp: number }
-  
-  // 窗口事件数据
-  [EVENTS.WINDOW_RESIZE]: { windowId?: string; width: number; height: number; oldSize?: { width: number; height: number } }
-  [EVENTS.WINDOW_FOCUS]: { windowId?: string; appKey?: string; timestamp: number }
-  [EVENTS.WINDOW_BLUR]: { windowId?: string; appKey?: string; timestamp: number }
-  [EVENTS.WINDOW_FULLSCREEN]: { enabled: boolean; windowId?: string }
-  [EVENTS.WINDOW_TITLE_CHANGE]: { title: string; appKey?: string; pid?: number; windowId?: string }
-  
-  // 键盘事件数据
-  [EVENTS.KEYBOARD_SHORTCUT]: { key: string; modifiers: string[]; action: string; timestamp: number }
-  [EVENTS.KEYBOARD_PRESS]: { key: string; code: string; timestamp: number }
-  [EVENTS.KEYBOARD_RELEASE]: { key: string; code: string; timestamp: number }
-  
-  // 通知事件数据
-  [EVENTS.NOTIFICATION_SHOW]: { id: string; title: string; message?: string; type?: string; duration?: number }
-  [EVENTS.NOTIFICATION_HIDE]: { id: string; reason?: 'timeout' | 'user' | 'system' }
-  [EVENTS.NOTIFICATION_CLICK]: { id: string; action?: string }
-  
-  // 音量事件数据
-  [EVENTS.VOLUME_CHANGE]: { volume: number; previous?: number; timestamp: number }
-  [EVENTS.VOLUME_MUTE]: { muted: boolean; timestamp: number }
-  
-  // 语言事件数据
-  [EVENTS.LANGUAGE_CHANGE]: { language: string; previous?: string; timestamp: number }
-  
-  // 小组件事件数据
-  [EVENTS.WIDGET_ADD]: { widgetId: string; type: string; position?: { x: number; y: number } }
-  [EVENTS.WIDGET_REMOVE]: { widgetId: string; reason?: string }
-  [EVENTS.WIDGET_UPDATE]: { widgetId: string; data: any; timestamp: number }
-  
-  // Dock事件数据
-  [EVENTS.DOCK_SHOW]: { timestamp: number; trigger?: string }
-  [EVENTS.DOCK_HIDE]: { timestamp: number; trigger?: string }
-  [EVENTS.DOCK_APP_ADD]: { appKey: string; position?: number }
-  [EVENTS.DOCK_APP_REMOVE]: { appKey: string; position?: number }
-  
-  // Launchpad事件数据
-  [EVENTS.LAUNCHPAD_SHOW]: { timestamp: number; trigger?: string }
-  [EVENTS.LAUNCHPAD_HIDE]: { timestamp: number; trigger?: string }
-  
-  // 应用启动事件数据
-  [EVENTS.APP_STARTUP]: { appKey?: string; timestamp: number; config?: any; bootTime?: number }
-  
-  // 数据同步事件数据
-  [EVENTS.DATA_SYNC]: { type: string; status: 'start' | 'progress' | 'complete' | 'error'; data?: any; progress?: number; error?: string }
-  
-  // 测试事件数据
-  [EVENTS.TEST_ERROR]: { message: string; error?: Error; context?: string; severity?: 'low' | 'medium' | 'high' | 'critical' }
-  [EVENTS.TEST_PERFORMANCE]: { index: number; timestamp: number }
-  
-  // 错误监控事件
-  'error:app': { appKey: string; error: string; stack?: string; severity: 'low' | 'medium' | 'high' | 'critical' }
-  'error:system': { component: string; error: string; recoverable: boolean }
-  'error:network': { url?: string; status?: number; error: string }
-  'error:performance': { component: string; metric: string; value: number; threshold: number }
-  
-  // 性能监控事件
-  'performance:memory': { used: number; available: number; percentage: number }
-  'performance:cpu': { usage: number; processes?: string[] }
-  'performance:render': { component: string; duration: number; frame?: number }
-  
-  // 业务相关事件
-  'business:feature-used': { feature: string; userId?: string; metadata?: any }
-  'business:conversion': { action: string; value?: number; metadata?: any }
-  'business:engagement': { type: string; duration: number; metadata?: any }
-  
-  // 自定义事件（兼容性）
-  [key: string]: any
+// ============ 阶段二：架构改进 - 事件工厂模式 ============
+
+// 类型化事件接口
+export interface TypedEvent<T extends EventName> {
+  readonly type: T
+  readonly data: EventDataMap[T]
+  readonly timestamp: number
+  readonly id: string
 }
 
-export type EventName = keyof EventDataMap
-export type EventData<T extends EventName> = EventDataMap[T]
+// 类型化事件监听器接口
+export interface TypedEventListener<T extends EventName> {
+  readonly eventType: T
+  readonly callback: EventCallback<EventDataMap[T]>
+  readonly options: EventListenerOptions
+}
+
+// 事件创建器接口
+export interface EventCreator<T extends EventName> {
+  readonly type: T
+  create(data: EventDataMap[T]): TypedEvent<T>
+  createListener(callback: EventCallback<EventDataMap[T]>): TypedEventListener<T>
+}
+
+// 类型安全的事件总线接口
+export interface TypeSafeEventBus {
+  // 触发事件
+  emit<T extends EventName>(event: T, data: EventDataMap[T]): Promise<any[]>
+  
+  // 添加监听器
+  on<T extends EventName>(
+    event: T,
+    callback: EventCallback<EventDataMap[T]>,
+    options?: Omit<EventListenerOptions, 'once'>
+  ): string
+  
+  // 添加一次性监听器
+  once<T extends EventName>(
+    event: T,
+    callback: EventCallback<EventDataMap[T]>,
+    options?: Omit<EventListenerOptions, 'once'>
+  ): string
+  
+  // 移除监听器
+  off(event: EventName, listenerId?: string): boolean
+  
+  // 检查是否有监听器
+  hasListeners(event: EventName): boolean
+  
+  // 获取监听器数量
+  listenerCount(event: EventName): number
+}
+
+// 事件工厂类
+export class EventFactory {
+  /**
+   * 创建类型化事件
+   */
+  static createEvent<T extends EventName>(
+    type: T,
+    data: EventDataMap[T]
+  ): TypedEvent<T> {
+    return {
+      type,
+      data,
+      timestamp: Date.now(),
+      id: `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    }
+  }
+  
+  /**
+   * 创建类型化事件监听器
+   */
+  static createListener<T extends EventName>(
+    eventType: T,
+    callback: EventCallback<EventDataMap[T]>,
+    options: EventListenerOptions = {}
+  ): TypedEventListener<T> {
+    return {
+      eventType,
+      callback,
+      options
+    }
+  }
+  
+  /**
+   * 创建事件创建器
+   */
+  static createEventCreator<T extends EventName>(type: T): EventCreator<T> {
+    return {
+      type,
+      create: (data: EventDataMap[T]) => EventFactory.createEvent(type, data),
+      createListener: (callback: EventCallback<EventDataMap[T]>) => 
+        EventFactory.createListener(type, callback)
+    }
+  }
+}
+
+
+
+// ============ 事件验证和中间件系统 ============
+
+// 事件数据验证器接口
+export interface EventValidator<T extends EventName> {
+  /**
+   * 验证事件数据
+   */
+  validate(data: any): data is EventDataMap[T]
+  
+  /**
+   * 清理和转换事件数据
+   */
+  sanitize(data: any): EventDataMap[T]
+  
+  /**
+   * 获取验证错误信息
+   */
+  getErrors?(data: any): string[]
+}
+
+// 事件中间件接口
+export interface EventMiddleware {
+  /**
+   * 事件触发前的处理
+   */
+  beforeEmit?<T extends EventName>(
+    event: T,
+    data: EventDataMap[T]
+  ): EventDataMap[T] | Promise<EventDataMap[T]>
+  
+  /**
+   * 事件触发后的处理
+   */
+  afterEmit?<T extends EventName>(
+    event: T,
+    data: EventDataMap[T],
+    results?: any[]
+  ): void | Promise<void>
+  
+  /**
+   * 监听器注册前的处理
+   */
+  beforeListen?<T extends EventName>(
+    event: T,
+    callback: EventCallback<EventDataMap[T]>
+  ): EventCallback<EventDataMap[T]>
+  
+  /**
+   * 监听器执行前的处理
+   */
+  beforeCallback?<T extends EventName>(
+    event: T,
+    data: EventDataMap[T],
+    callback: EventCallback<EventDataMap[T]>
+  ): EventDataMap[T] | Promise<EventDataMap[T]>
+  
+  /**
+   * 监听器执行后的处理
+   */
+  afterCallback?<T extends EventName>(
+    event: T,
+    data: EventDataMap[T],
+    result: any,
+    callback: EventCallback<EventDataMap[T]>
+  ): any | Promise<any>
+}
+
+// 带验证的事件总线接口
+export interface ValidatedEventBus extends TypeSafeEventBus {
+  /**
+   * 注册事件验证器
+   */
+  registerValidator<T extends EventName>(
+    event: T,
+    validator: EventValidator<T>
+  ): void
+  
+  /**
+   * 移除事件验证器
+   */
+  removeValidator(event: EventName): boolean
+  
+  /**
+   * 注册中间件
+   */
+  use(middleware: EventMiddleware): void
+  
+  /**
+   * 移除中间件
+   */
+  removeMiddleware(middleware: EventMiddleware): boolean
+  
+  /**
+   * 清理所有验证器和中间件
+   */
+  clearValidatorsAndMiddlewares(): void
+}
+
+// 验证错误类
+export class EventValidationError extends Error {
+  constructor(
+    public eventType: EventName,
+    public errors: string[],
+    public originalData: any
+  ) {
+    super(`Event validation failed for ${eventType}: ${errors.join(', ')}`)
+    this.name = 'EventValidationError'
+  }
+}
+
+// 中间件错误类
+export class EventMiddlewareError extends Error {
+  constructor(
+    public eventType: EventName,
+    public middlewareName: string,
+    public originalError: Error
+  ) {
+    super(`Middleware error in ${middlewareName} for event ${eventType}: ${originalError.message}`)
+    this.name = 'EventMiddlewareError'
+  }
+}
+
+// ============ 增强的事件总线实现 ============
