@@ -51,8 +51,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useNotification } from '@/composables'
-import type { NotificationInstance } from '@/composables'
+import { useNotification } from '@/shared/composables'
+import type { NotificationInstance } from '@/shared/composables'
 
 defineProps({
   isVisible: {

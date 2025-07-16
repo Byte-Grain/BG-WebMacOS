@@ -93,13 +93,13 @@ export class DynamicComponentLoader {
     
     // 2. 根据应用分类生成路径（使用@别名）
     if (app.category) {
-      paths.push(`@/views/apps/${app.category}/${componentName}.vue`)
-      paths.push(`@/views/apps/${app.category}/${app.key}.vue`)
+      paths.push(`@/applications/${app.category}/${componentName}.vue`)
+    paths.push(`@/applications/${app.category}/${app.key}.vue`)
     }
     
     // 3. 通用路径
-    paths.push(`@/views/apps/${componentName}.vue`)
-    paths.push(`@/views/apps/${app.key}.vue`)
+    paths.push(`@/applications/${componentName}.vue`)
+    paths.push(`@/applications/${app.key}.vue`)
     
     // 4. 组件目录
     paths.push(`@/components/apps/${componentName}.vue`)

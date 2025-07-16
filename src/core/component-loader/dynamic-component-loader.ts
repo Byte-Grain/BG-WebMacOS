@@ -35,7 +35,7 @@ export class DynamicComponentLoader {
       preloadEnabled: true,
       preloadDelay: 1000,
       searchPaths: [
-        '@/views/apps',
+        '@/applications',
         '@/components/apps',
         '@/applications',
         '@/views/desktop/system'

@@ -1,5 +1,4 @@
 import { dynamicComponentLoader } from '@core/component-loader/dynamicComponentLoader'
-import { AppDiscovery, type AppDiscoveryConfig } from '@/utils/appDiscovery'
 import type { AppConfig } from '@/types/app.d'
 
 import { systemApps } from './system-apps'
@@ -11,28 +10,9 @@ import { customApps } from './custom-apps'
 class EnhancedAppRegistry {
   private apps = new Map<string, AppConfig>()
   private componentMap = new Map<string, any>()
-  private appDiscovery: AppDiscovery
   private initialized = false
 
-  constructor() {
-    // 配置应用发现器
-    const discoveryConfig: AppDiscoveryConfig = {
-      autoScan: import.meta.env.DEV, // 仅在开发环境启用自动扫描
-      scanPaths: [
-        '/src/views/apps/custom',
-      ],
-      excludePatterns: [
-        '.*\\.test\\.vue$',
-        '.*\\.spec\\.vue$',
-        '.*\\.story\\.vue$',
-        '.*\\.d\\.ts$'
-      ],
-      fileExtensions: ['.vue']
-    }
-
-    this.appDiscovery = new AppDiscovery(discoveryConfig)
-  }
-
+  constructor() { }
   /**
    * 初始化注册表
    */
@@ -96,32 +76,6 @@ class EnhancedAppRegistry {
       return 'demo'
     }
     return 'custom'
-  }
-
-  /**
-   * 发现并注册动态应用
-   */
-  private async discoverAndRegisterApps(): Promise<void> {
-    try {
-      const discoveredApps = await this.appDiscovery.discoverApps()
-      
-      for (const app of discoveredApps) {
-        // 避免覆盖已存在的静态配置
-        if (!this.apps.has(app.key)) {
-          this.apps.set(app.key, app)
-          
-          if (import.meta.env.DEV) {
-            console.log(`🔍 Discovered app: ${app.key} (${app.componentPath})`)
-          }
-        } else {
-          if (import.meta.env.DEV) {
-            console.log(`⚠️ Skipped duplicate app: ${app.key}`)
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('⚠️ Failed to discover apps:', error)
-    }
   }
 
   /**

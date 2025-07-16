@@ -16,7 +16,7 @@
   </div>
 </template>
 <script setup>
-  import { useAppManager } from '@/composables'
+  import { useAppManager } from '@/shared/composables'
 
   // 使用组合式函数
   const { 

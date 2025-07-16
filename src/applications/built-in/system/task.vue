@@ -90,7 +90,7 @@
 </style>
 <script setup lang="ts">
   import { reactive, onMounted, onUnmounted } from 'vue'
-  import { useAppManager } from '@/composables'
+  import { useAppManager } from '@/shared/composables'
   
   const emit = defineEmits(['api'])
   const { openApps } = useAppManager()
