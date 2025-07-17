@@ -2,12 +2,8 @@ import type { AppConfig } from '@/types/app'
 import { simpleApps } from './simple-apps'
 import demo__MyTestApp from '@/apps/demo/MyTestApp/index.vue'
 import demo__AppRegistryDebug from '@/apps/demo/AppRegistryDebug/index.vue'
-import builtIn_utilities_web from '@/apps/builtIn/utilities/web/index.vue'
-import builtIn_utilities_multitask from '@/apps/builtIn/utilities/multitask/index.vue'
 import builtIn_utilities_EventSystemExample from '@/apps/builtIn/utilities/EventSystemExample/index.vue'
-import builtIn_utilities_camera from '@/apps/builtIn/utilities/camera/index.vue'
 import builtIn_system_task from '@/apps/builtIn/system/task/index.vue'
-import builtIn_system_setting from '@/apps/builtIn/system/setting/index.vue'
 import builtIn_system_finder from '@/apps/builtIn/system/finder/index.vue'
 import builtIn_system_composablesTest from '@/apps/builtIn/system/composablesTest/index.vue'
 import builtIn_system_about from '@/apps/builtIn/system/about/index.vue'
@@ -20,12 +16,8 @@ import builtIn_system_about from '@/apps/builtIn/system/about/index.vue'
 export const APP_KEYS = {
   APPKEY_DEMO__MYTESTAPP: 'demo__mytestapp',
   APPKEY_DEMO__APPREGISTRYDEBUG: 'demo__appregistrydebug',
-  APPKEY_BUILTIN_UTILITIES_WEB: 'builtin_utilities_web',
-  APPKEY_BUILTIN_UTILITIES_MULTITASK: 'builtin_utilities_multitask',
   APPKEY_BUILTIN_UTILITIES_EVENTSYSTEMEXAMPLE: 'builtin_utilities_eventsystemexample',
-  APPKEY_BUILTIN_UTILITIES_CAMERA: 'builtin_utilities_camera',
   APPKEY_BUILTIN_SYSTEM_TASK: 'builtin_system_task',
-  APPKEY_BUILTIN_SYSTEM_SETTING: 'builtin_system_setting',
   APPKEY_BUILTIN_SYSTEM_FINDER: 'builtin_system_finder',
   APPKEY_BUILTIN_SYSTEM_COMPOSABLESTEST: 'builtin_system_composablestest',
   APPKEY_BUILTIN_SYSTEM_ABOUT: 'builtin_system_about'
@@ -96,57 +88,6 @@ export const scanApps: AppConfig[] = [
     component: demo__AppRegistryDebug
   },
   {
-    key: 'builtin_utilities_web',
-    title: 'Web应用',
-    icon: 'icon-chrome',
-    iconColor: '#fff',
-    iconBgColor: '#4285F4',
-    width: 800,
-    height: 600,
-    resizable: true,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    category: 'builtIn',
-    description: '用于显示网页内容的应用',
-    version: '1.0.0',
-    author: 'Demo Team',
-    tags: ["web","iframe"],
-    demo: true,
-    featured: false,
-    permissions: ["network"],
-    _id: 'e300626af7706bca9a3ca355908ecdc7',
-    group: 'utilities',
-    component: builtIn_utilities_web
-  },
-  {
-    key: 'builtin_utilities_multitask',
-    title: '多任务应用',
-    icon: 'icon-multitask',
-    iconColor: '#fff',
-    iconBgColor: '#007AFF',
-    width: 500,
-    height: 300,
-    resizable: true,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    multiTask: true,
-    keepInDock: false,
-    category: 'builtIn',
-    description: '演示多任务功能的应用',
-    version: '1.0.0',
-    author: 'Demo Team',
-    tags: ["multitask","demo"],
-    demo: true,
-    featured: false,
-    _id: 'e0609d06eac32e9e6014595d0814cb48',
-    group: 'utilities',
-    component: builtIn_utilities_multitask
-  },
-  {
     key: 'builtin_utilities_eventsystemexample',
     title: 'ES',
     icon: 'icon-MIS_bangongOA',
@@ -170,29 +111,6 @@ export const scanApps: AppConfig[] = [
     _id: '058e255307e1bf6789a79b25a3436af0',
     group: 'utilities',
     component: builtIn_utilities_EventSystemExample
-  },
-  {
-    key: 'builtin_utilities_camera',
-    title: 'Photo Booth',
-    icon: 'icon-camera1',
-    iconColor: '#fff',
-    iconBgColor: '#E24637',
-    width: 540,
-    height: 540,
-    resizable: false,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    category: 'builtIn',
-    description: '相机拍照应用演示',
-    version: '1.0.0',
-    author: 'Demo Team',
-    demo: true,
-    featured: false,
-    _id: 'fc647623586b47ea92f7cfc2ac779d70',
-    group: 'utilities',
-    component: builtIn_utilities_camera
   },
   {
     key: 'builtin_system_task',
@@ -219,33 +137,6 @@ export const scanApps: AppConfig[] = [
     _id: 'd0d240d5e08c3b10d4f91eae8defd75e',
     group: 'system',
     component: builtIn_system_task
-  },
-  {
-    key: 'builtin_system_setting',
-    title: 'System Preferences',
-    icon: '⚙️',
-    iconColor: '#fff',
-    iconBgColor: '#8E8E93',
-    width: 800,
-    height: 600,
-    resizable: true,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    hideInDesktop: false,
-    keepInDock: true,
-    category: 'builtIn',
-    description: '系统偏好设置',
-    version: '1.0.0',
-    author: 'System',
-    tags: ["system","preferences","settings"],
-    system: true,
-    essential: true,
-    singleton: true,
-    _id: 'cc02cf00ad37023d5eda3b05bbdb113e',
-    group: 'system',
-    component: builtIn_system_setting
   },
   {
     key: 'builtin_system_finder',
