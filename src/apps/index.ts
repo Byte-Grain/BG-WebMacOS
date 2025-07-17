@@ -1,7 +1,7 @@
 import type { AppConfig } from '@/types/app'
 import { simpleApps } from './simple-apps'
-import custom__MyTestApp from '@/apps/custom/MyTestApp/index.vue'
-import custom__AppRegistryDebug from '@/apps/custom/AppRegistryDebug/index.vue'
+import test__MyTestApp from '@/apps/test/MyTestApp/index.vue'
+import test__AppRegistryDebug from '@/apps/test/AppRegistryDebug/index.vue'
 import builtIn_utilities_web from '@/apps/builtIn/utilities/web/index.vue'
 import builtIn_utilities_unresize from '@/apps/builtIn/utilities/unresize/index.vue'
 import builtIn_utilities_unclose from '@/apps/builtIn/utilities/unclose/index.vue'
@@ -24,8 +24,8 @@ import builtIn_system_about from '@/apps/builtIn/system/about/index.vue'
  * 扫描目录: src/apps/
  */
 export const APP_KEYS = {
-  APPKEY_CUSTOM__MYTESTAPP: 'custom__mytestapp',
-  APPKEY_CUSTOM__APPREGISTRYDEBUG: 'custom__appregistrydebug',
+  APPKEY_TEST__MYTESTAPP: 'test__mytestapp',
+  APPKEY_TEST__APPREGISTRYDEBUG: 'test__appregistrydebug',
   APPKEY_BUILTIN_UTILITIES_WEB: 'builtin_utilities_web',
   APPKEY_BUILTIN_UTILITIES_UNRESIZE: 'builtin_utilities_unresize',
   APPKEY_BUILTIN_UTILITIES_UNCLOSE: 'builtin_utilities_unclose',
@@ -53,7 +53,7 @@ export type AppKey = typeof APP_KEYS[keyof typeof APP_KEYS]
  */
 export const scanApps: AppConfig[] = [
   {
-    key: 'custom__mytestapp',
+    key: 'test__mytestapp',
     title: '我的测试应用',
     icon: 'icon-loading',
     iconColor: '#667eea',
@@ -80,30 +80,30 @@ export const scanApps: AppConfig[] = [
     hideInDesktop: false,
     hideWhenClose: false,
     autoFocus: true,
-    category: 'custom',
+    category: 'test',
     tags: [],
     version: '1.0.0',
     author: '动态加载系统',
     description: '这是一个用于测试动态加载功能的示例应用',
     permissions: ["storage"],
     dependencies: [],
-    _id: 'ff6a6a3d0160268a50b9abc347ba2145',
+    _id: '501f1048d88b3355b465f28f7e7e8b37',
     group: '',
-    component: custom__MyTestApp
+    component: test__MyTestApp
   },
   {
-    key: 'custom__appregistrydebug',
+    key: 'test__appregistrydebug',
     title: '应用注册表调试',
     icon: 'icon-bug',
     iconBgColor: '#FF6B6B',
     iconColor: '#FFFFFF',
-    category: 'custom',
+    category: 'test',
     tags: ["debug","registry","development"],
     version: '1.0.0',
     description: '用于调试应用注册表状态的工具',
-    _id: '45fb1d8f12e67974a1ad991c3d3d0131',
+    _id: '56caf16eba95a763d71da6c5de87cf0c',
     group: '',
-    component: custom__AppRegistryDebug
+    component: test__AppRegistryDebug
   },
   {
     key: 'builtin_utilities_web',
