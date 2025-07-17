@@ -15,7 +15,7 @@ export default defineConfig({
     // 使用多目录扫描功能
     autoGenerateApps({
       scanDirs: [
-        'src/apps/',
+        'src/apps/'
       ],
       outDir:'src/apps'
     }),

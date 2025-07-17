@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import { glob } from 'glob'
 import crypto from 'crypto'
 import { parse } from '@babel/parser'
 import traverse from '@babel/traverse'
@@ -64,6 +63,67 @@ export function autoGenerateApps(options = {}) {
 }
 
 /**
+ * 递归查找目录中的 index.vue 文件
+ * @param {string} dir - 要扫描的目录
+ * @param {number} depth - 当前递归深度
+ * @param {number} maxDepth - 最大递归深度
+ * @param {string} baseDir - 基础目录，用于计算相对路径
+ * @returns {string[]} - 相对于基础目录的 index.vue 文件路径数组
+ */
+function findIndexVueFiles(dir, depth = 0, maxDepth = 4, baseDir = null) {
+  if (!baseDir) baseDir = dir;
+  if (depth > maxDepth) return [];
+  
+  let results = [];
+  
+  try {
+    // 读取目录内容
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      
+      // 检查是否为目录
+      let isDir = false;
+      try {
+        // 使用 lstat 而不是 stat 来获取符号链接本身的信息
+        const stats = fs.lstatSync(fullPath);
+        
+        if (stats.isDirectory()) {
+          isDir = true;
+        } else if (stats.isSymbolicLink()) {
+          // 如果是符号链接，检查它指向的是否是目录
+          try {
+            const targetStats = fs.statSync(fullPath);
+            isDir = targetStats.isDirectory();
+          } catch (e) {
+            console.warn(`⚠️ 无法访问符号链接目标: ${fullPath}`, e.message);
+            continue;
+          }
+        }
+      } catch (e) {
+        console.warn(`⚠️ 无法获取文件状态: ${fullPath}`, e.message);
+        continue;
+      }
+      
+      if (isDir) {
+        // 递归扫描子目录
+        const subResults = findIndexVueFiles(fullPath, depth + 1, maxDepth, baseDir);
+        results = results.concat(subResults);
+      } else if (entry.name === 'index.vue') {
+        // 找到 index.vue 文件，添加到结果中
+        const relativePath = path.relative(baseDir, fullPath);
+        results.push(relativePath.replace(/\\/g, '/'));
+      }
+    }
+  } catch (e) {
+    console.warn(`⚠️ 无法读取目录: ${dir}`, e.message);
+  }
+  
+  return results;
+}
+
+/**
  * 生成custom-apps.ts文件
  * @param {string[]} scanDirs - 要扫描的目录数组
  * @param {string} outputFilePath - 输出文件路径
@@ -89,10 +149,8 @@ function generateCustomApps(scanDirs, outputFilePath) {
       // 按照新的目录结构规则扫描：
       // 第一层为分类，第二层为分组或应用，第三层为应用（如果存在）
       // 只扫描index.vue文件，最多扫描四层（apps/分类/分组/应用）
-      const indexFiles = glob.sync('**/index.vue', {
-        cwd: appsDir,
-        maxDepth: 4 // 增加到4层以支持 apps/builtIn/system/about 这样的结构
-      })
+      const indexFiles = findIndexVueFiles(appsDir)
+      console.log("-----------files",indexFiles)
 
       indexFiles.forEach((file) => {
         const filePath = path.join(appsDir, file)
