@@ -1,4 +1,4 @@
-import type { AppConfig } from '@/types/app'
+import type { AppConfig } from '@/types/app' 
 import { simpleApps } from './simple-apps'
 import builtIn_system_about from '@/apps/builtIn/system/about/index.vue'
 import builtIn_system_composablesTest from '@/apps/builtIn/system/composablesTest/index.vue'

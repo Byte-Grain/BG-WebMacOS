@@ -28,3 +28,5 @@ pnpm-debug.log*
 *.sw?
 
 /src/apps/extensions
+# 自动生成，不需要版本管理
+/src/apps/index.ts
