@@ -1,18 +1,12 @@
 import type { AppConfig } from '@/types/app'
 import { simpleApps } from './simple-apps'
-import test__MyTestApp from '@/apps/test/MyTestApp/index.vue'
-import test__AppRegistryDebug from '@/apps/test/AppRegistryDebug/index.vue'
+import demo__MyTestApp from '@/apps/demo/MyTestApp/index.vue'
+import demo__AppRegistryDebug from '@/apps/demo/AppRegistryDebug/index.vue'
 import builtIn_utilities_web from '@/apps/builtIn/utilities/web/index.vue'
-import builtIn_utilities_unresize from '@/apps/builtIn/utilities/unresize/index.vue'
-import builtIn_utilities_unclose from '@/apps/builtIn/utilities/unclose/index.vue'
 import builtIn_utilities_multitask from '@/apps/builtIn/utilities/multitask/index.vue'
-import builtIn_utilities_hidedesktop from '@/apps/builtIn/utilities/hidedesktop/index.vue'
 import builtIn_utilities_EventSystemExample from '@/apps/builtIn/utilities/EventSystemExample/index.vue'
-import builtIn_utilities_dock from '@/apps/builtIn/utilities/dock/index.vue'
-import builtIn_utilities_colorfull from '@/apps/builtIn/utilities/colorfull/index.vue'
 import builtIn_utilities_camera from '@/apps/builtIn/utilities/camera/index.vue'
 import builtIn_system_task from '@/apps/builtIn/system/task/index.vue'
-import builtIn_system_store from '@/apps/builtIn/system/store/index.vue'
 import builtIn_system_setting from '@/apps/builtIn/system/setting/index.vue'
 import builtIn_system_finder from '@/apps/builtIn/system/finder/index.vue'
 import builtIn_system_composablesTest from '@/apps/builtIn/system/composablesTest/index.vue'
@@ -24,19 +18,13 @@ import builtIn_system_about from '@/apps/builtIn/system/about/index.vue'
  * 扫描目录: src/apps/
  */
 export const APP_KEYS = {
-  APPKEY_TEST__MYTESTAPP: 'test__mytestapp',
-  APPKEY_TEST__APPREGISTRYDEBUG: 'test__appregistrydebug',
+  APPKEY_DEMO__MYTESTAPP: 'demo__mytestapp',
+  APPKEY_DEMO__APPREGISTRYDEBUG: 'demo__appregistrydebug',
   APPKEY_BUILTIN_UTILITIES_WEB: 'builtin_utilities_web',
-  APPKEY_BUILTIN_UTILITIES_UNRESIZE: 'builtin_utilities_unresize',
-  APPKEY_BUILTIN_UTILITIES_UNCLOSE: 'builtin_utilities_unclose',
   APPKEY_BUILTIN_UTILITIES_MULTITASK: 'builtin_utilities_multitask',
-  APPKEY_BUILTIN_UTILITIES_HIDEDESKTOP: 'builtin_utilities_hidedesktop',
   APPKEY_BUILTIN_UTILITIES_EVENTSYSTEMEXAMPLE: 'builtin_utilities_eventsystemexample',
-  APPKEY_BUILTIN_UTILITIES_DOCK: 'builtin_utilities_dock',
-  APPKEY_BUILTIN_UTILITIES_COLORFULL: 'builtin_utilities_colorfull',
   APPKEY_BUILTIN_UTILITIES_CAMERA: 'builtin_utilities_camera',
   APPKEY_BUILTIN_SYSTEM_TASK: 'builtin_system_task',
-  APPKEY_BUILTIN_SYSTEM_STORE: 'builtin_system_store',
   APPKEY_BUILTIN_SYSTEM_SETTING: 'builtin_system_setting',
   APPKEY_BUILTIN_SYSTEM_FINDER: 'builtin_system_finder',
   APPKEY_BUILTIN_SYSTEM_COMPOSABLESTEST: 'builtin_system_composablestest',
@@ -53,7 +41,7 @@ export type AppKey = typeof APP_KEYS[keyof typeof APP_KEYS]
  */
 export const scanApps: AppConfig[] = [
   {
-    key: 'test__mytestapp',
+    key: 'demo__mytestapp',
     title: '我的测试应用',
     icon: 'icon-loading',
     iconColor: '#667eea',
@@ -80,30 +68,32 @@ export const scanApps: AppConfig[] = [
     hideInDesktop: false,
     hideWhenClose: false,
     autoFocus: true,
-    category: 'test',
+    category: 'demo',
     tags: [],
     version: '1.0.0',
     author: '动态加载系统',
     description: '这是一个用于测试动态加载功能的示例应用',
     permissions: ["storage"],
     dependencies: [],
-    _id: '501f1048d88b3355b465f28f7e7e8b37',
+    _id: '499be18dbfe7862b88f306e484663643',
     group: '',
-    component: test__MyTestApp
+    component: demo__MyTestApp
   },
   {
-    key: 'test__appregistrydebug',
+    key: 'demo__appregistrydebug',
     title: '应用注册表调试',
     icon: 'icon-bug',
     iconBgColor: '#FF6B6B',
     iconColor: '#FFFFFF',
-    category: 'test',
+    width: 600,
+    height: 700,
+    category: 'demo',
     tags: ["debug","registry","development"],
     version: '1.0.0',
     description: '用于调试应用注册表状态的工具',
-    _id: '56caf16eba95a763d71da6c5de87cf0c',
+    _id: 'd4f0f9142e26867208983320a9694e90',
     group: '',
-    component: test__AppRegistryDebug
+    component: demo__AppRegistryDebug
   },
   {
     key: 'builtin_utilities_web',
@@ -129,55 +119,6 @@ export const scanApps: AppConfig[] = [
     _id: 'e300626af7706bca9a3ca355908ecdc7',
     group: 'utilities',
     component: builtIn_utilities_web
-  },
-  {
-    key: 'builtin_utilities_unresize',
-    title: '固定尺寸应用',
-    icon: 'icon-smallscreen_fill',
-    iconColor: '#fff',
-    iconBgColor: '#1573fa',
-    width: 600,
-    height: 400,
-    resizable: false,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    category: 'builtIn',
-    description: '演示固定窗口尺寸功能',
-    version: '1.0.0',
-    author: 'Demo Team',
-    tags: ["window","fixed-size"],
-    demo: true,
-    featured: false,
-    _id: 'c3adfc81dbc5cf262666bdddc091d525',
-    group: 'utilities',
-    component: builtIn_utilities_unresize
-  },
-  {
-    key: 'builtin_utilities_unclose',
-    title: '无法彻底关闭',
-    icon: 'icon-wechat-fill',
-    iconColor: '#fff',
-    iconBgColor: '#24dc72',
-    width: 610,
-    height: 430,
-    resizable: true,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    hideWhenClose: true,
-    category: 'builtIn',
-    description: '演示关闭时隐藏而非退出的功能',
-    version: '1.0.0',
-    author: 'Demo Team',
-    tags: ["window","hide-on-close"],
-    demo: true,
-    featured: false,
-    _id: 'c5589533cfcd02af4b1ac6a92a1efdad',
-    group: 'utilities',
-    component: builtIn_utilities_unclose
   },
   {
     key: 'builtin_utilities_multitask',
@@ -206,32 +147,6 @@ export const scanApps: AppConfig[] = [
     component: builtIn_utilities_multitask
   },
   {
-    key: 'builtin_utilities_hidedesktop',
-    title: '不在桌面显示',
-    icon: 'icon-shezhi',
-    iconColor: '#333',
-    iconBgColor: '#d4dbef',
-    width: 500,
-    height: 300,
-    resizable: true,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    hideInDesktop: true,
-    keepInDock: true,
-    category: 'builtIn',
-    description: '演示仅在 Dock 显示的应用',
-    version: '1.0.0',
-    author: 'Demo Team',
-    tags: ["dock-only","hidden"],
-    demo: true,
-    featured: false,
-    _id: '3e4431cb51f37d4a195f4a68aae2916d',
-    group: 'utilities',
-    component: builtIn_utilities_hidedesktop
-  },
-  {
     key: 'builtin_utilities_eventsystemexample',
     title: 'ES',
     icon: 'icon-MIS_bangongOA',
@@ -255,55 +170,6 @@ export const scanApps: AppConfig[] = [
     _id: '058e255307e1bf6789a79b25a3436af0',
     group: 'utilities',
     component: builtIn_utilities_EventSystemExample
-  },
-  {
-    key: 'builtin_utilities_dock',
-    title: '常驻 Dock 应用',
-    icon: 'icon-MIS_bangongOA',
-    iconColor: '#fff',
-    iconBgColor: '#022732',
-    width: 420,
-    height: 350,
-    resizable: true,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    keepInDock: true,
-    category: 'builtIn',
-    description: '演示常驻 Dock 功能的应用',
-    version: '1.0.0',
-    author: 'Demo Team',
-    tags: ["dock","persistent"],
-    demo: true,
-    featured: false,
-    _id: 'c9f53f1c94bb95e1a14ca86c58a39be9',
-    group: 'utilities',
-    component: builtIn_utilities_dock
-  },
-  {
-    key: 'builtin_utilities_colorfull',
-    title: '花里胡哨',
-    icon: 'icon-loading',
-    iconColor: '#fff',
-    iconBgColor: '#ff4500',
-    width: 420,
-    height: 310,
-    resizable: true,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    category: 'builtIn',
-    description: '演示自定义窗口样式功能',
-    version: '1.0.0',
-    author: 'Demo Team',
-    tags: ["colorful","custom-style"],
-    demo: true,
-    featured: false,
-    _id: 'f74d2210e6bdb5847676e04933c34290',
-    group: 'utilities',
-    component: builtIn_utilities_colorfull
   },
   {
     key: 'builtin_utilities_camera',
@@ -355,33 +221,6 @@ export const scanApps: AppConfig[] = [
     component: builtIn_system_task
   },
   {
-    key: 'builtin_system_store',
-    title: 'App Store',
-    icon: '🛍️',
-    iconColor: '#fff',
-    iconBgColor: '#007AFF',
-    width: 1000,
-    height: 700,
-    resizable: true,
-    draggable: true,
-    closable: true,
-    minimizable: true,
-    maximizable: true,
-    keepInDock: true,
-    category: 'builtIn',
-    description: '应用商店',
-    version: '1.0.0',
-    author: 'System',
-    tags: ["store","apps","download"],
-    permissions: ["network"],
-    system: true,
-    essential: false,
-    singleton: true,
-    _id: '90d8b684cc376d4175adde070c6096d3',
-    group: 'system',
-    component: builtIn_system_store
-  },
-  {
     key: 'builtin_system_setting',
     title: 'System Preferences',
     icon: '⚙️',
@@ -431,6 +270,7 @@ export const scanApps: AppConfig[] = [
     system: true,
     essential: true,
     singleton: true,
+    menu: [{"key":"finder","title":"访达","sub":[{"key":"about","title":"关于 访达"},{"isLine":true},{"key":"setting","title":"首选项"},{"isLine":true},{"key":"close","title":"退出 访达"}]},{"key":"window","title":"窗口","sub":[{"key":"min","title":"最小化"},{"key":"max","title":"最大化"}]},{"key":"help","title":"帮助","sub":[{"key":"send","title":"发送反馈"}]}],
     _id: '52849bcf065bb72646127e5a1e22a018',
     group: 'system',
     component: builtIn_system_finder

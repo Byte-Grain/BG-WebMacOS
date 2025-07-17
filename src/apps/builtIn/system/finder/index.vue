@@ -34,7 +34,57 @@ export const appConfig: AppConfig = {
   tags: ['file', 'manager', 'system'],
   system: true,
   essential: true,
-  singleton: true
+  singleton: true,
+  menu: [
+        {
+          key: "finder",
+          title: "访达",
+          sub: [
+            {
+              key: "about",
+              title: "关于 访达",
+            },
+            {
+              isLine: true,
+            },
+            {
+              key: "setting",
+              title: "首选项",
+            },
+            {
+              isLine: true,
+            },
+            {
+              key: "close",
+              title: "退出 访达",
+            },
+          ],
+        },
+        {
+          key: "window",
+          title: "窗口",
+          sub: [
+            {
+              key: "min",
+              title: "最小化",
+            },
+            {
+              key: "max",
+              title: "最大化",
+            },
+          ],
+        },
+        {
+          key: "help",
+          title: "帮助",
+          sub: [
+            {
+              key: "send",
+              title: "发送反馈",
+            },
+          ],
+        },
+      ]
 }
 </script>
 

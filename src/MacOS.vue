@@ -34,6 +34,22 @@
     bottom: 0;
   }
   
+  // 优化过渡动画，减少闪动
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+  
+  .fade-enter-to,
+  .fade-leave-from {
+    opacity: 1;
+  }
+  
   .debug-controls {
     position: fixed;
     top: 20px;
@@ -104,12 +120,12 @@ const {
 
 // 响应式数据
 const showDebugTest = ref(false)
-// 对于已登录用户，立即标记系统为已初始化状态
-const systemInitialized = ref(!store.state.showLogin)
+// 系统初始化状态，初始为false确保加载过程完整
+const systemInitialized = ref(false)
 
 // 计算属性
-const showLogin = computed(() => !isLoggedIn.value)
-const loading = computed(() => isLoading.value)
+const showLogin = computed(() => !isLoggedIn.value && systemInitialized.value)
+const loading = computed(() => isLoading.value || !systemInitialized.value)
 const launchpad = computed(() => isLaunchpadOpen.value)
 
 // 注册系统快捷键

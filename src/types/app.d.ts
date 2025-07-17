@@ -6,7 +6,7 @@ export interface AppMenu {
 }
 
 export interface AppConfig {
-  _id:string;
+  _id?:string;
   key: string; // 生成机制会根据目录结构重组形成key,保证应用id的唯一性
   icon: string;
   title: string;

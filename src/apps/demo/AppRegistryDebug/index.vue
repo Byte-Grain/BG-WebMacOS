@@ -73,6 +73,8 @@ export const appConfig: AppConfig = {
   icon: 'icon-bug',
   iconBgColor: '#FF6B6B',
   iconColor: '#FFFFFF',
+  width:600,
+  height:700,
   category: 'development',
   tags: ['debug', 'registry', 'development'],
   version: '1.0.0',
@@ -139,6 +141,12 @@ import { getDesktopApps, getDockApps, getAllApps } from '@core/app-registry'
     max-width: 1200px;
     margin: 0 auto;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scroll-behavior: smooth;
 
     h1 {
       color: #333;
