@@ -73,7 +73,7 @@
   // 优化：使用shallowRef和缓存优化菜单渲染
   const menu = shallowRef([])
   const userName = computed(() => userInfo.value?.name || '')
-  
+
   // 使用watchEffect优化菜单更新
   watchEffect(() => {
     const newMenu = currentMenu.value

@@ -48,11 +48,11 @@ body, html {
     backdrop-filter: blur(20px);
 }
 
-.el-dropdown-menu__item.line {
+/* .el-dropdown-menu__item.line {
     height: 1px;
     background: rgba(0, 0, 0, 0.1);
     margin: 0px 15px;
-}
+} */
 
 .el-dropdown-menu__item span {
     color: #aaa;
@@ -91,7 +91,10 @@ body {
 
 @font-face {
     font-family: 'Gotham-Book';
-    src: url('@/assets/fonts/Gotham-Book.woff2');
+    src: url('@/assets/fonts/Gotham-Book.woff2') format('woff2');
+    font-display: swap;
+    font-weight: normal;
+    font-style: normal;
 }
 
 * {

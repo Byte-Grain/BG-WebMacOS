@@ -1,7 +1,7 @@
 import { ref, computed, watch } from 'vue'
 import { useStore } from 'vuex'
-import { STORAGE_KEYS, SYSTEM_STATES } from '@shared/constants'
-import type { SystemState } from '@shared/constants'
+import { STORAGE_KEYS, SYSTEM_STATES } from '@/shared/constants'
+import type { SystemState } from '@/shared/constants'
 
 // 系统状态管理组合式函数
 export function useSystem() {

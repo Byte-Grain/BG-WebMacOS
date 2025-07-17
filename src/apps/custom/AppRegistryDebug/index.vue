@@ -76,7 +76,9 @@ export const appConfig: AppConfig = {
   category: 'development',
   tags: ['debug', 'registry', 'development'],
   version: '1.0.0',
-  description: '用于调试应用注册表状态的工具'
+  description: '用于调试应用注册表状态的工具',
+  width:600,
+  height:700
 }
 </script>
 

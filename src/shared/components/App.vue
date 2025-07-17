@@ -141,7 +141,7 @@
   // 设置窗口事件监听器
   const setupWindowEventListeners = () => {
     // 监听窗口标题变化事件
-    const titleChangeId = eventBus.on('window:title-change', (data) => {
+    const titleChangeId = eventBus.on(EVENTS.WINDOW_TITLE_CHANGE, (data) => {
       if (data.appKey === props.app.key || data.pid === props.app.pid) {
         appData.title = data.title
       }
@@ -223,7 +223,7 @@
     
     // 保存清理函数
     eventCleanupFunctions.value.push(
-      () => eventBus.off('window:title-change', titleChangeId),
+      () => eventBus.off(EVENTS.WINDOW_TITLE_CHANGE, titleChangeId),
       () => eventBus.off(EVENTS.APP_MAXIMIZE, maximizeId),
       () => eventBus.off(EVENTS.APP_MINIMIZE, minimizeId),
       () => eventBus.off(EVENTS.WINDOW_FULLSCREEN, fullscreenId),
@@ -371,12 +371,15 @@
     if (props.app.disableResize) {
       return
     }
-    isFullScreen.value = !isFullScreen.value
-    if (isFullScreen.value) {
-      isMaxShowing.value = false
-    } else {
-      isMaxShowing.value = false
-    }
+    const newFullScreenState = !isFullScreen.value
+    
+    // 触发全屏事件
+    eventBus.emit(EVENTS.WINDOW_FULLSCREEN, {
+      enabled: newFullScreenState,
+      windowId: props.app.key
+    })
+    
+    // 本地状态会通过事件监听器更新
   }
 
   const switchMaximize = () => {
@@ -527,7 +530,9 @@
 
     .isFullScreen {
       position: fixed !important;
-      z-index: 999 !important;
+      z-index: 100000 !important;
+      left: -5px !important;
+      right: -5px !important;
       bottom: -5px !important;
       top: -5px !important;
     }

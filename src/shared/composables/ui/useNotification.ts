@@ -66,17 +66,7 @@ export function useNotification() {
   
   // 通知列表 - 现在从平台模块获取
   const notifications = computed(() => {
-    return notificationManager.getAll().map(platformNotification => {
-      return convertPlatformToLegacy(platformNotification)
-    })
-  })
-  
-  // 全局配置
-  const globalConfig = reactive<Partial<NotificationConfig>>({ ...DEFAULT_CONFIG })
-  
-  // 转换平台通知到旧版格式
-  const convertPlatformToLegacy = (platformNotification: PlatformNotification): NotificationInstance => {
-    return {
+    return notificationManager.getAll().map(platformNotification => ({
       id: platformNotification.id,
       title: platformNotification.title || '',
       message: platformNotification.message,
@@ -98,34 +88,13 @@ export function useNotification() {
       })),
       onClick: platformNotification.onClick,
       onClose: platformNotification.onClose
-    }
-  }
+    }))
+  })
   
-  // 转换旧版配置到平台格式
-  const convertLegacyToPlatform = (config: NotificationConfig): PlatformNotificationConfig => {
-    return {
-      id: config.id,
-      title: config.title,
-      message: config.message,
-      type: config.type || 'info',
-      duration: config.duration,
-      position: config.position,
-      showClose: config.showClose,
-      persistent: config.persistent,
-      icon: config.icon,
-      avatar: config.avatar,
-      customClass: config.customClass,
-      html: config.html,
-      data: config.data,
-      actions: config.actions?.map(action => ({
-        text: action.text,
-        handler: action.action,
-        type: action.type || 'secondary'
-      })),
-      onClick: config.onClick,
-      onClose: config.onClose
-    }
-  }
+  // 全局配置
+  const globalConfig = reactive<Partial<NotificationConfig>>({ ...DEFAULT_CONFIG })
+  
+
   
   // 按位置分组的通知
   const notificationsByPosition = computed(() => {
@@ -180,7 +149,28 @@ export function useNotification() {
   // 显示通知
   const show = (config: NotificationConfig): string => {
     const mergedConfig = { ...globalConfig, ...config }
-    const platformConfig = convertLegacyToPlatform(mergedConfig)
+    const platformConfig: PlatformNotificationConfig = {
+      id: mergedConfig.id,
+      title: mergedConfig.title,
+      message: mergedConfig.message,
+      type: mergedConfig.type || 'info',
+      duration: mergedConfig.duration,
+      position: mergedConfig.position,
+      showClose: mergedConfig.showClose,
+      persistent: mergedConfig.persistent,
+      icon: mergedConfig.icon,
+      avatar: mergedConfig.avatar,
+      customClass: mergedConfig.customClass,
+      html: mergedConfig.html,
+      data: mergedConfig.data,
+      actions: mergedConfig.actions?.map(action => ({
+        text: action.text,
+        handler: action.action,
+        type: action.type || 'secondary'
+      })),
+      onClick: mergedConfig.onClick,
+      onClose: mergedConfig.onClose
+    }
     
     // 使用平台模块创建通知
     const id = notificationManager.create(platformConfig)
@@ -237,7 +227,29 @@ export function useNotification() {
   // 获取通知实例
   const getNotification = (id: string): NotificationInstance | undefined => {
     const platformNotification = notificationManager.get(id)
-    return platformNotification ? convertPlatformToLegacy(platformNotification) : undefined
+    return platformNotification ? {
+      id: platformNotification.id,
+      title: platformNotification.title || '',
+      message: platformNotification.message,
+      type: platformNotification.type,
+      duration: platformNotification.duration || 4000,
+      position: platformNotification.position || 'top-right',
+      showClose: platformNotification.showClose ?? true,
+      persistent: platformNotification.persistent ?? false,
+      icon: platformNotification.icon || '',
+      avatar: platformNotification.avatar || '',
+      customClass: platformNotification.customClass || '',
+      html: platformNotification.html ?? false,
+      data: platformNotification.data,
+      createdAt: platformNotification.createdAt,
+      actions: platformNotification.actions?.map(action => ({
+        text: action.text,
+        action: action.handler,
+        type: action.type as 'primary' | 'secondary' | 'danger'
+      })),
+      onClick: platformNotification.onClick,
+      onClose: platformNotification.onClose
+    } : undefined
   }
 
   // 检查通知是否存在
@@ -327,7 +339,28 @@ export function useNotification() {
         const persistentNotifications: NotificationInstance[] = JSON.parse(saved)
         persistentNotifications.forEach(notification => {
           // 使用平台模块重新创建持久化通知
-          const platformConfig = convertLegacyToPlatform(notification)
+          const platformConfig: PlatformNotificationConfig = {
+            id: notification.id,
+            title: notification.title,
+            message: notification.message,
+            type: notification.type || 'info',
+            duration: notification.duration,
+            position: notification.position,
+            showClose: notification.showClose,
+            persistent: notification.persistent,
+            icon: notification.icon,
+            avatar: notification.avatar,
+            customClass: notification.customClass,
+            html: notification.html,
+            data: notification.data,
+            actions: notification.actions?.map(action => ({
+              text: action.text,
+              handler: action.action,
+              type: action.type || 'secondary'
+            })),
+            onClick: notification.onClick,
+            onClose: notification.onClose
+          }
           notificationManager.create({ ...platformConfig, id: notification.id })
         })
       }

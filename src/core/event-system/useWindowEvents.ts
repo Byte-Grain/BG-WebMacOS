@@ -184,7 +184,7 @@ export class WindowEventManager {
   // 设置窗口标题
   private handleSetWindowTitle(data: WindowEventData['setWindowTitle']) {
     // 这个事件需要传递给具体的窗口组件处理
-    this.eventBus.emit('window:title-change', {
+    this.eventBus.emit(EVENTS.WINDOW_TITLE_CHANGE, {
       title: data.title,
       appKey: data.appKey,
       pid: data.pid
