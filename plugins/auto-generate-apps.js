@@ -150,7 +150,6 @@ function generateCustomApps(scanDirs, outputFilePath) {
       // 第一层为分类，第二层为分组或应用，第三层为应用（如果存在）
       // 只扫描index.vue文件，最多扫描四层（apps/分类/分组/应用）
       const indexFiles = findIndexVueFiles(appsDir)
-      console.log("-----------files",indexFiles)
 
       indexFiles.forEach((file) => {
         const filePath = path.join(appsDir, file)
